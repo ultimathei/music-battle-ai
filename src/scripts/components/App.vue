@@ -14,8 +14,23 @@
             ></piano-white-key>
           </div>
           <div class="piano-keyboard__black-keys">
-            <div class="piano-keyboard__black-key">
-              
+            <div
+              v-for="n in 2"
+              :key="`black-key-${n}`"
+              class="piano-keyboard__black-key | black-key"
+              :data-piano-black-key-index="n"
+            >
+              <div class="black-key__top"></div>
+              <div class="black-key__front"></div>
+            </div>
+            <div
+              v-for="n in 3"
+              :key="`black-key-${n+3}`"
+              class="piano-keyboard__black-key | black-key"
+              :data-piano-black-key-index="n+3"
+            >
+              <div class="black-key__top"></div>
+              <div class="black-key__front"></div>
             </div>
           </div>
         </div>

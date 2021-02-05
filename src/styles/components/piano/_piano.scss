@@ -36,7 +36,9 @@
 
 //
 $piano-white-key-size: 80px;
+$piano-black-key-size: 40px;
 $piano-number-of-keys: 8;
+
 .piano-keyboard {
   position: relative;
   width: calc(#{$piano-white-key-size} * #{$piano-number-of-keys} + 0px);
@@ -49,44 +51,64 @@ $piano-number-of-keys: 8;
   &__black-keys {
     @extend %click-throw-component;
     @extend %overlaid-component;
-    border: 2px dashed red;
   }
 
   &__white-key {
-    float: left;
     display: flex;
     flex-flow: column;
+    float: left;
     height: 100%;
-    width: 80px;
+    width: $piano-white-key-size;
   }
 
   &__black-key {
-    border: 2px solid black;
     display: flex;
     flex-flow: column;
     height: 50%;
-    width: 40px;
+    width: $piano-black-key-size;
   }
 }
 
 //
 .white-key {
   &__front {
-    background: $color-blue;
+    background-color: $color-blue;
     flex-grow: 1;
-    width: 80px;
+    width: 100%;
   }
   &:not(:last-child) &__front {
-    border-right: 2px solid $color-white;
+    border-right: 3px solid $color-white;
   }
 
   &__top {
-    background: $color-white;
+    background-color: $color-white;
     height: 90%;
-    width: 80px;
+    width: 100%;
+  }
+  &:not(:last-child) &__top {
+    border-right: 3px solid $color-blue;
+  }
+}
+
+.black-key {
+  position: absolute;
+  margin-left: calc(#{$piano-black-key-size} / -2);
+
+  @for $i from 1 through 6 {
+    &[data-piano-black-key-index="#{$i}"] {
+      left: calc(#{$i} * #{$piano-white-key-size});
+    }
   }
 
-  &:not(:last-child) &__top {
-    border-right: 2px solid $color-blue;
+  &__front {
+    background-color: $color-black;
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  &__top {
+    background-color: $color-black;
+    height: 90%;
+    width: 100%;
   }
 }
