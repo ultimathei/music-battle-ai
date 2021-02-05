@@ -3,12 +3,18 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "test",
-  props: {
-    msg: String,
-  },
+  computed: {
+      localComputed () {
+          // ...
+      },
+      ...mapState([
+        // mapping this.msg to store.state.msg
+        "msg",
+      ]),
+  }
 };
 </script>
-
-<style></style>
