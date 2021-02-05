@@ -1,16 +1,14 @@
 <template>
   <div id="app">
-    <h1>{{ msg }}</h1>
+    <test msg="Hello"></test>
   </div>
 </template>
 
 <script>
+import test from './test/Test.vue';
+
 export default {
+  components: { test },
   name: "app",
-  data() {
-    return {
-      msg: "Welcome to Music Battle Ai",
-    };
-  },
 };
 </script>
