@@ -6,15 +6,11 @@
 
 <script>
 export default {
-  name: 'app',
-  data () {
+  name: "app",
+  data() {
     return {
-      msg: 'Welcome to Your Vue.js App'
-    }
-  }
-}
+      msg: "Welcome to Music Battle Ai",
+    };
+  },
+};
 </script>
-
-<style lang="scss">
-
-</style>
