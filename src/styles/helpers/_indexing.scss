@@ -1,0 +1,11 @@
+/**
+*
+*/
+
+@mixin click-throw-component {
+    pointer-events: none;
+}
+
+%click-throw-component {
+    @include click-throw-component;
+}

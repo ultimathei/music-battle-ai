@@ -5,12 +5,17 @@
  */
 
 // constant colors
-$color-black: #000000;
+$color-black: #101010;
 $color-white: #ffffff;
+$color-yellow: #fcf677;
+$color-orange: #fcb588;
+$color-blue: #9b9bf2;
+$color-purp: #cc9dfc;
+$color-pink: #f78181;
 
 // brand colors
-$color-brand-background: deepskyblue; 
-$color-brand-foreground: $color-white; 
+$color-brand-background: $color-black;
+$color-brand-foreground: $color-white;
 
 // mixins
 

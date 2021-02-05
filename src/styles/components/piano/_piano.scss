@@ -1,0 +1,92 @@
+/**
+* PIANO component
+* --
+* A graphical UI element resembling a synthetizator
+*/
+
+.piano {
+  border: 2px solid white;
+  border-radius: 20px;
+  display: flex;
+  flex-flow: row nowrap;
+  height: 600px;
+  overflow: hidden;
+  width: 854px;
+
+  &__side-panel {
+    background-color: $color-pink;
+    flex-grow: 1;
+  }
+
+  &__main {
+    display: flex;
+    flex-flow: column nowrap;
+  }
+
+  &__top-panel {
+    background-color: $color-orange;
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  &__keyboard {
+    height: 340px;
+  }
+}
+
+//
+$piano-white-key-size: 80px;
+$piano-number-of-keys: 8;
+.piano-keyboard {
+  position: relative;
+  width: calc(#{$piano-white-key-size} * #{$piano-number-of-keys} + 0px);
+
+  &__white-keys {
+    @extend %click-throw-component;
+    @extend %overlaid-component;
+  }
+
+  &__black-keys {
+    @extend %click-throw-component;
+    @extend %overlaid-component;
+    border: 2px dashed red;
+  }
+
+  &__white-key {
+    float: left;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 80px;
+  }
+
+  &__black-key {
+    border: 2px solid black;
+    display: flex;
+    flex-flow: column;
+    height: 50%;
+    width: 40px;
+  }
+}
+
+//
+.white-key {
+  &__front {
+    background: $color-blue;
+    flex-grow: 1;
+    width: 80px;
+  }
+  &:not(:last-child) &__front {
+    border-right: 2px solid $color-white;
+  }
+
+  &__top {
+    background: $color-white;
+    height: 90%;
+    width: 80px;
+  }
+
+  &:not(:last-child) &__top {
+    border-right: 2px solid $color-blue;
+  }
+}
