@@ -1,0 +1,66 @@
+/**
+ * RESET
+ * --
+ * A stylesheet that attempts to reset/remove all styles that the popular web
+ * browsers apply to elements by default.
+ */
+
+ html, body, div, span, iframe, h1, h2, h3, h4, h5, h6, p,
+ a, address, em,
+ img, strong, b, i, ol, ul, li, dl, dt, dd, fieldset, form, label, legend, table, caption,
+ tbody, tfoot, thead, tr, th, td, article, aside, footer, header, nav,
+ section, video, time {
+     border: 0;
+     font: inherit;
+     font-size: 100%;
+     margin: 0;
+     padding: 0;
+     vertical-align: baseline;
+ }
+ 
+ html {
+     /**
+      * Preserve font-size when iPhone changes from portrait to landscape
+      */
+     -webkit-font-smoothing: antialiased;
+     -webkit-text-size-adjust: 100%;
+ }
+ 
+ html, *, *:after, *:before { box-sizing: border-box; }
+ body { line-height: 1; }
+ ol, ul { list-style: none; }
+ strong, b { font-weight: 600; }
+ em, i { font-style: italic; }
+ 
+ table {
+     border-collapse: collapse;
+     border-spacing: 0;
+ }
+ 
+ :focus { outline: none; }
+ 
+ article, aside, footer, header, nav, section {
+     display: block;
+ }
+ 
+ a {
+     color: inherit;
+     text-decoration: none;
+ }
+ 
+ // Added by Mate Krisztian
+ img:not([src]),
+ img[src=""] {
+     visibility: hidden;
+ }
+ 
+ input {
+     -webkit-appearance: none;
+ }
+ 
+ input[type="search"]::-webkit-search-decoration,
+ input[type="search"]::-webkit-search-cancel-button,
+ input[type="search"]::-webkit-search-results-button,
+ input[type="search"]::-webkit-search-results-decoration {
+   -webkit-appearance:none;
+ }

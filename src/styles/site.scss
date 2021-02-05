@@ -1,0 +1,20 @@
+/**
+ * SITE
+ * --
+ * The top level stylesheet file used to import all of the other stylesheets
+ * into one. The stylesheet is included on every page of the website.
+ */
+
+ @charset 'UTF-8';
+
+ // A stylesheet used to reset the browser's base styles.
+ @import 'reset';
+ 
+ // A list of common variables including colours, fonts, breakpoints, etc.
+ @import 'settings/settings';
+ 
+ // A list of helpful mixins and extends.
+ @import 'helpers/helpers';
+ 
+ // Core element styles and generic component styles/placeholders.
+ @import 'base';
