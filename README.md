@@ -1,18 +1,5 @@
 # music-battle-ai
+This is the code repository for my Computer Science, Bsc. final year project at Queen Mary University of London.
 
-> A Vue.js project
+I aim to record the progress of my project here.
 
-## Build Setup
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-```
-
-For detailed explanation on how things work, consult the [docs for vue-loader](http://vuejs.github.io/vue-loader).
