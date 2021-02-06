@@ -12,7 +12,7 @@
   width: 854px;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     height: 100%;
     width: 100%;
@@ -22,7 +22,7 @@
     left: 0;
   }
 
-  &__content{
+  &__content {
     background: linear-gradient(45deg, $color-pink, $color-purp);
     // border: 2px solid white;
     border-radius: 20px;
@@ -37,7 +37,7 @@
   }
 
   &__side-panel {
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     mix-blend-mode: overlay;
     flex-grow: 1;
     // border: 2px dashed white;
@@ -64,4 +64,4 @@
   }
 }
 
-@import 'piano-keyboard';
+@import "piano-keyboard";

@@ -5,16 +5,16 @@
 
 .white-key {
   &__front {
-    background-color: $color-blue;
+    background: linear-gradient(0deg, $color-blue-deep, $color-blue);
     flex-grow: 1;
     width: 100%;
   }
   &:not(:last-child) &__front {
-    border-right: 3px solid $color-white;
+    border-right: 3px solid $color-blue-deep;
   }
 
   &__top {
-    background-color: $color-white;
+    background: linear-gradient(180deg, $color-blue, $color-white 33%);
     height: 90%;
     width: 100%;
   }

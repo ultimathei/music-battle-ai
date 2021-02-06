@@ -16,13 +16,15 @@
   }
 
   &__front {
-    background-color: $color-black;
+    background-color: $color-blue-deep;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     flex-grow: 1;
     width: 100%;
   }
 
   &__top {
-    background-color: $color-black;
+    background: linear-gradient(180deg, $color-black, $color-blue-deep 33%);
     height: 90%;
     width: 100%;
   }
