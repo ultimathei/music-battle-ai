@@ -7,9 +7,11 @@
 .piano {
   border-radius: 20px;
   height: 600px;
+  // height: 0;
   margin: 30px;
   position: relative;
   width: 854px;
+  // padding-top: 600px / 854px * 100%;
 
   &::before {
     content: "";
@@ -53,7 +55,7 @@
   }
 
   &__keyboard {
-    height: 340px;
+    height: 55%;
   }
 }
 

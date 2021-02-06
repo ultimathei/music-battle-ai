@@ -1,7 +1,9 @@
 <template>
-  <div id="app">
+  <div id="app" class="app">
     <!-- <test></test> -->
+    <h1 class="app__header">Music Battle Ai</h1>
     <piano></piano>
+    <p class="app__footer">created by Mate Krisztian for the final year project QMUL @ 2021</p>
   </div>
 </template>
 

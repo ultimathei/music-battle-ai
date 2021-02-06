@@ -29,11 +29,21 @@ body {
   }
 }
 
-#app {
+.app {
   align-items: center;
   display: flex;
   flex-flow: column nowrap;
   height: 100vh;
-  justify-content: center;
+  justify-content: space-around;
   width: 100vw;
+
+  &__header {
+    padding: 20px;
+    font-size: 30px;
+  }
+
+  &__footer{
+    padding: 20px;
+    font-size: 14px;
+  }
 }

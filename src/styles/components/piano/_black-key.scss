@@ -20,7 +20,7 @@
   }
 
   &__top {
-    background: linear-gradient(180deg, $color-black, $color-blue-deep 33%);
+    background: linear-gradient(180deg, $color-black, transparent 33%);
     // outline but with border-radius
     box-shadow: 0 0 0 3px $color-grey-dark;
     border-bottom-left-radius: 10px;
