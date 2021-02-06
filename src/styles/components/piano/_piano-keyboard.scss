@@ -1,0 +1,43 @@
+/**
+* PIANO KEYBOARD COMPONENT
+* --
+*/
+
+//
+$piano-white-key-size: 80px;
+$piano-black-key-size: 40px;
+$piano-number-of-keys: 8;
+
+.piano-keyboard {
+  position: relative;
+  width: calc(#{$piano-white-key-size} * #{$piano-number-of-keys} + 0px);
+
+  &__white-keys {
+    @extend %click-throw-component;
+    @extend %overlaid-component;
+  }
+
+  &__black-keys {
+    @extend %click-throw-component;
+    @extend %overlaid-component;
+  }
+
+  &__white-key {
+    display: flex;
+    flex-flow: column;
+    float: left;
+    height: 100%;
+    width: $piano-white-key-size;
+  }
+
+  &__black-key {
+    display: flex;
+    flex-flow: column;
+    height: 50%;
+    width: $piano-black-key-size;
+  }
+}
+
+@import 'white-key';
+@import 'black-key';
+

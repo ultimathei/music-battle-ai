@@ -1,0 +1,27 @@
+/**
+* PIANO BLACK KEY COMPONENT
+* -- 
+*/
+
+.black-key {
+  position: absolute;
+  margin-left: calc(#{$piano-black-key-size} / -2);
+
+  @for $i from 1 through 6 {
+    &[data-piano-black-key-index="#{$i}"] {
+      left: calc(#{$i} * #{$piano-white-key-size});
+    }
+  }
+
+  &__front {
+    background-color: $color-black;
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  &__top {
+    background-color: $color-black;
+    height: 90%;
+    width: 100%;
+  }
+}

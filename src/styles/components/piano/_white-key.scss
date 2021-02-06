@@ -1,0 +1,24 @@
+/**
+* PIANO WHITE KEY COMPONENT
+* -- 
+*/
+
+.white-key {
+  &__front {
+    background-color: $color-blue;
+    flex-grow: 1;
+    width: 100%;
+  }
+  &:not(:last-child) &__front {
+    border-right: 3px solid $color-white;
+  }
+
+  &__top {
+    background-color: $color-white;
+    height: 90%;
+    width: 100%;
+  }
+  &:not(:last-child) &__top {
+    border-right: 3px solid $color-blue;
+  }
+}
