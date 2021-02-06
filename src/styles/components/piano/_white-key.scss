@@ -21,4 +21,8 @@
   &:not(:last-child) &__top {
     border-right: 3px solid $color-blue;
   }
+  &[data-piano-key-pressed="true"] &__top {
+    height: 95%;
+    background: linear-gradient(180deg, $color-blue, $color-grey 50%);
+  }
 }

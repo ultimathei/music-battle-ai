@@ -4,8 +4,12 @@
 */
 
 .black-key {
-  position: absolute;
+  background-color: $color-blue-deep;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
   margin-left: calc(#{$piano-black-key-size} / -2);
+  overflow: hidden;
+  position: absolute;
 
   // defining left offset for all black keys in the octave range
   $black-key-locations: 1, 2, 4, 5, 6;
@@ -15,17 +19,16 @@
     }
   }
 
-  &__front {
-    background-color: $color-blue-deep;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    flex-grow: 1;
-    width: 100%;
-  }
-
   &__top {
     background: linear-gradient(180deg, $color-black, $color-blue-deep 33%);
-    height: 90%;
+    // outline but with border-radius
+    box-shadow: 0 0 0 3px $color-grey-dark;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    height: 85%;
     width: 100%;
+  }
+  &[data-piano-key-pressed="true"] &__top {
+    height: 95%;
   }
 }

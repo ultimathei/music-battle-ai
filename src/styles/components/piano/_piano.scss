@@ -24,7 +24,6 @@
 
   &__content {
     background: linear-gradient(45deg, $color-pink, $color-purp);
-    // border: 2px solid white;
     border-radius: 20px;
     display: flex;
     flex-flow: row nowrap;
@@ -40,9 +39,6 @@
     background-color: rgba(0, 0, 0, 0.5);
     mix-blend-mode: overlay;
     flex-grow: 1;
-    // border: 2px dashed white;
-    // border-top-left-radius: 20px;
-    // border-bottom-left-radius: 20px;
   }
 
   &__main {
@@ -51,9 +47,6 @@
   }
 
   &__top-panel {
-    // background-color: $color-orange;
-    // border: 2px dashed white;
-    // border-left: none;
     border-top-right-radius: 20px;
     flex-grow: 1;
     width: 100%;
