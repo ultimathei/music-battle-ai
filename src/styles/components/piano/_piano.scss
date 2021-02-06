@@ -5,17 +5,44 @@
 */
 
 .piano {
-  border: 2px solid white;
   border-radius: 20px;
-  display: flex;
-  flex-flow: row nowrap;
   height: 600px;
-  overflow: hidden;
+  margin: 30px;
+  position: relative;
   width: 854px;
 
+  &::before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(45deg, $color-pink, $color-purp);
+    filter: blur(30px);
+    top: 0;
+    left: 0;
+  }
+
+  &__content{
+    background: linear-gradient(45deg, $color-pink, $color-purp);
+    // border: 2px solid white;
+    border-radius: 20px;
+    display: flex;
+    flex-flow: row nowrap;
+    overflow: hidden;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
   &__side-panel {
-    background-color: $color-pink;
+    background-color: rgba(0,0,0,0.5);
+    mix-blend-mode: overlay;
     flex-grow: 1;
+    // border: 2px dashed white;
+    // border-top-left-radius: 20px;
+    // border-bottom-left-radius: 20px;
   }
 
   &__main {
@@ -24,7 +51,10 @@
   }
 
   &__top-panel {
-    background-color: $color-orange;
+    // background-color: $color-orange;
+    // border: 2px dashed white;
+    // border-left: none;
+    border-top-right-radius: 20px;
     flex-grow: 1;
     width: 100%;
   }
