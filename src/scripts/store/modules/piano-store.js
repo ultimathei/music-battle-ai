@@ -26,12 +26,11 @@ export default {
     octaveCount: 1,
     scale: 0.5,
     sidePanelWidth: 200,
-    width: 840,
   }),
 
   getters: {
-    aspectRatio(state) {
-      return state.height / state.width;
+    aspectRatio(state, getters) {
+      return state.height / getters.width;
     },
     blackKeySize(state) {
       return state.keySize / 2;
@@ -51,16 +50,16 @@ export default {
     sidePanelWidth(state) {
       return state.sidePanelWidth;
     },
-    width(state) {
-      return state.width;
-    },
     // width(state) {
-    //   return (
-    //     state.sidePanelWidth +
-    //     state.octaveCount * state.keySize * 7 +
-    //     state.keySize
-    //   );
+    //   return state.width;
     // },
+    width(state) {
+      return (
+        state.sidePanelWidth +
+        state.octaveCount * state.keySize * 7 +
+        state.keySize
+      );
+    },
   },
 
   mutations: {

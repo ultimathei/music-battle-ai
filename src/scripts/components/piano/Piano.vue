@@ -3,7 +3,7 @@
     <div class="piano__content">
       <div class="piano__side-panel"></div>
       <div class="piano__main">
-        <div class="piano__top-panel">{{ aspectRatio }}</div>
+        <div class="piano__top-panel">aspectRatio: {{ aspectRatio }}</div>
         <piano-keyboard class="piano__keyboard" />
       </div>
     </div>
@@ -12,7 +12,7 @@
 
 <script>
 import PianoKeyboard from "./PianoKeyboard.vue";
-import { mapState, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import {
   PIANO_ACTION_SET_HEIGHT,
   PIANO_ACTION_SET_KEYSIZE,
@@ -33,6 +33,7 @@ export default {
     };
   },
   computed: {
+    // local computed
     sizeStyle: function () {
       return {
         height: `${this.height}px`,
@@ -40,7 +41,10 @@ export default {
         // paddingTop: `${this.aspectRatio * 100}%`,
       };
     },
-    ...mapState("pianoStore", [
+
+    // mapping the getters not state to limit ability of modifications
+    // to actions
+    ...mapGetters("pianoStore", [
       "aspectRatio",
       "blackKeySize",
       "height",

@@ -52,8 +52,12 @@
   }
 
   &__top-panel {
+    align-items: center;
     border-top-right-radius: 20px;
+    color: $color-blue-deep;
+    display: flex;
     flex-grow: 1;
+    justify-content: center;
     width: 100%;
   }
 
