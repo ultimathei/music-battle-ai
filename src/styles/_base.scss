@@ -1,9 +1,7 @@
 /**
  * BASE
  * --
- * Contains a lot of the generic single-use classes that format text/elements on
- * the page. Unlike standard components, these components do not have child
- * elements.
+ * Contains some basic css components that are at the top level of the DOM.
  * -- 
  * CREDIT: 
  * grain filter css solution was inspired by the comments on this article:
@@ -26,26 +24,5 @@ body {
     top: 0;
     left: 0;
     mix-blend-mode: hard-light;
-  }
-}
-
-.app {
-  align-items: center;
-  display: flex;
-  flex-flow: column nowrap;
-  height: 100vh;
-  justify-content: space-around;
-  width: 100vw;
-
-  &__header {
-    padding: 20px;
-    font-size: 30px;
-    color: $color-pink;
-  }
-
-  &__footer{
-    padding: 20px;
-    font-size: 14px;
-    color: $color-pink;
   }
 }

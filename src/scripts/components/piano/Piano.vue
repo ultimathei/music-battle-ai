@@ -1,5 +1,5 @@
 <template>
-  <div class="piano">
+  <div :class="['|', 'piano']">
     <div class="piano__content">
       <div class="piano__side-panel"></div>
       <div class="piano__main">

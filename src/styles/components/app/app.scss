@@ -1,0 +1,26 @@
+/**
+* APP component
+* -- 
+* The main component / root of all components of the vue application.
+*/
+
+.app {
+  align-items: center;
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100vh;
+  justify-content: space-around;
+  width: 100vw;
+
+  &__header {
+    padding: 20px;
+    font-size: 30px;
+    color: $color-pink;
+  }
+
+  &__footer {
+    padding: 20px;
+    font-size: 14px;
+    color: $color-pink;
+  }
+}
