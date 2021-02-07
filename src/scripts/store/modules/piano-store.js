@@ -31,7 +31,10 @@ export default {
 
   getters: {
     aspectRatio(state) {
-        return state.height / state.width;
+      return state.height / state.width;
+    },
+    blackKeySize(state) {
+      return state.keySize / 2;
     },
     height(state) {
       return state.height;

@@ -21,6 +21,10 @@
     filter: blur(30px);
     top: 0;
     left: 0;
+    // -webkit-animation: pulsing-01 1s alternate infinite; /* Safari 4+ */
+    // -moz-animation: pulsing-01 1s alternate infinite; /* Fx 5+ */
+    // -o-animation: pulsing-01 1s alternate infinite; /* Opera 12+ */
+    // animation: pulsing-01 1s alternate infinite; /* IE 10+, Fx 29+ */
   }
 
   &__content {
@@ -59,3 +63,36 @@
 }
 
 @import "piano-keyboard";
+
+@-webkit-keyframes pulsing-01 {
+  0% {
+    filter: blur(15px);
+  }
+  100% {
+    filter: blur(30px);
+  }
+}
+@-moz-keyframes pulsing-01 {
+  0% {
+    filter: blur(15px);
+  }
+  100% {
+    filter: blur(30px);
+  }
+}
+@-o-keyframes pulsing-01 {
+  0% {
+    filter: blur(15px);
+  }
+  100% {
+    filter: blur(30px);
+  }
+}
+@keyframes pulsing-01 {
+  0% {
+    filter: blur(15px);
+  }
+  100% {
+    filter: blur(30px);
+  }
+}
