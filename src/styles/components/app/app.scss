@@ -1,7 +1,8 @@
 /**
 * APP component
 * -- 
-* The main component / root of all components of the vue application.
+* The main component / root of all components 
+* of the vue application.
 */
 
 .app {
@@ -22,5 +23,12 @@
     padding: 20px;
     font-size: 14px;
     color: $color-pink;
+  }
+
+  &__testbtn {
+    border: 2px solid white;
+    border-radius: 2px;
+    padding: 10px 20px;
+    text-transform: uppercase;
   }
 }
