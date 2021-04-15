@@ -15,14 +15,15 @@
 
   &__top {
     background: linear-gradient(180deg, $color-blue, $color-white 33%);
-    height: 90%;
+    height: calc(100% - 30px);
     width: 100%;
   }
   &:not(:last-child) &__top {
     border-right: 3px solid $color-blue;
   }
   &[data-piano-key-pressed="true"] &__top {
-    height: 95%;
+    // height: 95%;
+    height: calc(100% - 15px);
     background: linear-gradient(180deg, $color-blue, $color-grey 50%);
   }
 }

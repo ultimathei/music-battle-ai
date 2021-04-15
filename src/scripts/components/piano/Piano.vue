@@ -1,9 +1,13 @@
 <template>
   <div :class="['|', 'piano']" :style="sizeStyle">
     <div class="piano__content">
-      <div class="piano__side-panel"></div>
+      <div class="piano__side-panel">
+        <div class="piano__side-panel-bottom"></div>
+      </div>
       <div class="piano__main">
-        <div class="piano__top-panel">aspectRatio: {{ aspectRatio }}</div>
+        <div class="piano__top-panel">
+          {{ /*'aspectRatio:' + aspectRatio */}}
+        </div>
         <piano-keyboard class="piano__keyboard" />
       </div>
     </div>

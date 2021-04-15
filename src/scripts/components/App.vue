@@ -3,6 +3,7 @@
     <!-- <test></test> -->
     <h1 class="app__header">Music Battle Ai v.1.0</h1>
     <div class="app__testbtn" @click="getMIDI()">Click me for MIDI</div>
+    <metronome class="app__testbtn" />
     <piano class="app__piano" ref="piano"></piano>
     <p class="app__footer">
       created by Mate Krisztian for the final year project QMUL @ 2021
@@ -13,11 +14,13 @@
 <script>
 // import test from "./test/Test.vue"
 import Piano from "./piano/Piano.vue";
+import Metronome from "./metronome/metronome.vue";
 
 export default {
   components: {
     // test,
     Piano,
+    Metronome,
   },
   name: "app",
 
@@ -90,17 +93,21 @@ export default {
       }
     },
     noteOn(note) {
-      console.log('note on: ', note);
-      let pressed_key_DOM = this.$el.querySelector(`[data-note-index='${note}']`)
+      console.log("note on: ", note);
+      let pressed_key_DOM = this.$el.querySelector(
+        `[data-note-index='${note}']`
+      );
       // console.log(pressed_key_DOM);
-      if(pressed_key_DOM) 
-        pressed_key_DOM.setAttribute('data-piano-key-pressed', 'true')
+      if (pressed_key_DOM)
+        pressed_key_DOM.setAttribute("data-piano-key-pressed", "true");
     },
     noteOff(note) {
-      console.log('note off: ', note);
-      let pressed_key_DOM = this.$el.querySelector(`[data-note-index='${note}']`)
-      if(pressed_key_DOM) 
-        pressed_key_DOM.setAttribute('data-piano-key-pressed', 'false')
+      console.log("note off: ", note);
+      let pressed_key_DOM = this.$el.querySelector(
+        `[data-note-index='${note}']`
+      );
+      if (pressed_key_DOM)
+        pressed_key_DOM.setAttribute("data-piano-key-pressed", "false");
     },
   },
 };
