@@ -1,5 +1,7 @@
 <template>
-  <div @click="startStop()">Metronome</div>
+  <div @click="startStop()">
+    Metronome  |  Bar: {{ currentBar  }}  |  Beat: {{ currentBeat }}/4
+  </div>
 </template>
 
 <script>
@@ -14,6 +16,7 @@ export default {
       audioContext: null,
       bipsInQueue: [],
       currentBeat: 0,
+      currentBar: 1,
       tempo: 120,
       lookahead: 25,
       scheduleAheadTime: 0.1,
@@ -30,8 +33,12 @@ export default {
       const secondsPerBeat = 60.0 / this.tempo; // as tempo is in bpm
       this.nextBipTime += secondsPerBeat;
       this.currentBeat++; // keeping track of where we are in a bar
-      if (this.currentBeat == 4) {
-        this.currentBeat = 0; // wrap to zero
+      if (this.currentBeat == 5) {
+        this.currentBeat = 1; // wrap to zero
+        this.currentBar++;
+        if(this.currentBar == 5) {
+          this.currentBar = 1;
+        }
       }
     },
 

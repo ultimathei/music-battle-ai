@@ -1,8 +1,7 @@
 <template>
   <div id="app" class="app">
-    <!-- <test></test> -->
     <h1 class="app__header">Music Battle Ai v.1.0</h1>
-    <div class="app__testbtn" @click="getMIDI()">Click me for MIDI</div>
+    <div class="app__testbtn" @click="getMIDI()">Connect MIDI</div>
     <metronome class="app__testbtn" />
     <piano class="app__piano" ref="piano"></piano>
     <p class="app__footer">
@@ -93,7 +92,9 @@ export default {
       }
     },
     noteOn(note) {
-      console.log("note on: ", note);
+      var timestamp = new Date().getTime();
+      console.log("note on: ", note, " timestamp: ", timestamp);
+
       let pressed_key_DOM = this.$el.querySelector(
         `[data-note-index='${note}']`
       );
