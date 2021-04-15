@@ -8,6 +8,7 @@ import {
   PIANO_MUTATION_SCALE,
   PIANO_MUTATION_SIDE_PANEL_WIDTH,
   PIANO_MUTATION_WIDTH,
+  PIANO_MUTATION_KEY_STATE,
 } from "../mutations";
 import {
   PIANO_ACTION_SET_HEIGHT,
@@ -16,6 +17,7 @@ import {
   PIANO_ACTION_SET_SCALE,
   PIANO_ACTION_SET_SIDE_PANEL_WIDTH,
   PIANO_ACTION_SET_WIDTH,
+  PIANO_ACTION_SET_KEY_STATE,
 } from "../actions";
 
 export default {
@@ -103,6 +105,9 @@ export default {
     },
     [PIANO_ACTION_SET_WIDTH]({ commit }, data) {
       commit(PIANO_MUTATION_WIDTH, data);
+    },
+    [PIANO_ACTION_SET_KEY_STATE]({ commit }, data) {
+      commit(PIANO_MUTATION_KEY_STATE, data);
     },
   },
 };

@@ -11,3 +11,5 @@ export const PIANO_MUTATION_SCALE = "piano_mutation_scale";
 export const PIANO_MUTATION_SIDE_PANEL_WIDTH =
   "piano_mutation_side_panel_width";
 export const PIANO_MUTATION_WIDTH = "piano_mutation_width";
+
+export const PIANO_MUTATION_KEY_STATE = "piano_mutation_key_state";

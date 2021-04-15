@@ -11,3 +11,5 @@ export const PIANO_ACTION_SET_SCALE = "piano_action_set_scale";
 export const PIANO_ACTION_SET_SIDE_PANEL_WIDTH =
 "piano_action_set_side_panel_width";
 export const PIANO_ACTION_SET_WIDTH = "piano_action_set_width";
+
+export const PIANO_ACTION_SET_KEY_STATE = "piano_action_set_key_state";
