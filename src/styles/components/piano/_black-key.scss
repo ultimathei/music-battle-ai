@@ -42,6 +42,7 @@
 
   &__top {
     background: linear-gradient(180deg, $color-black, transparent 33%);
+    // background: linear-gradient(180deg, #272727, rgba(155,100,0,1) 100%);
     // outline but with border-radius
     box-shadow: 0 0 0 3px $color-grey-dark;
     border-bottom-left-radius: 10px;
@@ -51,5 +52,8 @@
   }
   &[data-piano-key-pressed="true"] &__top {
     height: 95%;
+    // background: linear-gradient(180deg, #272727, rgba(155,100,0,1) 100%);
+    // background: linear-gradient(180deg, #272727, #9b0039 100%);
+    background: linear-gradient(180deg, #272727, #00779b 100%);
   }
 }

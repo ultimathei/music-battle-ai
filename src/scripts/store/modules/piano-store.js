@@ -28,6 +28,7 @@ export default {
     octaveCount: 1,
     scale: 0.5,
     sidePanelWidth: 200,
+    keystate: null,
   }),
 
   getters: {
@@ -85,6 +86,9 @@ export default {
     [PIANO_MUTATION_WIDTH](state, data) {
       state.width = data;
     },
+    [PIANO_MUTATION_KEY_STATE](state, data) {
+      state.keystate = data;
+    },
   },
 
   actions: {
@@ -107,6 +111,14 @@ export default {
       commit(PIANO_MUTATION_WIDTH, data);
     },
     [PIANO_ACTION_SET_KEY_STATE]({ commit }, data) {
+      console.log('action here..');
+      // the idea here would be that somehow this action triggers the metronome
+      // to return the current time (1/32nd unit)
+      // ..
+      // another aproach would be to create another store for metronome,
+      // keep the current 32unit up to date there
+      // and use a getter to get the value.. (or add an action, that pushes the note to
+      // the music sheet array!) <-- TRY THIS
       commit(PIANO_MUTATION_KEY_STATE, data);
     },
   },

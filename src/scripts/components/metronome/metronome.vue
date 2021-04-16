@@ -1,6 +1,6 @@
 <template>
   <div @click="startStop()">
-    Metronome  |  Bar: {{ currentBar  }}  |  Beat: {{ currentBeat }}/4
+    Metronome  |  Bar: {{ currentBar  }}  |  {{ currentBeat }}/32
   </div>
 </template>
 
@@ -18,6 +18,7 @@ export default {
       currentBeat: 0,
       currentBar: 1,
       tempo: 120,
+      denominator: 8,
       lookahead: 25,
       scheduleAheadTime: 0.1,
       nextBipTime: 0.0,
@@ -31,9 +32,9 @@ export default {
      */
     nextBip() {
       const secondsPerBeat = 60.0 / this.tempo; // as tempo is in bpm
-      this.nextBipTime += secondsPerBeat;
+      this.nextBipTime += secondsPerBeat / this.denominator;
       this.currentBeat++; // keeping track of where we are in a bar
-      if (this.currentBeat == 5) {
+      if (this.currentBeat == 33) {
         this.currentBeat = 1; // wrap to zero
         this.currentBar++;
         if(this.currentBar == 5) {
@@ -55,17 +56,20 @@ export default {
       const envelope = this.audioContext.createGain();
 
       // first accent bip is slightly higher pitch
-      osc.frequency.value = beatNumber % 4 == 0 ? 1200 : 800;
-      envelope.gain.value = 1;
-      envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
-      envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
+      osc.frequency.value = beatNumber % 32 == 0 ? 1200 : 800;
+      
+      if(beatNumber % 8 == 0) {
+        envelope.gain.value = 1;
+        envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
+        envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
 
-      osc.connect(envelope);
-      envelope.connect(this.audioContext.destination);
+        osc.connect(envelope);
+        envelope.connect(this.audioContext.destination);
 
-      // only playing for a sharp period
-      osc.start(time);
-      osc.stop(time + 0.03);
+        // only playing for a sharp period
+        osc.start(time);
+        osc.stop(time + 0.03);
+      }
     },
 
     /**
@@ -121,6 +125,10 @@ export default {
         this.start();
       }
     },
+
+    getCurrent32unit() {
+      return this.beatNumber;
+    }
   },
 };
 </script>
