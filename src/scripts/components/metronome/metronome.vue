@@ -10,7 +10,7 @@
  * This Metronome component is based oaround the idea in this code repository
  * https://github.com/grantjames/metronome by grantjames.
  *
- * Demisemiquaver is a synonim for 32rd musical notes
+ * Demisemiquaver is a synonim for the 1/32rd musical note
  */
 import {
   CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
@@ -25,28 +25,30 @@ export default {
     return {
       audioContext: null,
       bipsInQueue: [],
-      currentPatternInd: 1,
       currentBar: 1,
       currentDemisemiquaver: 0,
-      tempo: 120,
+      currentPatternInd: 1,
       denominator: 8,
-      lookahead: 25,
-      scheduleAheadTime: 0.1,
-      nextBipTime: 0.0,
-      isRunning: false,
       intervalID: null,
+      isRunning: false,
+      lookahead: 25,
+      nextBipTime: 0.0,
+      scheduleAheadTime: 0.1,
       soundOn: true,
+      tempo: 120, // fixed value for now
     };
   },
   methods: {
-    // mapping mutation functions - essentially synhcronous setters
+    /**
+     * Mapping mutation functions - essentially synhcronous setters
+     *  */ 
     ...mapMutations("mainClockStore", [
       CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
       CLOCK_MUTATION_UPDATE_CURRENT_BAR,
       CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
     ]),
     /**
-     * Move to next bip
+     * Move to next bip/tick of the metronome
      */
     nextBip() {
       const secondsPerBeat = 60.0 / this.tempo; // as tempo is in bpm

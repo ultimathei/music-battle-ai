@@ -3,10 +3,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import {
-  PIANO_ACTION_SET_KEY_STATE,
-} from "../../store/actions";
+import { mapGetters } from "vuex";
 
 export default {
   name: "MidiController",
@@ -14,11 +11,14 @@ export default {
     this.getMIDI();
   },
   methods: {
-    // mapping the getters not state to limit ability of modifications
-    // to actions
+    /**
+     * Mapping the getters (not the state) to limit ability of modifications to actions
+     */
     ...mapGetters("mainClockStore", ["currentMusicalTime"]),
-    ...mapActions("pianoStore", [PIANO_ACTION_SET_KEY_STATE]),
 
+    /**
+     *
+     */
     getMIDI() {
       if (navigator.requestMIDIAccess) {
         console.log("This browser supports WebMIDI!");
@@ -73,35 +73,47 @@ export default {
         case 144:
           if (velocity > 0) {
             // this.noteOn(note, velocity);
-            this.noteToggle(note, true, velocity)
+            this.noteToggle(note, true, velocity);
           } else {
             // this.noteOff(note);
-            this.noteToggle(note, false)
+            this.noteToggle(note, false);
           }
           break;
         // noteOff
         case 128:
-          this.noteToggle(note, false)
+          this.noteToggle(note, false);
           break;
         // expand switch to handle other command types
       }
     },
-    noteToggle(note, on_message=true, velocity=0) {
+    /**
+     * Toggles the key for given note on/off
+     * Also records the note changes to store
+     */
+    noteToggle(note, on_message = true, velocity = 0) {
       const payload = {
         on_message,
         note: note,
         timestamp: new Date().getTime(),
-        velocity
+        velocity,
       };
       // emit to parent so the dom can be updated
       this.$emit("note-toggle", payload);
       // get current musical time position (using the global metronome)
-      const currentMusicalTime = this.currentMusicalTime()
+      const currentMusicalTime = this.currentMusicalTime();
       // print to console
       if (on_message)
-        console.log(`%c note started at `, 'background: #222; color: #bada55', currentMusicalTime);
+        console.log(
+          `%c note started at `,
+          "background: #222; color: #bada55",
+          currentMusicalTime
+        );
       else
-        console.log(`%c note ended at `, 'background: #222; color: red', currentMusicalTime);
+        console.log(
+          `%c note ended at `,
+          "background: #222; color: red",
+          currentMusicalTime
+        );
     },
   },
 };

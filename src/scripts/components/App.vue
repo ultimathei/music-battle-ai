@@ -11,7 +11,6 @@
 </template>
 
 <script>
-// import test from "./test/Test.vue"
 import Piano from "./piano/Piano.vue";
 import Metronome from "./metronome/metronome.vue";
 import MidiController from "./midi/midi-controller.vue";

@@ -24,7 +24,6 @@ import {
   PIANO_ACTION_SET_SCALE,
   PIANO_ACTION_SET_SIDE_PANEL_WIDTH,
   PIANO_ACTION_SET_WIDTH,
-  PIANO_ACTION_SET_KEY_STATE,
 } from "../../store/actions";
 
 export default {
@@ -68,7 +67,6 @@ export default {
       PIANO_ACTION_SET_SCALE,
       PIANO_ACTION_SET_SIDE_PANEL_WIDTH,
       PIANO_ACTION_SET_WIDTH,
-      PIANO_ACTION_SET_KEY_STATE,
     ]),
   },
 };

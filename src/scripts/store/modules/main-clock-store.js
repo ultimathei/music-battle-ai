@@ -53,15 +53,15 @@ export default {
     },
   },
 
-  actions: {
-    [CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER]({ commit }, data) {
-      commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, data);
-    },
-    [CLOCK_ACTION_UPDATE_CURRENT_BAR]({ commit }, data) {
-      commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, data);
-    },
-    [CLOCK_ACTION_UPDATE_CURRENT_PATTERN_IND]({ commit }, data) {
-      commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, data);
-    },
-  },
+  // actions: {
+  //   [CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER]({ commit }, data) {
+  //     commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, data);
+  //   },
+  //   [CLOCK_ACTION_UPDATE_CURRENT_BAR]({ commit }, data) {
+  //     commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, data);
+  //   },
+  //   [CLOCK_ACTION_UPDATE_CURRENT_PATTERN_IND]({ commit }, data) {
+  //     commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, data);
+  //   },
+  // },
 };
