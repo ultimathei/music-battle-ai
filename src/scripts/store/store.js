@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import titleStore from "./modules/title-store";
 import pianoStore from "./modules/piano-store";
+import mainClockStore from "./modules/main-clock-store";
 
 Vue.use(Vuex);
 
@@ -10,6 +11,7 @@ export default new Vuex.Store({
     // registering all imported store modules ..
     titleStore,
     pianoStore,
+    mainClockStore,
   },
 
   // other, non module stores

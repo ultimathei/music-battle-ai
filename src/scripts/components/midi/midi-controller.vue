@@ -6,14 +6,17 @@
 import { mapGetters, mapActions } from "vuex";
 import {
   PIANO_ACTION_SET_KEY_STATE,
+  CLOCK_ACTION_UPDATE_CURRENT_32_UNIT,
 } from "../../store/actions";
 
 export default {
   name: "MidiController",
   methods: {
-    ...mapActions("pianoStore", [
-      PIANO_ACTION_SET_KEY_STATE,
-    ]),
+    // mapping the getters not state to limit ability of modifications
+    // to actions
+    ...mapGetters("mainClockStore", ["current32unit"]),
+    ...mapActions("mainClockStore", [CLOCK_ACTION_UPDATE_CURRENT_32_UNIT]),
+    ...mapActions("pianoStore", [PIANO_ACTION_SET_KEY_STATE]),
 
     getMIDI() {
       if (navigator.requestMIDIAccess) {
@@ -46,17 +49,16 @@ export default {
         input.onmidimessage = this.getMIDIMessage;
     },
     /**
-     * 144 signifies a “note on” event
-     * 128 typically signifies a “note off” event
+     * command:
+     *    144 marks a “note on” event
+     *    128 marks a “note off” event (or 144 with 0 velocity)
      *
      * notes (pitch): 0...127
-     * example: lowest note on an 88-key piano has a value of 21
-     *  the highest is 108. A “middle C” is 60.
+     *    example: lowest note on an 88-key piano has a value of 21
+     *    the highest is 108. A “middle C” is 60.
      *
      * velocity: 0..127
-     * minimum velocity for note-on is 1, but
-     * (note-on + velocity 0 means aslo note off)
-     *
+     *    minimum velocity for note-on is 1
      */
     getMIDIMessage(midiMsg) {
       // console.log(midiMsg);
@@ -81,16 +83,24 @@ export default {
         // expand switch to handle other command types
       }
     },
-    noteOn(note) {      
+    noteOn(note) {
+      const payload = {
+        on_message: true,
+        note: note,
+        timestamp: new Date().getTime(),
+      };
       // emit to parent so the dom can be updated
-      const payload = {on_message: true, note: note, timestamp: new Date().getTime()}
-      this.$emit('test-event', payload)
+      this.$emit("note-toggle", payload);
       // get current 32 unit position of metronome
-      // emit note to event bus?
-      this.$store.dispatch('pianoStore/'+PIANO_ACTION_SET_KEY_STATE, payload)
+      // console.log(note)
+      console.log(this.current32unit())
     },
     noteOff(note) {
-      this.$emit('test-event', {on_message: false, note: note, timestamp: new Date().getTime()})
+      this.$emit("note-toggle", {
+        on_message: false,
+        note: note,
+        timestamp: new Date().getTime(),
+      });
     },
   },
 };

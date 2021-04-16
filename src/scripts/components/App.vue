@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="app">
     <h1 class="app__header">Music Battle Ai v.1.0</h1>
-    <midi-controller class="app__testbtn" @test-event="test" />
+    <midi-controller class="app__testbtn" @note-toggle="updateKeyboardUI" />
     <metronome class="app__testbtn" />
     <piano class="app__piano" ref="piano"></piano>
     <p class="app__footer">
@@ -24,7 +24,7 @@ export default {
     Piano,
   },
   methods: {
-    test(payload) {
+    updateKeyboardUI(payload) {
       // console.log(payload);
       let pressed_key_DOM = this.$el.querySelector(
         `[data-note-index='${payload.note}']`

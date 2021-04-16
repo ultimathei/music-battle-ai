@@ -1,6 +1,6 @@
 <template>
   <div @click="startStop()">
-    Metronome  |  Bar: {{ currentBar  }}  |  {{ currentBeat }}/32
+    Metronome | Bar: {{ currentBar }} | {{ currentBeat }}/32
   </div>
 </template>
 
@@ -9,6 +9,8 @@
  * This Metronome component is based oaround the idea in this code repository
  * https://github.com/grantjames/metronome by grantjames.
  */
+import { CLOCK_ACTION_UPDATE_CURRENT_32_UNIT } from "../../store/actions";
+
 export default {
   name: "Metronome",
   data() {
@@ -37,10 +39,16 @@ export default {
       if (this.currentBeat == 33) {
         this.currentBeat = 1; // wrap to zero
         this.currentBar++;
-        if(this.currentBar == 5) {
+        if (this.currentBar == 5) {
           this.currentBar = 1;
         }
       }
+      // update current beat in store
+      const payload = this.currentBeat
+      this.$store.dispatch(
+        "mainClockStore/" + CLOCK_ACTION_UPDATE_CURRENT_32_UNIT,
+        payload
+      );
     },
 
     /**
@@ -57,8 +65,8 @@ export default {
 
       // first accent bip is slightly higher pitch
       osc.frequency.value = beatNumber % 32 == 0 ? 1200 : 800;
-      
-      if(beatNumber % 8 == 0) {
+
+      if (beatNumber % 8 == 0) {
         envelope.gain.value = 1;
         envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
         envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
@@ -73,7 +81,7 @@ export default {
     },
 
     /**
-     * Until there are things on the play queue before the next interval, 
+     * Until there are things on the play queue before the next interval,
      * schedule them and advance the pointer.
      */
     scheduler() {
@@ -125,10 +133,6 @@ export default {
         this.start();
       }
     },
-
-    getCurrent32unit() {
-      return this.beatNumber;
-    }
   },
 };
 </script>

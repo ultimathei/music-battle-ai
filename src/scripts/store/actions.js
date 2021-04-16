@@ -13,3 +13,4 @@ export const PIANO_ACTION_SET_SIDE_PANEL_WIDTH =
 export const PIANO_ACTION_SET_WIDTH = "piano_action_set_width";
 
 export const PIANO_ACTION_SET_KEY_STATE = "piano_action_set_key_state";
+export const CLOCK_ACTION_UPDATE_CURRENT_32_UNIT = "clock_action_update_current_32_unit";

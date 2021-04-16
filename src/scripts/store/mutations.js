@@ -13,3 +13,5 @@ export const PIANO_MUTATION_SIDE_PANEL_WIDTH =
 export const PIANO_MUTATION_WIDTH = "piano_mutation_width";
 
 export const PIANO_MUTATION_KEY_STATE = "piano_mutation_key_state";
+
+export const CLOCK_MUTATION_UPDATE_CURRENT_32_UNIT = "clock_mutation_update_current_32_unit";
