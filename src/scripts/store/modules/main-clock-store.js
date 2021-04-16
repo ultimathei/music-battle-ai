@@ -2,42 +2,47 @@
  * Store module for the main clock of the app
  */
  import {
-  CLOCK_MUTATION_UPDATE_CURRENT_32_UNIT,
+  CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
+  CLOCK_MUTATION_UPDATE_CURRENT_BAR,
 } from "../mutations";
 import {
-  CLOCK_ACTION_UPDATE_CURRENT_32_UNIT,
+  CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER,
+  CLOCK_ACTION_UPDATE_CURRENT_BAR,
 } from "../actions";
 
 export default {
   namespaced: true,
   state: () => ({
-    current32unit: 0,
+    currentDemisemiquaver: 0,
+    currentBar: 0,
   }),
 
   getters: {
-    current32unit(state) {
-      return state.current32unit;
+    currentDemisemiquaver(state) {
+      return state.currentDemisemiquaver;
+    },
+    currentBar(state) {
+      return state.currentBar;
     },
   },
 
+  // basiacally setters
   mutations: {
     // using the ES2015 computed property name feature
-    [CLOCK_MUTATION_UPDATE_CURRENT_32_UNIT](state, data) {
-      state.current32unit = data;
+    [CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](state, data) {
+      state.currentDemisemiquaver = data;
+    },
+    [CLOCK_MUTATION_UPDATE_CURRENT_BAR](state, data) {
+      state.currentBar = data;
     },
   },
 
   actions: {
-    [CLOCK_ACTION_UPDATE_CURRENT_32_UNIT]({ commit }, data) {
-      console.log('update clock in store here..');
-      // the idea here would be that somehow this action triggers the metronome
-      // to return the current time (1/32nd unit)
-      // ..
-      // another aproach would be to create another store for metronome,
-      // keep the current 32unit up to date there
-      // and use a getter to get the value.. (or add an action, that pushes the note to
-      // the music sheet array!) <-- TRY THIS
-      commit(CLOCK_MUTATION_UPDATE_CURRENT_32_UNIT, data);
+    [CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER]({ commit }, data) {
+      commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, data);
+    },
+    [CLOCK_ACTION_UPDATE_CURRENT_BAR]({ commit }, data) {
+      commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, data);
     },
   },
 };

@@ -1,21 +1,24 @@
 <template>
-  <div @click="getMIDI()">Connect MIDI</div>
+  <div @click="getMIDI()">Reconnect MIDI</div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 import {
   PIANO_ACTION_SET_KEY_STATE,
-  CLOCK_ACTION_UPDATE_CURRENT_32_UNIT,
+  CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER,
 } from "../../store/actions";
 
 export default {
   name: "MidiController",
+  mounted() {
+    this.getMIDI();
+  },
   methods: {
     // mapping the getters not state to limit ability of modifications
     // to actions
-    ...mapGetters("mainClockStore", ["current32unit"]),
-    ...mapActions("mainClockStore", [CLOCK_ACTION_UPDATE_CURRENT_32_UNIT]),
+    ...mapGetters("mainClockStore", ["currentDemisemiquaver"]),
+    ...mapActions("mainClockStore", [CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER]),
     ...mapActions("pianoStore", [PIANO_ACTION_SET_KEY_STATE]),
 
     getMIDI() {
@@ -41,7 +44,7 @@ export default {
     onMIDISuccess(midiAccess) {
       console.log("MIDI successfully connected", midiAccess);
       const inputs = midiAccess.inputs;
-      console.log("inputs: ", inputs);
+      // console.log("inputs: ", inputs);
       // const outputs = midiAccess.outputs
       // console.log('outputs: ', outputs)
 
@@ -93,7 +96,7 @@ export default {
       this.$emit("note-toggle", payload);
       // get current 32 unit position of metronome
       // console.log(note)
-      console.log(this.current32unit())
+      console.log(this.currentDemisemiquaver())
     },
     noteOff(note) {
       this.$emit("note-toggle", {
