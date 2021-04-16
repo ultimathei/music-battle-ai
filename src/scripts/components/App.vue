@@ -23,6 +23,9 @@ export default {
     Piano,
   },
   methods: {
+    /**
+     * Updating the keyboard UI to refelct changes in currently played MIDI notes.
+     */
     updateKeyboardUI(payload) {
       // console.log(payload);
       let pressed_key_DOM = this.$el.querySelector(

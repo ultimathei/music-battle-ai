@@ -6,11 +6,6 @@
   CLOCK_MUTATION_UPDATE_CURRENT_BAR,
   CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
 } from "../mutations";
-import {
-  CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER,
-  CLOCK_ACTION_UPDATE_CURRENT_BAR,
-  CLOCK_ACTION_UPDATE_CURRENT_PATTERN_IND,
-} from "../actions";
 
 export default {
   namespaced: true,
@@ -52,16 +47,4 @@ export default {
       state.currentPatternInd = data;
     },
   },
-
-  // actions: {
-  //   [CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER]({ commit }, data) {
-  //     commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, data);
-  //   },
-  //   [CLOCK_ACTION_UPDATE_CURRENT_BAR]({ commit }, data) {
-  //     commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, data);
-  //   },
-  //   [CLOCK_ACTION_UPDATE_CURRENT_PATTERN_IND]({ commit }, data) {
-  //     commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, data);
-  //   },
-  // },
 };
