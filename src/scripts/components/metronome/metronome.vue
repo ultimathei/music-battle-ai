@@ -1,7 +1,10 @@
 <template>
-  <div @click="startStop()">
-    Metronome | Pos: {{ currentPatternInd }}, {{ currentBar }} ,
-    {{ currentDemisemiquaver }}/32
+  <div>
+    <MetronomeIcon class="icon-small" />
+    <div class="button" @click="startStop()">
+      {{ currentPatternInd+1 }}, {{ currentBar+1 }} ,
+      {{ Math.floor(currentDemisemiquaver/8)+1 }}/4
+    </div>
   </div>
 </template>
 
@@ -18,16 +21,20 @@ import {
   CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
 } from "../../store/mutations";
 import { mapMutations } from "vuex";
+import MetronomeIcon from '../graphics/metronome.svg';
 
 export default {
   name: "Metronome",
+  components: {
+    MetronomeIcon,
+  },
   data() {
     return {
       audioContext: null,
       bipsInQueue: [],
-      currentBar: 1,
+      currentBar: 0,
       currentDemisemiquaver: 0,
-      currentPatternInd: 1,
+      currentPatternInd: 0,
       denominator: 8,
       intervalID: null,
       isRunning: false,
@@ -41,7 +48,7 @@ export default {
   methods: {
     /**
      * Mapping mutation functions - essentially synhcronous setters
-     *  */ 
+     *  */
     ...mapMutations("mainClockStore", [
       CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
       CLOCK_MUTATION_UPDATE_CURRENT_BAR,
@@ -54,11 +61,11 @@ export default {
       const secondsPerBeat = 60.0 / this.tempo; // as tempo is in bpm
       this.nextBipTime += secondsPerBeat / this.denominator;
       this.currentDemisemiquaver++; // keeping track of where we are in a bar
-      if (this.currentDemisemiquaver == 33) {
-        this.currentDemisemiquaver = 1; // wrap to (1,32)
+      if (this.currentDemisemiquaver == 32) {
+        this.currentDemisemiquaver = 0; // wrap to (0,32]
         this.currentBar++;
-        if (this.currentBar == 5) {
-          this.currentBar = 1;
+        if (this.currentBar == 4) {
+          this.currentBar = 0;
           this.currentPatternInd++;
           // update pattern ind in store
           this[CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](
@@ -143,9 +150,9 @@ export default {
       this.isRunning = true;
 
       // reset pointers ?
-      this.currentPatternInd = 1;
+      this.currentPatternInd = 0;
       this[CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](this.currentPatternInd);
-      this.currentBar = 1;
+      this.currentBar = 0;
       this[CLOCK_MUTATION_UPDATE_CURRENT_BAR](this.currentBar);
       this.currentDemisemiquaver = 0;
       this[CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](

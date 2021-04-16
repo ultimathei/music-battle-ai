@@ -1,12 +1,19 @@
 <template>
-  <div @click="getMIDI()">Reconnect MIDI</div>
+  <div>
+    <MidiIcon class="icon-small"/>
+    <div class="button" @click="getMIDI()">Reconnect MIDI</div>
+  </div>
 </template>
 
 <script>
+import MidiIcon from '../graphics/midi-controller.svg';
 import { mapGetters } from "vuex";
 
 export default {
   name: "MidiController",
+  components: {
+    MidiIcon,
+  },
   mounted() {
     this.getMIDI();
   },
@@ -30,7 +37,7 @@ export default {
         .requestMIDIAccess()
         .then(this.onMIDISuccess, this.onMIDIFailure);
     },
-    
+
     /**
      * MIDI connection failure handler
      */
