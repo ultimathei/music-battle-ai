@@ -14,5 +14,9 @@ export const PIANO_MUTATION_WIDTH = "piano_mutation_width";
 
 export const PIANO_MUTATION_KEY_STATE = "piano_mutation_key_state";
 
-export const CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER = "clock_mutation_update_current_demisemiquaver";
-export const CLOCK_MUTATION_UPDATE_CURRENT_BAR = "clock_mutation_update_current_bar";
+export const CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER =
+  "clock_mutation_update_current_demisemiquaver";
+export const CLOCK_MUTATION_UPDATE_CURRENT_BAR =
+  "clock_mutation_update_current_bar";
+export const CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND =
+  "clock_mutation_update_current_pattern_ind";

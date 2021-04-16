@@ -6,7 +6,6 @@
 import { mapGetters, mapActions } from "vuex";
 import {
   PIANO_ACTION_SET_KEY_STATE,
-  CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER,
 } from "../../store/actions";
 
 export default {
@@ -17,8 +16,7 @@ export default {
   methods: {
     // mapping the getters not state to limit ability of modifications
     // to actions
-    ...mapGetters("mainClockStore", ["currentDemisemiquaver"]),
-    ...mapActions("mainClockStore", [CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER]),
+    ...mapGetters("mainClockStore", ["currentMusicalTime"]),
     ...mapActions("pianoStore", [PIANO_ACTION_SET_KEY_STATE]),
 
     getMIDI() {
@@ -48,7 +46,7 @@ export default {
       // const outputs = midiAccess.outputs
       // console.log('outputs: ', outputs)
 
-      for (let input of midiAccess.inputs.values())
+      for (let input of inputs.values())
         input.onmidimessage = this.getMIDIMessage;
     },
     /**
@@ -74,36 +72,36 @@ export default {
         // noteOn
         case 144:
           if (velocity > 0) {
-            this.noteOn(note, velocity);
+            // this.noteOn(note, velocity);
+            this.noteToggle(note, true, velocity)
           } else {
-            this.noteOff(note);
+            // this.noteOff(note);
+            this.noteToggle(note, false)
           }
           break;
         // noteOff
         case 128:
-          this.noteOff(note);
+          this.noteToggle(note, false)
           break;
         // expand switch to handle other command types
       }
     },
-    noteOn(note) {
+    noteToggle(note, on_message=true, velocity=0) {
       const payload = {
-        on_message: true,
+        on_message,
         note: note,
         timestamp: new Date().getTime(),
+        velocity
       };
       // emit to parent so the dom can be updated
       this.$emit("note-toggle", payload);
-      // get current 32 unit position of metronome
-      // console.log(note)
-      console.log(this.currentDemisemiquaver())
-    },
-    noteOff(note) {
-      this.$emit("note-toggle", {
-        on_message: false,
-        note: note,
-        timestamp: new Date().getTime(),
-      });
+      // get current musical time position (using the global metronome)
+      const currentMusicalTime = this.currentMusicalTime()
+      // print to console
+      if (on_message)
+        console.log(`%c note started at `, 'background: #222; color: #bada55', currentMusicalTime);
+      else
+        console.log(`%c note ended at `, 'background: #222; color: red', currentMusicalTime);
     },
   },
 };

@@ -1,6 +1,7 @@
 <template>
   <div @click="startStop()">
-    Metronome | Bar: {{ currentBar }} | {{ currentDemisemiquaver }}/32
+    Metronome | Pos: {{ currentPatternInd }}, {{ currentBar }} ,
+    {{ currentDemisemiquaver }}/32
   </div>
 </template>
 
@@ -12,9 +13,11 @@
  * Demisemiquaver is a synonim for 32rd musical notes
  */
 import {
-  CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER,
-  CLOCK_ACTION_UPDATE_CURRENT_BAR,
-} from "../../store/actions";
+  CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
+  CLOCK_MUTATION_UPDATE_CURRENT_BAR,
+  CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
+} from "../../store/mutations";
+import { mapMutations } from "vuex";
 
 export default {
   name: "Metronome",
@@ -22,8 +25,9 @@ export default {
     return {
       audioContext: null,
       bipsInQueue: [],
-      currentDemisemiquaver: 0,
+      currentPatternInd: 1,
       currentBar: 1,
+      currentDemisemiquaver: 0,
       tempo: 120,
       denominator: 8,
       lookahead: 25,
@@ -35,6 +39,12 @@ export default {
     };
   },
   methods: {
+    // mapping mutation functions - essentially synhcronous setters
+    ...mapMutations("mainClockStore", [
+      CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
+      CLOCK_MUTATION_UPDATE_CURRENT_BAR,
+      CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
+    ]),
     /**
      * Move to next bip
      */
@@ -43,19 +53,21 @@ export default {
       this.nextBipTime += secondsPerBeat / this.denominator;
       this.currentDemisemiquaver++; // keeping track of where we are in a bar
       if (this.currentDemisemiquaver == 33) {
-        this.currentDemisemiquaver = 1; // wrap to zero
+        this.currentDemisemiquaver = 1; // wrap to (1,32)
         this.currentBar++;
         if (this.currentBar == 5) {
           this.currentBar = 1;
+          this.currentPatternInd++;
+          // update pattern ind in store
+          this[CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](
+            this.currentPatternInd
+          );
         }
-        this.$store.dispatch(
-          "mainClockStore/" + CLOCK_ACTION_UPDATE_CURRENT_BAR,
-          this.currentBar
-        );
+        // update bar in store
+        this[CLOCK_MUTATION_UPDATE_CURRENT_BAR](this.currentBar);
       }
-      // update current beat in store
-      this.$store.dispatch(
-        "mainClockStore/" + CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER,
+      // update current demisemi in store
+      this[CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](
         this.currentDemisemiquaver
       );
     },
@@ -65,23 +77,30 @@ export default {
      * and calls a function to play the metronome sound
      * on every crotchets (4th note)
      */
-    scheduleBip(demisemiquaver_pos, time) {
+    scheduleBip(time) {
       // push the note on the queue, even if we're not playing.
-      this.bipsInQueue.push({ bip: demisemiquaver_pos, time: time });
+      const demisemi = this.currentDemisemiquaver;
+      this.bipsInQueue.push({ bip: demisemi, time: time });
 
-      if (this.soundOn && demisemiquaver_pos % 8 == 0)
-        this.playMetronomeSound(demisemiquaver_pos, time);
+      if (this.soundOn && demisemi % 8 == 0) this.playMetronomeSound(time);
     },
 
     /**
      * Using an oscillator and an envelope to produce sound
      */
-    playMetronomeSound(demisemiquaver_pos, time) {
+    playMetronomeSound(time) {
       // create an oscillator for the bip sound
       const osc = this.audioContext.createOscillator();
       const envelope = this.audioContext.createGain();
       // first accent bip is slightly higher pitch
-      osc.frequency.value = demisemiquaver_pos % 32 == 0 ? 1200 : 800;
+      osc.frequency.value =
+        this.currentDemisemiquaver % 32 == 0
+          ? this.currentBar % 2 == 0
+            ? this.currentBar % 4 == 0
+              ? 2000
+              : 1600
+            : 1200
+          : 800;
       envelope.gain.value = 1;
       envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
       envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
@@ -103,7 +122,7 @@ export default {
         this.nextBipTime <
         this.audioContext.currentTime + this.scheduleAheadTime
       ) {
-        this.scheduleBip(this.currentDemisemiquaver, this.nextBipTime);
+        this.scheduleBip(this.nextBipTime);
         this.nextBip();
       }
     },
@@ -121,7 +140,16 @@ export default {
 
       this.isRunning = true;
 
+      // reset pointers ?
+      this.currentPatternInd = 1;
+      this[CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](this.currentPatternInd);
+      this.currentBar = 1;
+      this[CLOCK_MUTATION_UPDATE_CURRENT_BAR](this.currentBar);
       this.currentDemisemiquaver = 0;
+      this[CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](
+        this.currentDemisemiquaver
+      );
+
       this.nextBipTime = this.audioContext.currentTime + 0.05;
 
       // the trick is to use an interval combined with the webaudio context

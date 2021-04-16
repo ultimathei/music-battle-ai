@@ -4,10 +4,12 @@
  import {
   CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
   CLOCK_MUTATION_UPDATE_CURRENT_BAR,
+  CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
 } from "../mutations";
 import {
   CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER,
   CLOCK_ACTION_UPDATE_CURRENT_BAR,
+  CLOCK_ACTION_UPDATE_CURRENT_PATTERN_IND,
 } from "../actions";
 
 export default {
@@ -15,6 +17,7 @@ export default {
   state: () => ({
     currentDemisemiquaver: 0,
     currentBar: 0,
+    currentPatternInd: 0,
   }),
 
   getters: {
@@ -24,6 +27,16 @@ export default {
     currentBar(state) {
       return state.currentBar;
     },
+    currentPatternInd(state) {
+      return state.currentPatternInd;
+    },
+    currentMusicalTime(state) {
+      return {
+        pattern: state.currentPatternInd,
+        bar: state.currentBar,
+        demisemi: state.currentDemisemiquaver
+      }
+    }
   },
 
   // basiacally setters
@@ -35,6 +48,9 @@ export default {
     [CLOCK_MUTATION_UPDATE_CURRENT_BAR](state, data) {
       state.currentBar = data;
     },
+    [CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](state, data) {
+      state.currentPatternInd = data;
+    },
   },
 
   actions: {
@@ -43,6 +59,9 @@ export default {
     },
     [CLOCK_ACTION_UPDATE_CURRENT_BAR]({ commit }, data) {
       commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, data);
+    },
+    [CLOCK_ACTION_UPDATE_CURRENT_PATTERN_IND]({ commit }, data) {
+      commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, data);
     },
   },
 };
