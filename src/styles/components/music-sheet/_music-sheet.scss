@@ -99,27 +99,31 @@ $ms_header-height: 20px;
     flex-grow: 1;
 
     // vertical bar markers (1/1)
-    &[data-demisemiquaver-index="32"],
-    &[data-demisemiquaver-index="64"],
-    &[data-demisemiquaver-index="96"],
-    &[data-demisemiquaver-index="128"]{
+    &[data-demisemiquaver-cell-index="32"],
+    &[data-demisemiquaver-cell-index="64"],
+    &[data-demisemiquaver-cell-index="96"],
+    &[data-demisemiquaver-cell-index="128"]{
       border-right: 1px solid rgba(0, 0, 0, 0.5);
     }
     // vertical crotchet marker (1/4)
-    &[data-demisemiquaver-index="8"],
-    &[data-demisemiquaver-index="16"],
-    &[data-demisemiquaver-index="24"],
-    &[data-demisemiquaver-index="40"],
-    &[data-demisemiquaver-index="48"],
-    &[data-demisemiquaver-index="56"],
-    &[data-demisemiquaver-index="72"],
-    &[data-demisemiquaver-index="80"],
-    &[data-demisemiquaver-index="88"],
-    &[data-demisemiquaver-index="104"],
-    &[data-demisemiquaver-index="112"],
-    &[data-demisemiquaver-index="120"]
+    &[data-demisemiquaver-cell-index="8"],
+    &[data-demisemiquaver-cell-index="16"],
+    &[data-demisemiquaver-cell-index="24"],
+    &[data-demisemiquaver-cell-index="40"],
+    &[data-demisemiquaver-cell-index="48"],
+    &[data-demisemiquaver-cell-index="56"],
+    &[data-demisemiquaver-cell-index="72"],
+    &[data-demisemiquaver-cell-index="80"],
+    &[data-demisemiquaver-cell-index="88"],
+    &[data-demisemiquaver-cell-index="104"],
+    &[data-demisemiquaver-cell-index="112"],
+    &[data-demisemiquaver-cell-index="120"]
     {
       border-right: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    &[data-note-cell-active="true"] {
+      background-color: $color-brand-accent-2;
     }
   }
 }

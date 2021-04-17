@@ -8,7 +8,8 @@
 <script>
 // import MidiIcon from '../graphics/midi-controller.svg';
 import MidiIcon from '../graphics/midi.svg';
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
+import { SESSION_MUTATION_ADD_NOTE } from '../../store/mutations';
 
 export default {
   name: "MidiController",
@@ -23,6 +24,7 @@ export default {
      * Mapping the getters (not the state) to limit ability of modifications to actions
      */
     ...mapGetters("mainClockStore", ["currentMusicalTime"]),
+    ...mapMutations("sessionStore", [SESSION_MUTATION_ADD_NOTE]),
 
     /**
      *
@@ -82,14 +84,14 @@ export default {
         // noteOn
         case 144:
           if (velocity > 0) {
-            this.noteToggle(note, true, velocity);
+            this.noteTrigger(note, true, velocity);
           } else {
-            this.noteToggle(note, false);
+            this.noteTrigger(note, false);
           }
           break;
         // noteOff
         case 128:
-          this.noteToggle(note, false);
+          this.noteTrigger(note, false);
           break;
         // expand switch to handle other command types
       }
@@ -99,7 +101,7 @@ export default {
      * Toggles the key for given note on/off
      * Also records the note changes to store
      */
-    noteToggle(note, on_message = true, velocity = 0) {
+    noteTrigger(note, on_message = true, velocity = 0) {
       const payload = {
         on_message,
         note: note,
@@ -110,20 +112,55 @@ export default {
       this.$emit("note-toggle", payload);
       // get current musical time position (using the global metronome)
       const currentMusicalTime = this.currentMusicalTime();
-      // print to console
-      if (on_message)
-        console.log(
-          `%c note started at `,
-          "background: #222; color: #bada55",
-          currentMusicalTime
-        );
-      else
-        console.log(
-          `%c note ended at `,
-          "background: #222; color: red",
-          currentMusicalTime
-        );
+      // record to store
+      this.recordNoteChanges(on_message, note, currentMusicalTime);
     },
+
+    /**
+     * 
+     */
+    recordNoteChanges(on_message, note, currentMusicalTime){
+      //   {
+      //     note: 8,
+      //     start: { pattern: 0, bar: 0, demisemi: 0 }, // pattern*128 + bar*32 + demisemi
+      //     end: { pattern: 0, bar: 0, demisemi: 16 },
+      //   },
+      // ];
+      let data;
+      if(on_message) {
+        data = {
+          note: note,
+          start: this.convertToPatternTime(currentMusicalTime),
+        }
+      }
+      else{
+        data = {
+          note: note,
+          end: this.convertToPatternTime(currentMusicalTime),
+        }
+      }
+      // send data here to store
+      this[SESSION_MUTATION_ADD_NOTE](data);     
+      
+      // // print to console
+      // if (on_message)
+      //   console.log(
+      //     `%c note started at `,
+      //     "background: #222; color: #bada55",
+      //     JSON.stringify(currentMusicalTime)
+      //   );
+      
+      // else
+      //   console.log(
+      //     `%c note ended at `,
+      //     "background: #222; color: red",
+      //     JSON.stringify(currentMusicalTime)
+      //   );
+    },
+
+    convertToPatternTime(musicalTime){
+      return musicalTime.pattern*128 + musicalTime.bar*32 + musicalTime.demisemi;
+    }
   },
 };
 </script>
