@@ -1,0 +1,14 @@
+/**
+* The App LOGO
+*/
+.logo {
+  &__music {
+    fill: $color-brand-foreground;
+  }
+  &__battle {
+    fill: $color-brand-accent-2;
+  }
+  &__ai {
+    fill: $color-brand-accent-1;
+  }
+}
