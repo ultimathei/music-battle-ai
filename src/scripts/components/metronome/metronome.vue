@@ -2,8 +2,8 @@
   <div>
     <MetronomeIcon class="icon-small" />
     <div class="button" @click="startStop()">
-      {{ currentPatternInd+1 }}, {{ currentBar+1 }} ,
-      {{ Math.floor(currentDemisemiquaver/8)+1 }}/4
+      {{ currentPatternInd + 1 }}, {{ currentBar + 1 }} ,
+      {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
     </div>
   </div>
 </template>
@@ -19,9 +19,10 @@ import {
   CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
   CLOCK_MUTATION_UPDATE_CURRENT_BAR,
   CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
+  SESSION_MUTATION_CLEAR_PATTERN,
 } from "../../store/mutations";
 import { mapMutations } from "vuex";
-import MetronomeIcon from '../graphics/metronome.svg';
+import MetronomeIcon from "../graphics/metronome.svg";
 
 export default {
   name: "Metronome",
@@ -54,6 +55,7 @@ export default {
       CLOCK_MUTATION_UPDATE_CURRENT_BAR,
       CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
     ]),
+    ...mapMutations("sessionStore", [SESSION_MUTATION_CLEAR_PATTERN]),
     /**
      * Move to next bip/tick of the metronome
      */
@@ -141,6 +143,9 @@ export default {
      */
     start() {
       if (this.isRunning) return;
+
+      // clear pattern
+      this[SESSION_MUTATION_CLEAR_PATTERN]();
 
       if (this.audioContext == null) {
         this.audioContext = new (window.AudioContext ||

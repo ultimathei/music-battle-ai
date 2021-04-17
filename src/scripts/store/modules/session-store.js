@@ -10,18 +10,20 @@
 
  import {
   SESSION_MUTATION_ADD_NOTE,
+  SESSION_MUTATION_CLEAR_PATTERN,
 } from "../mutations";
 
 export default {
   namespaced: true,
   state: () => ({
-    sessions: [
+    currentUserPattern: [
       // {
       //   note: 8,
       //   // pattern*128 + bar*32 + demisemi
       //   start: 1,
       //   end: 32,
       // },
+
       // {
       //   note: 3,
       //   // pattern*128 + bar*32 + demisemi
@@ -32,15 +34,8 @@ export default {
   }),
 
   getters: {
-    sessions(state) {
-      return state.sessions;
-      // return [
-      //   {
-      //     note: 8,
-      //     start: { pattern: 0, bar: 0, demisemi: 0 }, // pattern*128 + bar*32 + demisemi
-      //     end: { pattern: 0, bar: 0, demisemi: 16 },
-      //   },
-      // ];
+    currentUserPattern(state) {
+      return state.currentUserPattern;
     },
   },
 
@@ -50,23 +45,25 @@ export default {
     [SESSION_MUTATION_ADD_NOTE](state, data) {
       // its a start message
       if(data.start) {
-        state.sessions.push(data);
-        console.log(state.sessions);
+        state.currentUserPattern.push(data);
         return;
       }
 
       // else it's end message
       // find the note that has no end yet
-      for (let i in state.sessions){
-        let s = state.sessions[i];
+      for (let i in state.currentUserPattern){
+        let s = state.currentUserPattern[i];
         if(s.note === data.note) {
           if(!s.end) {
-            state.sessions[i] = {...state.sessions[i], end: data.end}
-            console.log(state.sessions);
+            state.currentUserPattern[i] = {...state.currentUserPattern[i], end: data.end}
             return;
           }
         }
       }
+    },
+
+    [SESSION_MUTATION_CLEAR_PATTERN](state){
+      state.currentUserPattern = [];
     },
   },
 };

@@ -91,12 +91,14 @@ $ms_header-height: 20px;
     flex-grow: 1;
   }
   &__column {
-    border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
-    border-right: 0.5px solid rgba(0, 0, 0, 0.05);
+    // border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
+    // border-right: 0.5px solid rgba(0, 0, 0, 0.05);
+    border: 0.5px solid rgba(0, 0, 0, 0.05);
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
     flex-grow: 1;
+    flex-shrink: 0;
 
     // vertical bar markers (1/1)
     &[data-demisemiquaver-cell-index="32"],
@@ -122,8 +124,32 @@ $ms_header-height: 20px;
       border-right: 1px solid rgba(0, 0, 0, 0.25);
     }
 
-    &[data-note-cell-active="true"] {
+
+    $active-cell-border-radius: 5px;
+    &[data-note-cell-status="singlecell"], 
+    &[data-note-cell-status="start"], 
+    &[data-note-cell-status="end"], 
+    &[data-note-cell-status="inbetween"] {
       background-color: $color-brand-accent-2;
+      border: 0.5px solid black;
+    }
+    
+    &[data-note-cell-status="start"]{
+      // border-width: 1px 0 1px 1px;
+      border-right-color: transparent;
+      border-radius: $active-cell-border-radius 0 0 $active-cell-border-radius;
+    }
+    &[data-note-cell-status="inbetween"] {
+      border-right-color: transparent;
+      border-left-color: transparent;
+      border-radius: 0;
+    }
+    &[data-note-cell-status="end"] {
+      border-left-color: transparent;
+      border-radius: 0 $active-cell-border-radius $active-cell-border-radius 0;
+    }
+    &[data-note-cell-status="singlecell"] {
+      border-radius: $active-cell-border-radius;
     }
   }
 }

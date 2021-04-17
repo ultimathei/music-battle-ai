@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
-    ...mapState("sessionStore", ["sessions"]),
+    ...mapState("sessionStore", ["currentUserPattern"]),
     currentCursorPos() {
       return this.currentBar * 32 + this.currentDemisemiquaver;
     },
@@ -75,22 +75,39 @@ export default {
   },
   methods: {
     updateMusicSheetNotes() {
-      for (let session of this.sessions) {
-        let note_start_cells_DOM = this.$el.querySelectorAll(
-          `[data-note-cell-index='${session.note}'][data-demisemiquaver-cell-index]`
-        );
-        let active_cells = [].filter.call(
-          note_start_cells_DOM,
-          (cell) =>
-            cell.dataset.demisemiquaverCellIndex >= session.start &&
-            (cell.dataset.demisemiquaverCellIndex <= session.end ||
-              (!session.end &&
-                cell.dataset.demisemiquaverCellIndex <= this.currentCursorPos))
+      // for each note of current pattern
+      for (let note of this.currentUserPattern) {
+        // get all DOM cells in this note pitch (row)
+        let note_cells_DOM = this.$el.querySelectorAll(
+          `[data-note-cell-index='${note.note}'][data-demisemiquaver-cell-index]`
         );
 
-        for (let cellDOM of active_cells) {
-          cellDOM.setAttribute("data-note-cell-active", true);
+        for (let cell of note_cells_DOM) {
+          let demisemiIndex = cell.dataset.demisemiquaverCellIndex;
+
+          if(note.end && demisemiIndex == note.start && demisemiIndex == note.end) {
+            cell.setAttribute("data-note-cell-status", "singlecell");
+          } else if (demisemiIndex == note.start) {
+            cell.setAttribute("data-note-cell-status", "start");
+          } else if(note.end && demisemiIndex > note.start && demisemiIndex < note.end) {
+            cell.setAttribute("data-note-cell-status", "inbetween");
+          } else if(!note.end && demisemiIndex > note.start && demisemiIndex < this.currentCursorPos) {
+            cell.setAttribute("data-note-cell-status", "inbetween");
+          } else if(note.end && demisemiIndex == note.end) {
+            cell.setAttribute("data-note-cell-status", "end");
+          } else if(!note.end && demisemiIndex == this.currentCursorPos) {
+            cell.setAttribute("data-note-cell-status", "end");
+          }
         }
+      }
+    },
+
+    clearMusicSheetNotes() {
+      let note_cells_all_DOM = this.$el.querySelectorAll(
+        "[data-note-cell-index]"
+      );
+      for (let cellDOM of note_cells_all_DOM) {
+        cellDOM.setAttribute("data-note-cell-active", false);
       }
     },
     /**
