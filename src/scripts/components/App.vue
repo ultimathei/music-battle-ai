@@ -10,37 +10,7 @@
         <Metronome class="header-controls__control" />
       </div>
     </div>
-
-    <div class="app__music-sheet-wrap">
-      <div class="app__music-sheet | music-sheet">
-        <div class="music-sheet__side">
-          <div class="music-sheet__header"></div>
-          <div class="music-sheet__row" v-for="r in array" :key="`row-${r}`">
-            {{ getNoteName(r, 0) }}
-          </div>
-        </div>
-        <div class="music-sheet__body">
-          <div class="music-sheet__header">
-            <div
-              class="music-sheet__column"
-              v-for="c in 128"
-              :key="`header-marker-${c}`"
-              :data-demisemiquaver-index="c"
-            ></div>
-          </div>
-          <div class="music-sheet__content">
-            <div class="music-sheet__row" v-for="r in 12" :key="`row-${r}`">
-              <div
-                class="music-sheet__column"
-                v-for="c in 128"
-                :key="`row-${c}`"
-                :data-demisemiquaver-index="c"
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <MusicSheet class="app__music-sheet-wrap" />
     <Piano class="app__piano" ref="piano" />
 
     <p class="app__footer">
@@ -50,10 +20,11 @@
 </template>
 
 <script>
+import Logo from "./graphics/logo.svg";
 import Metronome from "./metronome/metronome.vue";
 import MidiController from "./midi/midi-controller.vue";
+import MusicSheet from "./music-sheet/music-sheet.vue";
 import Piano from "./piano/Piano.vue";
-import Logo from "./graphics/logo.svg";
 
 export default {
   name: "app",
@@ -61,12 +32,8 @@ export default {
     Logo,
     Metronome,
     MidiController,
+    MusicSheet,
     Piano,
-  },
-  data() {
-    return {
-      array: Array.from({ length: 12 }, (x, i) => i).reverse(),
-    };
   },
   methods: {
     /**
@@ -82,39 +49,6 @@ export default {
           "data-piano-key-pressed",
           payload.on_message
         );
-    },
-
-    getNoteName(noteIndex, octaveIndex) {
-      switch (noteIndex) {
-        case 0:
-          return "C" + octaveIndex;
-        case 1:
-          return "C#" + octaveIndex;
-        case 2:
-          return "D" + octaveIndex;
-        case 3:
-          return "D#" + octaveIndex;
-        case 4:
-          return "E" + octaveIndex;
-        case 5:
-          return "F" + octaveIndex;
-        case 6:
-          return "F#" + octaveIndex;
-        case 7:
-          return "G" + octaveIndex;
-        case 8:
-          return "G#" + octaveIndex;
-        case 9:
-          return "A" + octaveIndex;
-        case 10:
-          return "A#" + octaveIndex;
-        case 11:
-          return "B" + octaveIndex;
-        case 12:
-          return "C" + octaveIndex;
-        default:
-          return "missing";
-      }
     },
   },
 };
