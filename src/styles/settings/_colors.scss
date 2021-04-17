@@ -7,18 +7,32 @@
 // constant colors
 $color-black: #272727;
 $color-white: #ffffff;
-$color-grey: #eeeeee;
+$color-grey: #ddd;
 $color-grey-dark: #666666;
 $color-yellow: #fcf677;
 $color-orange: #fca36b;
 $color-blue: #8989f7;
-$color-blue-deep: #1a1a36;
+// $color-blue-deep: #1a1a36;
+// $color-blue-deep: rgb(10,20,20);
+$color-blue-deep: #001010;
 $color-purp: #a856fa;
 $color-pink: #fd6161;
+$color-bronze: #ae662c;
+$color-gold: #85754e;
+$color-skyblue: #00779b;
 
 // brand colors
 $color-brand-background: $color-blue-deep;
 $color-brand-foreground: $color-white;
+$color-brand-accent-1: $color-gold;
+$color-brand-accent-2: $color-bronze;
+$color-brand-accent-3: $color-purp;
+$color-brand-accent-4: $color-orange;
+$color-brand-accent-5: $color-skyblue;
+$color-brand-neutral-1: $color-grey-dark;
+$color-brand-neutral-2: $color-grey;
+$color-brand-neutral-3: $color-black;
+$color-brand-neutral-4: $color-blue;
 
 // mixins
 

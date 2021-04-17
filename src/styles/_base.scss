@@ -20,7 +20,7 @@
 
 body {
   background-color: $color-brand-background;
-  color: $color-white;
+  color: $color-brand-foreground;
 
   // apply a grain filter overlay
   &::after{

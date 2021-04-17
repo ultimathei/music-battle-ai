@@ -16,11 +16,12 @@
     content: "";
     position: absolute;
     height: 100%;
-    width: 100%;
-    background: linear-gradient(45deg, $color-pink, $color-purp);
-    filter: blur(30px);
+    width: 101%;
+    // background: linear-gradient(45deg, $color-pink, $color-purp);
+    background: linear-gradient(45deg, $color-brand-accent-2, $color-brand-accent-1);
+    filter: blur(20px);
     top: 0;
-    left: 0;
+    left: -0.5%;
     // -webkit-animation: pulsing-01 1s alternate infinite; /* Safari 4+ */
     // -moz-animation: pulsing-01 1s alternate infinite; /* Fx 5+ */
     // -o-animation: pulsing-01 1s alternate infinite; /* Opera 12+ */
@@ -28,7 +29,8 @@
   }
 
   &__content {
-    background: linear-gradient(45deg, $color-pink, $color-purp);
+    // background: linear-gradient(45deg, $color-pink, $color-purp);
+    background: linear-gradient(45deg, $color-brand-accent-2, $color-brand-accent-1);
     border-radius: 20px;
     display: flex;
     flex-flow: row nowrap;
@@ -38,6 +40,7 @@
     width: 100%;
     top: 0;
     left: 0;
+    // box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.75);
   }
 
   &__side-panel {
@@ -63,7 +66,7 @@
   &__top-panel {
     align-items: center;
     border-top-right-radius: 20px;
-    color: $color-blue-deep;
+    color: $color-brand-background;
     display: flex;
     flex-grow: 1;
     justify-content: center;

@@ -5,7 +5,11 @@
 
 .white-key {
   &__front {
-    background: linear-gradient(0deg, $color-blue-deep, $color-blue);
+    background: linear-gradient(
+      0deg,
+      $color-brand-background,
+      $color-brand-neutral-4
+    );
     flex-grow: 1;
     width: 100%;
   }
@@ -14,7 +18,11 @@
   }
 
   &__top {
-    background: linear-gradient(180deg, $color-blue, $color-white 33%);
+    background: linear-gradient(
+      180deg,
+      $color-brand-neutral-4,
+      $color-brand-foreground 33%
+    );
     height: calc(100% - 30px);
     width: 100%;
   }
@@ -24,6 +32,10 @@
   &[data-piano-key-pressed="true"] &__top {
     // height: 95%;
     height: calc(100% - 15px);
-    background: linear-gradient(180deg, $color-blue, $color-grey 50%);
+    background: linear-gradient(
+      180deg,
+      $color-brand-neutral-4,
+      $color-brand-neutral-2 50%
+    );
   }
 }
