@@ -8,6 +8,16 @@
  * https://stackoverflow.com/questions/4011113/can-you-add-noise-to-a-css3-gradient
  */
 
+// @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap');
+// @font-face {
+//   font-family: 'Montserrat';
+//   src: url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap') format('opentype');
+// }
+
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+
 body {
   background-color: $color-brand-background;
   color: $color-white;
