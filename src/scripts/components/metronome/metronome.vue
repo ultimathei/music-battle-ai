@@ -148,17 +148,6 @@ export default {
       }
 
       this.isRunning = true;
-
-      // reset pointers ?
-      this.currentPatternInd = 0;
-      this[CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](this.currentPatternInd);
-      this.currentBar = 0;
-      this[CLOCK_MUTATION_UPDATE_CURRENT_BAR](this.currentBar);
-      this.currentDemisemiquaver = 0;
-      this[CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](
-        this.currentDemisemiquaver
-      );
-
       this.nextBipTime = this.audioContext.currentTime + 0.05;
 
       // the trick is to use an interval combined with the webaudio context
@@ -172,6 +161,15 @@ export default {
     stop() {
       this.isRunning = false;
       clearInterval(this.intervalID);
+      // reset pointers
+      this.currentPatternInd = 0;
+      this[CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](this.currentPatternInd);
+      this.currentBar = 0;
+      this[CLOCK_MUTATION_UPDATE_CURRENT_BAR](this.currentBar);
+      this.currentDemisemiquaver = 0;
+      this[CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](
+        this.currentDemisemiquaver
+      );
     },
 
     /**

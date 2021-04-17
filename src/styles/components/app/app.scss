@@ -38,7 +38,7 @@
 .app-header {
   &__logo {
     width: 140px;
-    margin: 0 20px;
+    margin: 0 15px;
   }
 
   &__controls {
@@ -146,6 +146,7 @@ $ms_header-height: 20px;
     // margin-left: -2px;
     background-color: $color-orange;
     mix-blend-mode: multiply;
+    transition: left 25ms;
   }
   
   &__header{

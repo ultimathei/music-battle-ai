@@ -43,10 +43,11 @@ export default {
     };
   },
   computed: {
-    ...mapState(["currentMusicalTime", "currentDemisemiquaver"]),
+    ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
     cursorLeftPosStyle() {
+      const currdemi = this.currentBar * 32 + this.currentDemisemiquaver
       return {
-        left: `${this.currentDemisemiquaver * (100 / 128)}%`,
+        left: `${ currdemi * (100 / 128)}%`,
       };
     },
   },
