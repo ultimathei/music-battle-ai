@@ -64,13 +64,13 @@
 
 .logo {
   &__music {
-    fill: #fff;
+    fill: $color-brand-foreground;
   }
   &__battle {
-    fill: #ae662c;
+    fill: $color-brand-accent-2;
   }
   &__ai {
-    fill: #85754e;
+    fill: $color-brand-accent-1;
   }
 }
 
