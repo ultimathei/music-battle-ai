@@ -11,6 +11,12 @@
         <div class="music-sheet__cursor" :style="cursorLeftPosStyle"></div>
         <div class="music-sheet__header">
           <div
+            v-for="(n, i) in 4"
+            :key="`musicsheet-header-marker${i}`"
+            class="music-sheet__header-timestamp"
+            :data-musicsheet-header-marker="i"
+          >{{n}}</div>
+          <div
             class="music-sheet__column"
             v-for="c in 128"
             :key="`header-marker-${c}`"
@@ -45,9 +51,9 @@ export default {
   computed: {
     ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
     cursorLeftPosStyle() {
-      const currdemi = this.currentBar * 32 + this.currentDemisemiquaver
+      const currdemi = this.currentBar * 32 + this.currentDemisemiquaver;
       return {
-        left: `${ currdemi * (100 / 128)}%`,
+        left: `${currdemi * (100 / 128)}%`,
       };
     },
   },

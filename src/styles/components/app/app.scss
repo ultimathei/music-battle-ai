@@ -147,6 +147,7 @@ $ms_header-height: 20px;
     background-color: $color-orange;
     mix-blend-mode: multiply;
     transition: left 25ms;
+    z-index: 10;
   }
   
   &__header{
@@ -156,6 +157,20 @@ $ms_header-height: 20px;
     background-color: $color-grey-dark;
     display: flex;
     flex-flow: row nowrap;
+    position: relative;
+  }
+  &__header-timestamp{
+    // left: 60px;
+    position: absolute;
+    bottom: 0;
+    z-index: 9;
+    content: attr(data-musicsheet-header-marker);
+
+    @for $i from 0 through 3 {
+      &[data-musicsheet-header-marker="#{$i}"]{
+        left: calc((#{$i} * (100% /4)));
+      }
+    }
   }
 
   &__content {

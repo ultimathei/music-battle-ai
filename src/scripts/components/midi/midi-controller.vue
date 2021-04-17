@@ -6,7 +6,8 @@
 </template>
 
 <script>
-import MidiIcon from '../graphics/midi-controller.svg';
+// import MidiIcon from '../graphics/midi-controller.svg';
+import MidiIcon from '../graphics/midi.svg';
 import { mapGetters } from "vuex";
 
 export default {
