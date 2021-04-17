@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       // array: new Array(60,61,62,63,64,65,66,67,68,69,70,71).reverse(),
-      array: Array.from(Array(12), (_, index) => 71-index),
+      array: Array.from(Array(12), (_, index) => 71 - index),
     };
   },
   mounted() {
@@ -67,11 +67,11 @@ export default {
       };
     },
   },
-  watch:{
-    currentDemisemiquaver(newVal, oldVal) {
+  watch: {
+    currentDemisemiquaver() {
       // update music sheet on every 1/32
-      this.updateMusicSheetNotes()
-    }
+      this.updateMusicSheetNotes();
+    },
   },
   methods: {
     updateMusicSheetNotes() {
@@ -82,10 +82,10 @@ export default {
         let active_cells = [].filter.call(
           note_start_cells_DOM,
           (cell) =>
-            cell.dataset.demisemiquaverCellIndex >= session.start && (
-              cell.dataset.demisemiquaverCellIndex <= session.end || 
-              !session.end && cell.dataset.demisemiquaverCellIndex <= this.currentCursorPos
-            )
+            cell.dataset.demisemiquaverCellIndex >= session.start &&
+            (cell.dataset.demisemiquaverCellIndex <= session.end ||
+              (!session.end &&
+                cell.dataset.demisemiquaverCellIndex <= this.currentCursorPos))
         );
 
         for (let cellDOM of active_cells) {
