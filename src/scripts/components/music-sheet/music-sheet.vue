@@ -1,8 +1,23 @@
 <template>
   <div>
+    <div class="app__pattern-sequence | pattern-sequence">
+      <BattleIcon class="pattern-sequence__icon" />
+      <div class="pattern-sequence__list">
+        <div class="pattern-sequence__scrollable" :style="{width: `${patternCount*50}px`}">
+          <div
+            v-for="n in patternCount"
+            :data-sequence-list-item-type="`${n%2==0?'robot':'human'}`"
+            :key="`sequence-item-${n}`"
+            class="pattern-sequence__list-item"
+          ></div>
+        </div>
+      </div>
+    </div>
     <div class="app__music-sheet | music-sheet">
       <div class="music-sheet__side">
-        <div class="music-sheet__header"></div>
+        <div class="music-sheet__header">
+          <NotesIcon class="music-sheet__header-icon"/>
+        </div>
         <div class="music-sheet__row" v-for="r of array" :key="`row-${r}`">
           {{ getNoteName(r, 0) }}
         </div>
@@ -26,11 +41,17 @@
           ></div>
         </div>
         <div class="music-sheet__content">
-          <div class="music-sheet__row" v-for="r of array" :key="`row-${r}`">
+          <div
+            class="music-sheet__row"
+            v-for="r of array"
+            :key="`row-${r}`"
+            :ref="`pitch-${r}`"
+          >
             <div
               class="music-sheet__column"
               v-for="c in 128"
               :key="`column-${c}`"
+              :ref="`cell-${c}`"
               :data-note-cell-index="r"
               :data-demisemiquaver-cell-index="c"
             ></div>
@@ -43,13 +64,19 @@
 
 <script>
 import { mapState } from "vuex";
+import BattleIcon from "../graphics/match.svg";
+import NotesIcon from "../graphics/notes.svg";
 
 export default {
   name: "MusicSheet",
+  components: {
+    BattleIcon,
+    NotesIcon,
+  },
   data() {
     return {
-      // array: new Array(60,61,62,63,64,65,66,67,68,69,70,71).reverse(),
       array: Array.from(Array(12), (_, index) => 71 - index),
+      patternCount: 20,
     };
   },
   mounted() {
@@ -82,20 +109,36 @@ export default {
           `[data-note-cell-index='${note.note}'][data-demisemiquaver-cell-index]`
         );
 
+        // test ref version
+        // let cell_refs = this.$refs[`pitch-${note.note}`];
+        // console.log('cell_refs', cell_refs[0]);
+
         for (let cell of note_cells_DOM) {
           let demisemiIndex = cell.dataset.demisemiquaverCellIndex;
 
-          if(note.end && demisemiIndex == note.start && demisemiIndex == note.end) {
+          if (
+            note.end &&
+            demisemiIndex == note.start &&
+            demisemiIndex == note.end
+          ) {
             cell.setAttribute("data-note-cell-status", "singlecell");
           } else if (demisemiIndex == note.start) {
             cell.setAttribute("data-note-cell-status", "start");
-          } else if(note.end && demisemiIndex > note.start && demisemiIndex < note.end) {
+          } else if (
+            note.end &&
+            demisemiIndex > note.start &&
+            demisemiIndex < note.end
+          ) {
             cell.setAttribute("data-note-cell-status", "inbetween");
-          } else if(!note.end && demisemiIndex > note.start && demisemiIndex < this.currentCursorPos) {
+          } else if (
+            !note.end &&
+            demisemiIndex > note.start &&
+            demisemiIndex < this.currentCursorPos
+          ) {
             cell.setAttribute("data-note-cell-status", "inbetween");
-          } else if(note.end && demisemiIndex == note.end) {
+          } else if (note.end && demisemiIndex == note.end) {
             cell.setAttribute("data-note-cell-status", "end");
-          } else if(!note.end && demisemiIndex == this.currentCursorPos) {
+          } else if (!note.end && demisemiIndex == this.currentCursorPos) {
             cell.setAttribute("data-note-cell-status", "end");
           }
         }

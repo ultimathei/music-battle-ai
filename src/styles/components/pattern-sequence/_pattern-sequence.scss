@@ -1,0 +1,39 @@
+
+.pattern-sequence {
+  display: flex;
+  flex-flow: row nowrap;
+
+  &__icon{
+    width: 60px;
+    fill: $color-brand-neutral-3;
+    padding: 8px;
+  }
+  &__list{
+    flex-grow: 1;
+    background-color: rgba(0,0,0,0.25);
+    overflow: hidden;
+    padding: 8px 4px;
+  }
+
+  &__scrollable{
+    height: 100%;
+  }
+
+  &__list-item {
+    background: $color-brand-accent-2;
+    height: 100%;
+    width: 40px;
+    z-index: 2;
+    display: inline-block;
+    margin: 0 4px;
+    border-radius: 5px;
+
+    &[data-sequence-list-item-type="human"]{
+      background: $color-brand-accent-2;
+    }
+    &[data-sequence-list-item-type="robot"]{
+      background: $color-brand-accent-1;
+    }
+  }
+
+}
