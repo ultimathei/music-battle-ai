@@ -11,7 +11,7 @@
         </div>
         <div
           class="pattern-sequence__scrollable"
-          :style="{ width: `${patternCount * 50}px` }"
+          :style="{ width: `${session.length * 50}px` }"
         >
           <div
             class="pattern-sequence__list-item"
@@ -47,7 +47,7 @@
           v-for="r of visibleNotes"
           :key="`row-${r}`"
         >
-          {{ getNoteName(r, 0) }}
+          {{ getNoteName(r) }}
         </div>
       </div>
       <div class="music-sheet__body">
@@ -124,8 +124,7 @@ export default {
   },
   data() {
     return {
-      visibleNotes: Array.from(Array(12), (_, index) => 71 - index),
-      patternCount: 20,
+      visibleNotes: Array.from(Array(13), (_, index) => 72 - index),
     };
   },
   computed: {
@@ -163,37 +162,51 @@ export default {
     /**
      * Returns a string associated to tha given note (in given octave)
      */
-    getNoteName(noteIndex, octaveIndex) {
-      switch (noteIndex) {
-        case 60:
-          return "C" + octaveIndex;
-        case 61:
-          return "C#" + octaveIndex;
-        case 62:
-          return "D" + octaveIndex;
-        case 63:
-          return "D#" + octaveIndex;
-        case 64:
-          return "E" + octaveIndex;
-        case 65:
-          return "F" + octaveIndex;
-        case 66:
-          return "F#" + octaveIndex;
-        case 67:
-          return "G" + octaveIndex;
-        case 68:
-          return "G#" + octaveIndex;
-        case 69:
-          return "A" + octaveIndex;
-        case 70:
-          return "A#" + octaveIndex;
-        case 71:
-          return "B" + octaveIndex;
-        case 72:
-          return "C" + octaveIndex;
+    getNoteName(noteIndex) {
+      let pitchName;
+      switch (noteIndex%12) {
+        case 0:
+          pitchName="C";
+          break;
+        case 1:
+          pitchName= "C#";
+          break;
+        case 2:
+          pitchName= "D" ;
+          break;
+        case 3:
+          pitchName= "D#" ;
+          break;
+        case 4:
+          pitchName= "E" ;
+          break;
+        case 5:
+          pitchName= "F" ;
+          break;
+        case 6:
+          pitchName= "F#" ;
+          break;
+        case 7:
+          pitchName= "G" ;
+          break;
+        case 8:
+          pitchName= "G#";
+          break;
+        case 9:
+          pitchName= "A" ;
+          break;
+        case 10:
+          pitchName= "A#" ;
+          break;
+        case 11:
+          pitchName= "B";
+          break;
         default:
-          return "missing";
+          pitchName= "missing";
+          break;
       }
+      let octaveIndex = Math.floor(noteIndex/12) -5;
+      return pitchName+octaveIndex;
     },
 
     getMarkerType(c) {
