@@ -91,7 +91,10 @@ export default {
       switch (command) {
         // noteOn
         case 144:
-          if (velocity > 0) {
+          if(note < 60 || note >= 72){
+            return;
+          }
+          else if (velocity > 0) {
             this.noteTrigger(note, true, velocity);
           } else {
             this.noteTrigger(note, false);

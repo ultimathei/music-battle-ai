@@ -4,14 +4,20 @@
       <BattleIcon class="pattern-sequence__icon" />
       <div class="pattern-sequence__list">
         <div
+          class="pattern-sequence__arrow"
+          :data-sequence-arrow-clickable="false"
+        >
+          <LeftArrowIcon />
+        </div>
+        <div
           class="pattern-sequence__scrollable"
           :style="{ width: `${patternCount * 50}px` }"
         >
           <div
+            class="pattern-sequence__list-item"
             v-for="(pattern, index) in session"
             :data-sequence-list-item-type="pattern.type"
             :key="`sequence-item-${index}`"
-            class="pattern-sequence__list-item"
           >
             {{ Math.floor(index / 2) + 1 }}
           </div>
@@ -21,6 +27,12 @@
           >
             {{ Math.floor(session.length / 2) + 1 }}
           </div>
+        </div>
+        <div
+          class="pattern-sequence__arrow"
+          :data-sequence-arrow-clickable="true"
+        >
+          <RightArrowIcon />
         </div>
       </div>
     </div>
@@ -99,12 +111,16 @@
 import { mapState } from "vuex";
 import BattleIcon from "../graphics/match.svg";
 import NotesIcon from "../graphics/notes.svg";
+import LeftArrowIcon from "../graphics/left-arrow.svg";
+import RightArrowIcon from "../graphics/right-arrow.svg";
 
 export default {
   name: "MusicSheet",
   components: {
     BattleIcon,
     NotesIcon,
+    LeftArrowIcon,
+    RightArrowIcon,
   },
   data() {
     return {
