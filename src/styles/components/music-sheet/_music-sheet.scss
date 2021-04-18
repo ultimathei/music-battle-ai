@@ -120,14 +120,20 @@ $ms_header-height: 25px;
 
 .pattern-notes {
   &__note{
-    background-color: $color-brand-accent-2;
+    background-color: $color-brand-background;
     border-radius: 5px;
     border: 0.5px solid black;
-    opacity: 0.75;
+    opacity: 1;
     position: absolute;
+    z-index: 11;
 
-    &--response{
-      background-color: $color-brand-background;
+    &[data-note-user-type="true"]{
+      background-color: $color-brand-accent-2;
+    }
+
+    &--previous{
+      opacity: 0.5;
+      z-index: 10;
     }
   }
 }

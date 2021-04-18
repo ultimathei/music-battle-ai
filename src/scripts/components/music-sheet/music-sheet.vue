@@ -59,22 +59,25 @@
           </div>
         </div>
         <div class="music-sheet__content">
-          <!-- user pattern -->
+          <!-- current pattern -->
           <div class="music-sheet__notes | pattern-notes">
             <div
               class="pattern-notes__note"
               v-for="(note, index) in currentPattern"
               :key="`note-${index}`"
               :style="displayNote(note)"
+              :data-note-user-type="userTurn"
             ></div>
           </div>
-          <!-- response pattern -->
+
+          <!-- previous pattern -->
           <div class="music-sheet__notes | pattern-notes">
             <div
-              class="pattern-notes__note | pattern-notes__note--response"
+              class="pattern-notes__note | pattern-notes__note--previous"
               v-for="(note, index) in previousPattern"
               :key="`note-${index}`"
               :style="displayNote(note)"
+              :data-note-user-type="!userTurn"
             ></div>
           </div>
 
@@ -111,14 +114,7 @@ export default {
   },
   computed: {
     ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
-    ...mapState("sessionStore", [
-      "currentPattern",
-      "previousPattern",
-      // "currentUserPattern",
-      // "currentResponsePattern",
-      "session",
-      "userTurn",
-    ]),
+    ...mapState("sessionStore", ["currentPattern", "session", "userTurn"]),
     currentCursorPos() {
       return this.currentBar * 32 + this.currentDemisemiquaver;
     },
@@ -126,6 +122,11 @@ export default {
       return {
         left: `${this.currentCursorPos * (100 / 128)}%`,
       };
+    },
+    previousPattern() {
+      if (this.session.length > 0)
+        return this.session[this.session.length - 1].pattern;
+      return [];
     },
   },
   methods: {
@@ -183,9 +184,9 @@ export default {
       return c % 32 == 0 ? "bar" : c % 8 == 0 ? "beat" : "";
     },
 
-    getRowType(r){
-      const blackPoses = [1,3,6,8,10];
-      return blackPoses.includes(r%12) ? 'black' : '';
+    getRowType(r) {
+      const blackPoses = [1, 3, 6, 8, 10];
+      return blackPoses.includes(r % 12) ? "black" : "";
     },
   },
 };

@@ -11,7 +11,6 @@
 import {
   SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN,
   SESSION_MUTATION_CLEAR_PATTERN,
-  SESSION_MUTATION_ADD_PATTERN_TO_SESSION,
   SESSION_MUTATION_SET_USER_TURN,
   SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE,
   SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE,
@@ -22,17 +21,16 @@ export default {
   state: () => ({
     userTurn: true,
     currentPattern: [],
-    previousPattern: [],
-    currentUserPattern: [], // a list of notes in the pattern (user)
-    currentResponsePattern: [], // a list of notes in the response pattern (robot)
+    // previousPattern: [],
+    responsePatternHalf: [], // a list of notes in the response pattern (for first half)
     session: [], // a list of alternating user/response patterns
   }),
 
   getters: {
     // current user pattern should consist two halves
-    currentUserPattern(state) {
-      return state.currentUserPattern;
-    },
+    // currentPattern(state) {
+    //   return state.currentPattern;
+    // },
     session(state) {
       return state.session;
     },
@@ -41,8 +39,10 @@ export default {
   // basiacally setters
   // using the ES2015 computed property name feature
   mutations: {
-    // add new incoming notes (either start or end msg)
+    // add new incoming notes (either start or end msg) ONLY when in user turn
     [SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](state, data) {
+      if (!state.userTurn) return; // safety check
+
       // its a start message push it straight to the pattern
       if (data.start) {
         state.currentPattern.push(data);
@@ -62,55 +62,51 @@ export default {
       }
     },
 
-    // should these be asynch?
     [SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE](state) {
-      // take a snapshot of notes in the first half of the pattern
+      if (!state.userTurn) return; // safety check
+
+      // take a snapshot of notes in the first half of the user's pattern
       // generate the first half of the response based on it
       // store it locally by adding it to current response pattern
 
       // for now we simply return same pattern shifted half note up
-      if (state.userTurn) {
-        console.log("generate first half response here..");
-        // deal with unfinished notes pls..
-        state.currentResponsePattern = state.currentPattern.map((note) => {
+      console.log("generate first half response here..");
+      // TODO deal with unfinished notes pls..
+
+      // should be asynch
+      setTimeout(() => {
+        state.responsePatternHalf = state.currentPattern.map((note) => {
           return {
             ...note,
             note: note.note + 1,
           };
         });
-      }
+      }, 1000);
     },
 
     [SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE](state) {
-      // get notes in the second half of the pattern
-      // generate the second half of the response based on it
-      // store it locally
-      // add it to current response pattern
-
+      // transitioning from user turn to response turn..
       if (state.userTurn) {
-        // transitioning from user turn to response turn..
+        // get notes in the second half of the pattern
+        // generate the second half of the response based on it
+        // when done, add it to current pattern (updating it)
         console.log("generate second half response here..");
-        // 1. push old previous pattern to session
-        if (state.previousPattern != []) {
-          // patternIndex == 0 (or 1?)
-          const patternToArchive = {
-            type: "robot",
-            pattern: [...state.previousPattern],
-          };
-          state.session.push(patternToArchive);
-        }
+        // 1. push old previous current pattern to session
+        const patternToArchive = {
+          type: "user",
+          pattern: [...state.currentPattern],
+        };
+        state.session.push(patternToArchive);
 
-        // 2. old current becomes new previous
-        state.previousPattern = [...state.currentPattern];
-
-        // 3. response pattern becomes the new current pattern
-        state.currentPattern = [...state.currentResponsePattern];
+        // 2. response pattern becomes the new current pattern
+        state.currentPattern = [...state.responsePatternHalf];
         // clear response pattern
-        state.currentResponsePattern = [];
+        state.responsePatternHalf = [];
 
+        // this should be asynch!
         // get second half of response while playing the first half already
         setTimeout(() => {
-          state.currentPattern = state.previousPattern.map((note) => {
+          state.currentPattern = patternToArchive.pattern.map((note) => {
             return {
               ...note,
               note: note.note + 1,
@@ -119,41 +115,19 @@ export default {
         }, 1000);
       } else {
         // transitioning from response turn to user turn..
-        // 1. push old previous pattern to session
-        if (state.previousPattern != []) {
-          // patternIndex == 0 (or 1?)
-          const patternToArchive = {
-            type: "user",
-            pattern: [...state.previousPattern],
-          };
-          state.session.push(patternToArchive);
-        }
+        // 1. push old current pattern to session
+        const patternToArchive = {
+          type: "robot",
+          pattern: [...state.currentPattern],
+        };
+        state.session.push(patternToArchive);
 
-        // 2. old current becomes new previous
-        state.previousPattern = [...state.currentPattern];
-
-        // clear current pattern
+        // clear current pattern - make it ready for user to play
         state.currentPattern = [];
       }
       // flip user turn boolean
       state.userTurn = !state.userTurn;
     },
-
-    // // when a pattern is complete, add it to the session (patterns list)
-    // // and clear the current pattern, so it's empty for the next pattern recording
-    // [SESSION_MUTATION_ADD_PATTERN_TO_SESSION](state) {
-    //   // here we should close all notes with no end yet
-    //   // ..
-
-    //   // add current pattern to session
-    //   const patternObject = {
-    //     type: "user", // or 'robot'
-    //     pattern: this.currentUserPattern, // or getResponsePattern()
-    //   };
-    //   state.session.push(patternObject);
-    //   // clear current pattern
-    //   state.currentUserPattern = [];
-    // },
 
     // clear/empty the current pattern
     [SESSION_MUTATION_CLEAR_PATTERN](state) {
