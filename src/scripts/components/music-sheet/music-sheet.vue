@@ -63,8 +63,8 @@
           <div class="music-sheet__notes | pattern-notes">
             <div
               class="pattern-notes__note"
-              v-for="(note, index) in currentUserPattern"
-              :key="`testnote-${index}`"
+              v-for="(note, index) in currentPattern"
+              :key="`note-${index}`"
               :style="displayNote(note)"
             ></div>
           </div>
@@ -72,8 +72,8 @@
           <div class="music-sheet__notes | pattern-notes">
             <div
               class="pattern-notes__note | pattern-notes__note--response"
-              v-for="(note, index) in currentResponsePattern"
-              :key="`testnote-${index}`"
+              v-for="(note, index) in previousPattern"
+              :key="`note-${index}`"
               :style="displayNote(note)"
             ></div>
           </div>
@@ -112,8 +112,10 @@ export default {
   computed: {
     ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
     ...mapState("sessionStore", [
-      "currentUserPattern",
-      "currentResponsePattern",
+      "currentPattern",
+      "previousPattern",
+      // "currentUserPattern",
+      // "currentResponsePattern",
       "session",
       "userTurn",
     ]),
@@ -141,14 +143,6 @@ export default {
       };
     },
 
-    clearMusicSheetNotes() {
-      let note_cells_all_DOM = this.$el.querySelectorAll(
-        "[data-note-cell-index]"
-      );
-      for (let cellDOM of note_cells_all_DOM) {
-        cellDOM.setAttribute("data-note-cell-active", false);
-      }
-    },
     /**
      * Returns a string associated to tha given note (in given octave)
      */
