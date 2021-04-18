@@ -71,7 +71,7 @@
           <!-- response pattern -->
           <div class="music-sheet__notes | pattern-notes">
             <div
-              class="pattern-notes__note"
+              class="pattern-notes__note | pattern-notes__note--response"
               v-for="(note, index) in currentResponsePattern"
               :key="`testnote-${index}`"
               :style="displayNote(note)"
