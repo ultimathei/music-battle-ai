@@ -20,6 +20,7 @@ export default {
   namespaced: true,
   state: () => ({
     userTurn: true,
+    prematureNotes: [], // this would be used to cache notes that are strated just before the pattern start
     currentPattern: [],
     responsePatternHalf: [], // a list of notes in the response pattern (for first half)
     session: [], // a list of alternating user/response patterns
@@ -44,7 +45,10 @@ export default {
 
       // its a start message push it straight to the pattern
       if (data.start) {
-        state.currentPattern.push(data);
+        state.currentPattern.push({
+          ...data,
+          start: Math.max(data.start - 1, 0),
+        });
         return;
       }
       // else it's end message so
@@ -52,6 +56,10 @@ export default {
       for (let i in state.currentPattern) {
         let s = state.currentPattern[i];
         if (s.note === data.note && !s.end) {
+          // // if end and start is same, let's add one to start
+          // if(data.end === s.start) {
+          //   data.end+=1;
+          // }
           state.currentPattern[i] = {
             ...state.currentPattern[i],
             end: data.end,
@@ -60,6 +68,17 @@ export default {
         }
       }
     },
+
+    ////////
+    
+    // IDEA
+    // for prematureNotes: is not userTurn and MIDI not receieved:
+    // collect theese notes to an array with start value 0.
+    // is end note message received for same pitch, remove from array
+    // at the start of a new user pattern, push the content of this array to 
+    // the currentPattern array
+
+    ////////
 
     [SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE](state) {
       if (!state.userTurn) return; // safety check
@@ -90,6 +109,12 @@ export default {
         // generate the second half of the response based on it
         // when done, add it to current pattern (updating it)
         console.log("generate second half response here..");
+        // 0. closing unfinished notes
+        for (let n of state.currentPattern) {
+          if (!n.end) {
+            n.end = 128;
+          }
+        }
         // 1. push old previous current pattern to session
         const patternToArchive = {
           type: "user",
