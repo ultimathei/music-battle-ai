@@ -1,9 +1,20 @@
 <template>
   <div>
     <MetronomeIcon class="icon-small" />
-    <div class="button" @click="startStop()">
-      {{ currentPatternInd + 1 }}, {{ currentBar + 1 }} ,
+    <div class="metronome__details">
+      {{ currentPatternInd + 1}}/{{currentBar + 1 }}
       {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
+    </div>
+    <div class="playback_control" v-if="currentPatternInd>0">
+      <PauseIcon v-if="isRunning" @click="startStop()"/>
+      <PlayIcon v-else @click="startStop()"/>
+    </div>
+    <div class="playback_control">
+      <PauseIcon v-if="isRunning" @click="startStop()"/>
+      <RecordIcon v-else @click="startStop()"/>
+    </div>
+    <div class="playback_control">
+      <RestartIcon @click="backToStart()"/>
     </div>
   </div>
 </template>
@@ -16,21 +27,29 @@
  * Demisemiquaver is a synonim for the 1/32rd musical note
  */
 import {
-  CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
   CLOCK_MUTATION_UPDATE_CURRENT_BAR,
+  CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
   CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
-  SESSION_MUTATION_CLEAR_PATTERN,
+  SESSION_MUTATION_CLEAR_SESSION,
   SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE,
   SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE,
   SESSION_MUTATION_SET_USER_TURN,
 } from "../../store/mutations";
 import { mapMutations } from "vuex";
 import MetronomeIcon from "../graphics/metronome.svg";
+import PauseIcon from "../graphics/pause.svg";
+import PlayIcon from "../graphics/play.svg";
+import RecordIcon from "../graphics/record.svg";
+import RestartIcon from "../graphics/restart.svg";
 
 export default {
   name: "Metronome",
   components: {
     MetronomeIcon,
+    PauseIcon,
+    PlayIcon,
+    RestartIcon,
+    RecordIcon,
   },
   data() {
     return {
@@ -54,12 +73,12 @@ export default {
      * Mapping mutation functions - essentially synhcronous setters
      *  */
     ...mapMutations("mainClockStore", [
-      CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
       CLOCK_MUTATION_UPDATE_CURRENT_BAR,
+      CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
       CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
     ]),
     ...mapMutations("sessionStore", [
-      SESSION_MUTATION_CLEAR_PATTERN,
+      SESSION_MUTATION_CLEAR_SESSION,
       SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE,
       SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE,
       SESSION_MUTATION_SET_USER_TURN,
@@ -162,9 +181,6 @@ export default {
     start() {
       if (this.isRunning) return;
 
-      // clear pattern
-      this[SESSION_MUTATION_CLEAR_PATTERN]();
-
       if (this.audioContext == null) {
         this.audioContext = new (window.AudioContext ||
           window.webkitAudioContext)();
@@ -184,6 +200,11 @@ export default {
     stop() {
       this.isRunning = false;
       clearInterval(this.intervalID);
+    },
+
+    backToStart() {
+      this.stop();
+      this[SESSION_MUTATION_CLEAR_SESSION]();
       // reset pointers
       this.currentPatternInd = 0;
       this[CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](this.currentPatternInd);

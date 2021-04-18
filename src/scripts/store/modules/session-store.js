@@ -10,7 +10,7 @@
 
 import {
   SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN,
-  SESSION_MUTATION_CLEAR_PATTERN,
+  SESSION_MUTATION_CLEAR_SESSION,
   SESSION_MUTATION_SET_USER_TURN,
   SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE,
   SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE,
@@ -21,7 +21,6 @@ export default {
   state: () => ({
     userTurn: true,
     currentPattern: [],
-    // previousPattern: [],
     responsePatternHalf: [], // a list of notes in the response pattern (for first half)
     session: [], // a list of alternating user/response patterns
   }),
@@ -130,8 +129,12 @@ export default {
     },
 
     // clear/empty the current pattern
-    [SESSION_MUTATION_CLEAR_PATTERN](state) {
-      state.currentUserPattern = [];
+    [SESSION_MUTATION_CLEAR_SESSION](state) {
+      state.currentPattern = [];
+      state.userTurn = true;
+      state.currentPattern = [];
+      state.responsePatternHalf = [];
+      state.session = [];
     },
 
     // switch between user or robot turn
