@@ -19,5 +19,7 @@ export const CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND =
   "clock_mutation_update_current_pattern_ind";
 
 // -- session store mutations --
-export const SESSION_MUTATION_ADD_NOTE = "session_mutation_add_note";
+export const SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN = "session_mutation_add_note_to_current_pattern";
 export const SESSION_MUTATION_CLEAR_PATTERN = "session_mutation_clear_pattern";
+export const SESSION_MUTATION_ADD_PATTERN_TO_SESSION = "session_mutation_add_pattern_to_session";
+export const SESSION_MUTATION_SET_USER_TURN = "session_mutationset_user_turn";

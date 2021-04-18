@@ -20,6 +20,7 @@ import {
   CLOCK_MUTATION_UPDATE_CURRENT_BAR,
   CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
   SESSION_MUTATION_CLEAR_PATTERN,
+  SESSION_MUTATION_ADD_PATTERN_TO_SESSION,
 } from "../../store/mutations";
 import { mapMutations } from "vuex";
 import MetronomeIcon from "../graphics/metronome.svg";
@@ -55,7 +56,10 @@ export default {
       CLOCK_MUTATION_UPDATE_CURRENT_BAR,
       CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
     ]),
-    ...mapMutations("sessionStore", [SESSION_MUTATION_CLEAR_PATTERN]),
+    ...mapMutations("sessionStore", [
+      SESSION_MUTATION_CLEAR_PATTERN,
+      SESSION_MUTATION_ADD_PATTERN_TO_SESSION,
+    ]),
     /**
      * Move to next bip/tick of the metronome
      */
@@ -66,6 +70,12 @@ export default {
       if (this.currentDemisemiquaver == 32) {
         this.currentDemisemiquaver = 0; // wrap to (0,32]
         this.currentBar++;
+        // if end of half pattern
+        // add half pattern to current pattern?
+        if(this.currentBar == 2) {
+          // add first half pattern
+          
+        }
         if (this.currentBar == 4) {
           this.currentBar = 0;
           this.currentPatternInd++;
@@ -73,6 +83,8 @@ export default {
           this[CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](
             this.currentPatternInd
           );
+          // push current pattern to session, clear current pattern
+          this[SESSION_MUTATION_ADD_PATTERN_TO_SESSION]();
         }
         // update bar in store
         this[CLOCK_MUTATION_UPDATE_CURRENT_BAR](this.currentBar);

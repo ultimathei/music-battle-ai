@@ -102,6 +102,14 @@ $ms_header-height: 25px;
     width: 100%;
     flex-grow: 1;
   }
+
+  $list: 61, 63, 66, 68, 70;
+  @each $i in $list {
+    &__row[data-row-index="#{$i}"] {
+      background: rgba(0,0,0,0.05);
+    }    
+  }
+
   &__column {
     // border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
     // border-right: 0.5px solid rgba(0, 0, 0, 0.05);
@@ -114,11 +122,13 @@ $ms_header-height: 25px;
 
     // vertical bar markers (1/1)
     &[data-demisemiquaver-cell-index="32"],
-    &[data-demisemiquaver-cell-index="64"],
-    &[data-demisemiquaver-cell-index="96"],
-    &[data-demisemiquaver-cell-index="128"]{
+    &[data-demisemiquaver-cell-index="96"]{
       border-right: 1px solid rgba(0, 0, 0, 0.5);
     }
+    &[data-demisemiquaver-cell-index="64"]{
+      border-right: 2px solid rgba(0, 0, 0, 0.5);
+    }
+
     // vertical crotchet marker (1/4)
     &[data-demisemiquaver-cell-index="8"],
     &[data-demisemiquaver-cell-index="16"],
@@ -135,7 +145,6 @@ $ms_header-height: 25px;
     {
       border-right: 1px solid rgba(0, 0, 0, 0.25);
     }
-
 
     $active-cell-border-radius: 5px;
     &[data-note-cell-status="singlecell"], 

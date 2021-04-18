@@ -3,20 +3,30 @@
     <div class="app__pattern-sequence | pattern-sequence">
       <BattleIcon class="pattern-sequence__icon" />
       <div class="pattern-sequence__list">
-        <div class="pattern-sequence__scrollable" :style="{width: `${patternCount*50}px`}">
+        <div
+          class="pattern-sequence__scrollable"
+          :style="{ width: `${patternCount * 50}px` }"
+        >
           <div
-            v-for="n in patternCount"
-            :data-sequence-list-item-type="`${n%2==0?'robot':'human'}`"
-            :key="`sequence-item-${n}`"
+            v-for="(pattern, index) in session"
+            :data-sequence-list-item-type="pattern.type"
+            :key="`sequence-item-${index}`"
             class="pattern-sequence__list-item"
-          ></div>
+          >
+            {{ index + 1 }}
+          </div>
+          <div
+            class="pattern-sequence__list-item"
+            data-sequence-list-item-type="preview"
+          >...</div>
         </div>
       </div>
     </div>
+
     <div class="app__music-sheet | music-sheet">
       <div class="music-sheet__side">
         <div class="music-sheet__header">
-          <NotesIcon class="music-sheet__header-icon"/>
+          <NotesIcon class="music-sheet__header-icon" />
         </div>
         <div class="music-sheet__row" v-for="r of array" :key="`row-${r}`">
           {{ getNoteName(r, 0) }}
@@ -46,6 +56,7 @@
             v-for="r of array"
             :key="`row-${r}`"
             :ref="`pitch-${r}`"
+            :data-row-index="r"
           >
             <div
               class="music-sheet__column"
@@ -84,7 +95,7 @@ export default {
   },
   computed: {
     ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
-    ...mapState("sessionStore", ["currentUserPattern"]),
+    ...mapState("sessionStore", ["currentUserPattern", "session"]),
     currentCursorPos() {
       return this.currentBar * 32 + this.currentDemisemiquaver;
     },

@@ -17,6 +17,8 @@
 
   &__scrollable{
     height: 100%;
+    display: flex;
+    flex-flow: row nowrap;
   }
 
   &__list-item {
@@ -24,15 +26,21 @@
     height: 100%;
     width: 40px;
     z-index: 2;
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 4px;
     border-radius: 5px;
+    flex: 0 0 40px;
 
     &[data-sequence-list-item-type="human"]{
       background: $color-brand-accent-2;
     }
     &[data-sequence-list-item-type="robot"]{
       background: $color-brand-accent-1;
+    }
+    &[data-sequence-list-item-type="preview"]{
+      background: $color-brand-neutral-1;
     }
   }
 
