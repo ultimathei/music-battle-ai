@@ -7,12 +7,13 @@
     width: 60px;
     fill: $color-brand-neutral-3;
     padding: 8px;
+    flex-shrink: 0;
   }
   &__list{
     flex-grow: 1;
     background-color: rgba(0,0,0,0.25);
     overflow: hidden;
-    padding: 8px 4px;
+    padding: 8px 6px;
   }
 
   &__scrollable{
@@ -32,6 +33,8 @@
     margin: 0 4px;
     border-radius: 5px;
     flex: 0 0 40px;
+    font-family: 'Montserrat', sans-serif;
+    color: $color-brand-foreground;
 
     &[data-sequence-list-item-type="human"]{
       background: $color-brand-accent-2;
@@ -39,8 +42,11 @@
     &[data-sequence-list-item-type="robot"]{
       background: $color-brand-accent-1;
     }
-    &[data-sequence-list-item-type="preview"]{
-      background: $color-brand-neutral-1;
+    // &[data-sequence-list-item-type="preview"]{
+    //   background: $color-brand-neutral-1;
+    // }
+    &.active {
+      border: 2px solid $color-brand-accent-4;
     }
   }
 

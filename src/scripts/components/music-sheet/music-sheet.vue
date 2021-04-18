@@ -13,12 +13,12 @@
             :key="`sequence-item-${index}`"
             class="pattern-sequence__list-item"
           >
-            {{ index + 1 }}
+            {{ Math.floor(index/2) + 1 }}
           </div>
           <div
-            class="pattern-sequence__list-item"
-            data-sequence-list-item-type="preview"
-          >...</div>
+            class="pattern-sequence__list-item | active"
+            :data-sequence-list-item-type="(userTurn?'human':'robot')"
+          >{{ Math.floor(session.length/2) + 1 }}</div>
         </div>
       </div>
     </div>
@@ -95,7 +95,7 @@ export default {
   },
   computed: {
     ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
-    ...mapState("sessionStore", ["currentUserPattern", "session"]),
+    ...mapState("sessionStore", ["currentUserPattern", "session", "userTurn"]),
     currentCursorPos() {
       return this.currentBar * 32 + this.currentDemisemiquaver;
     },

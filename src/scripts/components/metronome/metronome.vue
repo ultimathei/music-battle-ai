@@ -20,7 +20,9 @@ import {
   CLOCK_MUTATION_UPDATE_CURRENT_BAR,
   CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
   SESSION_MUTATION_CLEAR_PATTERN,
-  SESSION_MUTATION_ADD_PATTERN_TO_SESSION,
+  SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE,
+  SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE,
+  SESSION_MUTATION_SET_USER_TURN,
 } from "../../store/mutations";
 import { mapMutations } from "vuex";
 import MetronomeIcon from "../graphics/metronome.svg";
@@ -58,7 +60,9 @@ export default {
     ]),
     ...mapMutations("sessionStore", [
       SESSION_MUTATION_CLEAR_PATTERN,
-      SESSION_MUTATION_ADD_PATTERN_TO_SESSION,
+      SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE,
+      SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE,
+      SESSION_MUTATION_SET_USER_TURN,
     ]),
     /**
      * Move to next bip/tick of the metronome
@@ -73,8 +77,9 @@ export default {
         // if end of half pattern
         // add half pattern to current pattern?
         if(this.currentBar == 2) {
-          // add first half pattern
-          
+          // generate first half of response
+          // end of half pattern
+          this[SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE]();
         }
         if (this.currentBar == 4) {
           this.currentBar = 0;
@@ -84,7 +89,8 @@ export default {
             this.currentPatternInd
           );
           // push current pattern to session, clear current pattern
-          this[SESSION_MUTATION_ADD_PATTERN_TO_SESSION]();
+          // end of whole pattern
+          this[SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE]();
         }
         // update bar in store
         this[CLOCK_MUTATION_UPDATE_CURRENT_BAR](this.currentBar);

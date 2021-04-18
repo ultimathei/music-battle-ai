@@ -22,4 +22,6 @@ export const CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND =
 export const SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN = "session_mutation_add_note_to_current_pattern";
 export const SESSION_MUTATION_CLEAR_PATTERN = "session_mutation_clear_pattern";
 export const SESSION_MUTATION_ADD_PATTERN_TO_SESSION = "session_mutation_add_pattern_to_session";
-export const SESSION_MUTATION_SET_USER_TURN = "session_mutationset_user_turn";
+export const SESSION_MUTATION_SET_USER_TURN = "session_mutation_set_user_turn";
+export const SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE = "session_mutation_generate_first_half_response";
+export const SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE = "session_mutation_generate_second_half_response";
