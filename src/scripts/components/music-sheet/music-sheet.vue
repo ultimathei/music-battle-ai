@@ -13,12 +13,14 @@
             :key="`sequence-item-${index}`"
             class="pattern-sequence__list-item"
           >
-            {{ Math.floor(index/2) + 1 }}
+            {{ Math.floor(index / 2) + 1 }}
           </div>
           <div
             class="pattern-sequence__list-item | active"
-            :data-sequence-list-item-type="(userTurn?'human':'robot')"
-          >{{ Math.floor(session.length/2) + 1 }}</div>
+            :data-sequence-list-item-type="userTurn ? 'human' : 'robot'"
+          >
+            {{ Math.floor(session.length / 2) + 1 }}
+          </div>
         </div>
       </div>
     </div>
@@ -28,43 +30,60 @@
         <div class="music-sheet__header">
           <NotesIcon class="music-sheet__header-icon" />
         </div>
-        <div class="music-sheet__row" v-for="r of array" :key="`row-${r}`">
+        <div
+          class="music-sheet__side-row"
+          v-for="r of visibleNotes"
+          :key="`row-${r}`"
+        >
           {{ getNoteName(r, 0) }}
         </div>
       </div>
       <div class="music-sheet__body">
+        <div class="music-sheet__base-grid-cols | music-sheet-grid-cols">
+          <div
+            v-for="c in 128"
+            :key="`col-${c}`"
+            :data-ms-col-marker="getMarkerType(c)"
+            class="music-sheet-grid-cols__col"
+          ></div>
+        </div>
+
         <div class="music-sheet__cursor" :style="cursorLeftPosStyle"></div>
         <div class="music-sheet__header">
           <div
-            v-for="(n, i) in 4"
-            :key="`musicsheet-header-marker${i}`"
-            class="music-sheet__header-timestamp"
-            :data-musicsheet-header-marker="i"
+            v-for="i in 4"
+            :key="`bar-count-${i}`"
+            class="music-sheet__header-bar"
           >
-            {{ n }}
+            {{ i }}
           </div>
-          <div
-            class="music-sheet__column"
-            v-for="c in 128"
-            :key="`header-marker-${c}`"
-            :data-demisemiquaver-cell-index="c"
-          ></div>
         </div>
         <div class="music-sheet__content">
-          <div
-            class="music-sheet__row"
-            v-for="r of array"
-            :key="`row-${r}`"
-            :ref="`pitch-${r}`"
-            :data-row-index="r"
-          >
+          <!-- user pattern -->
+          <div class="music-sheet__notes | pattern-notes">
             <div
-              class="music-sheet__column"
-              v-for="c in 128"
-              :key="`column-${c}`"
-              :ref="`cell-${c}`"
-              :data-note-cell-index="r"
-              :data-demisemiquaver-cell-index="c"
+              class="pattern-notes__note"
+              v-for="(note, index) in currentUserPattern"
+              :key="`testnote-${index}`"
+              :style="displayNote(note)"
+            ></div>
+          </div>
+          <!-- response pattern -->
+          <div class="music-sheet__notes | pattern-notes">
+            <div
+              class="pattern-notes__note"
+              v-for="(note, index) in currentResponsePattern"
+              :key="`testnote-${index}`"
+              :style="displayNote(note)"
+            ></div>
+          </div>
+
+          <div class="music-sheet__base-grid-rows | music-sheet-grid-rows">
+            <div
+              class="music-sheet-grid-rows__row"
+              v-for="(r, index) of visibleNotes"
+              :key="`col-${index}`"
+              :data-ms-row-type="getRowType(r)"
             ></div>
           </div>
         </div>
@@ -86,16 +105,18 @@ export default {
   },
   data() {
     return {
-      array: Array.from(Array(12), (_, index) => 71 - index),
+      visibleNotes: Array.from(Array(12), (_, index) => 71 - index),
       patternCount: 20,
     };
   },
-  mounted() {
-    this.updateMusicSheetNotes();
-  },
   computed: {
     ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
-    ...mapState("sessionStore", ["currentUserPattern", "session", "userTurn"]),
+    ...mapState("sessionStore", [
+      "currentUserPattern",
+      "currentResponsePattern",
+      "session",
+      "userTurn",
+    ]),
     currentCursorPos() {
       return this.currentBar * 32 + this.currentDemisemiquaver;
     },
@@ -105,59 +126,19 @@ export default {
       };
     },
   },
-  watch: {
-    currentDemisemiquaver() {
-      // update music sheet on every 1/32
-      this.updateMusicSheetNotes();
-    },
-  },
   methods: {
-    updateMusicSheetNotes() {
-      // for each note of current pattern
-      for (let note of this.currentUserPattern) {
-        // get all DOM cells in this note pitch (row)
-        let note_cells_DOM = this.$el.querySelectorAll(
-          `[data-note-cell-index='${note.note}'][data-demisemiquaver-cell-index]`
-        );
+    displayNote(note) {
+      // don't display if no end and cursor is behind the start of note
+      if (!note.end && note.start > this.currentCursorPos) return {};
+      // display note til cursor if no end and cursor is after start of note
+      let end = note.end ? note.end : this.currentCursorPos;
 
-        // test ref version
-        // let cell_refs = this.$refs[`pitch-${note.note}`];
-        // console.log('cell_refs', cell_refs[0]);
-
-        for (let cell of note_cells_DOM) {
-          let demisemiIndex = cell.dataset.demisemiquaverCellIndex;
-
-          if (
-            note.end &&
-            demisemiIndex == note.start &&
-            demisemiIndex == note.end
-          ) {
-            cell.setAttribute("data-note-cell-status", "singlecell");
-          } else if (demisemiIndex == note.start) {
-            cell.setAttribute("data-note-cell-status", "start");
-          } else if (
-            note.end &&
-            demisemiIndex > note.start &&
-            demisemiIndex < note.end
-          ) {
-            cell.setAttribute("data-note-cell-status", "inbetween");
-          } else if (
-            !note.end &&
-            demisemiIndex > note.start &&
-            demisemiIndex < this.currentCursorPos
-          ) {
-            cell.setAttribute("data-note-cell-status", "inbetween");
-          } else if (note.end && demisemiIndex == note.end) {
-            cell.setAttribute("data-note-cell-status", "end");
-          } else if (!note.end && demisemiIndex == this.currentCursorPos) {
-            cell.setAttribute("data-note-cell-status", "end");
-          }
-        }
-      }
-    },
-
-    update2() {
-      //
+      return {
+        width: `calc((100% / 128 ) * ${end - note.start})`,
+        height: `calc(100% / ${this.visibleNotes.length})`,
+        left: `calc((100% / 128 ) * ${note.start})`,
+        top: `calc((100% / 12) * ${71 - note.note})`,
+      };
     },
 
     clearMusicSheetNotes() {
@@ -202,6 +183,15 @@ export default {
         default:
           return "missing";
       }
+    },
+
+    getMarkerType(c) {
+      return c % 32 == 0 ? "bar" : c % 8 == 0 ? "beat" : "";
+    },
+
+    getRowType(r){
+      const blackPoses = [1,3,6,8,10];
+      return blackPoses.includes(r%12) ? 'black' : '';
     },
   },
 };

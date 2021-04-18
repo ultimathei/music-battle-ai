@@ -8,12 +8,35 @@ $ms_header-height: 25px;
 .music-sheet {
   background-color: $color-brand-foreground;
   border-radius: 10px;
+  border: 2px solid $color-brand-accent-4;
   display: flex;
   flex-flow: row nowrap;
   height: 250px;
   width: 100%;
   overflow: hidden;
   font-family: 'Montserrat', sans-serif;
+
+  &__notes{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__base-grid-cols{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+  }
+
+  &__base-grid-rows{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+  }
 
   &__side {
     position: relative;
@@ -35,11 +58,13 @@ $ms_header-height: 25px;
     fill: $color-brand-neutral-3;
     height: 18px;
   }
-
-  &__side &__row {
-    padding: 2px 10px;
-    padding-left: 18px;
+  &__side &__side-row {
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
     color: $color-brand-background;
+    display: flex;
+    flex-grow: 1;
+    padding: 2px 10px 2px 18px;
+    width: 100%;
   }
 
   &__body {
@@ -73,18 +98,14 @@ $ms_header-height: 25px;
     position: relative;
   }
 
-  &__header-timestamp{
+  &__header-bar{
+    flex-grow: 1;
+    flex-shrink: 0;
     font-size: 12px;
-    position: absolute;
-    bottom: 0;
-    z-index: 9;
-    content: attr(data-musicsheet-header-marker);
-
-    @for $i from 0 through 3 {
-      &[data-musicsheet-header-marker="#{$i}"]{
-        left: calc((#{$i} * (100% /4)));
-      }
-    }
+    padding: 2px 6px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
   }
 
   &__content {
@@ -95,82 +116,47 @@ $ms_header-height: 25px;
     position: relative;
     width: 100%;
   }
+}
 
-  &__row {
-    border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
-    display: flex;
-    width: 100%;
-    flex-grow: 1;
+.pattern-notes {
+  &__note{
+    background-color: $color-brand-background;
+    border-radius: 5px;
+    border: 0.5px solid black;
+    opacity: 0.75;
+    position: absolute;
   }
+}
 
-  $list: 61, 63, 66, 68, 70;
-  @each $i in $list {
-    &__row[data-row-index="#{$i}"] {
-      background: rgba(0,0,0,0.05);
-    }    
-  }
+.music-sheet-grid-cols{
+  display: flex;
+  flex-flow: row nowrap;
 
-  &__column {
-    // border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
-    // border-right: 0.5px solid rgba(0, 0, 0, 0.05);
+  &__col {
     border: 0.5px solid rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-start;
     flex-grow: 1;
     flex-shrink: 0;
 
-    // vertical bar markers (1/1)
-    &[data-demisemiquaver-cell-index="32"],
-    &[data-demisemiquaver-cell-index="96"]{
+    &[data-ms-col-marker="bar"]{
       border-right: 1px solid rgba(0, 0, 0, 0.5);
     }
-    &[data-demisemiquaver-cell-index="64"]{
-      border-right: 1px dashed rgba($color-brand-accent-2, 1);
-    }
-
-    // vertical crotchet marker (1/4)
-    &[data-demisemiquaver-cell-index="8"],
-    &[data-demisemiquaver-cell-index="16"],
-    &[data-demisemiquaver-cell-index="24"],
-    &[data-demisemiquaver-cell-index="40"],
-    &[data-demisemiquaver-cell-index="48"],
-    &[data-demisemiquaver-cell-index="56"],
-    &[data-demisemiquaver-cell-index="72"],
-    &[data-demisemiquaver-cell-index="80"],
-    &[data-demisemiquaver-cell-index="88"],
-    &[data-demisemiquaver-cell-index="104"],
-    &[data-demisemiquaver-cell-index="112"],
-    &[data-demisemiquaver-cell-index="120"]
-    {
+    &[data-ms-col-marker="beat"]{
       border-right: 1px solid rgba(0, 0, 0, 0.25);
     }
+  }
+}
 
-    $active-cell-border-radius: 5px;
-    &[data-note-cell-status="singlecell"], 
-    &[data-note-cell-status="start"], 
-    &[data-note-cell-status="end"], 
-    &[data-note-cell-status="inbetween"] {
-      background-color: $color-brand-accent-2;
-      border: 0.5px solid black;
-    }
-    
-    &[data-note-cell-status="start"]{
-      // border-width: 1px 0 1px 1px;
-      border-right-color: transparent;
-      border-radius: $active-cell-border-radius 0 0 $active-cell-border-radius;
-    }
-    &[data-note-cell-status="inbetween"] {
-      border-right-color: transparent;
-      border-left-color: transparent;
-      border-radius: 0;
-    }
-    &[data-note-cell-status="end"] {
-      border-left-color: transparent;
-      border-radius: 0 $active-cell-border-radius $active-cell-border-radius 0;
-    }
-    &[data-note-cell-status="singlecell"] {
-      border-radius: $active-cell-border-radius;
+.music-sheet-grid-rows{
+  display: flex;
+  flex-flow: column nowrap;
+
+  &__row{
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+    flex-grow: 1;
+    flex-shrink: 0;
+
+    &[data-ms-row-type="black"] {
+      background: rgba(0,0,0,0.05);
     }
   }
 }

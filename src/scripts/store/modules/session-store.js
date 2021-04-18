@@ -66,10 +66,16 @@ export default {
       // generate the first half of the response based on it
       // store it locally by adding it to current response pattern
 
-      // for now we simply return same pattern
+      // for now we simply return same pattern shifted half note up
       if (state.userTurn) {
         console.log("generate first half response here..");
-        state.currentResponsePattern = [...state.currentUserPattern];
+        state.currentResponsePattern = state.currentUserPattern.map(note => {
+          return {
+            ...note,
+            note: note.note +1
+          }
+        });
+
       }
     },
 
