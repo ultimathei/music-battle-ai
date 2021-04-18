@@ -3,10 +3,10 @@
 */
 
 
-$ms_side-width: 60px;
+$ms_side-width: 55px;
 $ms_header-height: 25px;
 .music-sheet {
-  background-color: $color-brand-foreground;
+  background-color: $color-brand-neutral-1;
   border-radius: 10px;
   border: 2px solid $color-brand-accent-4;
   display: flex;
@@ -15,6 +15,7 @@ $ms_header-height: 25px;
   width: 100%;
   overflow: hidden;
   font-family: 'Montserrat', sans-serif;
+  padding: 5px;
 
   &__notes{
     position: absolute;
@@ -63,7 +64,7 @@ $ms_header-height: 25px;
     color: $color-brand-background;
     display: flex;
     flex-grow: 1;
-    padding: 2px 10px 2px 18px;
+    padding: 2px 10px 2px 13px;
     width: 100%;
   }
 
@@ -82,8 +83,8 @@ $ms_header-height: 25px;
     height: 100%;
     width: calc(100% / 128);
     // margin-left: -2px;
-    background-color: $color-brand-accent-4;
-    mix-blend-mode: multiply;
+    background-color: $color-brand-accent-1;
+    mix-blend-mode: color;
     transition: left 25ms;
     z-index: 10;
   }
@@ -106,6 +107,7 @@ $ms_header-height: 25px;
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
+    color: $color-brand-neutral-3;
   }
 
   &__content {
@@ -115,6 +117,7 @@ $ms_header-height: 25px;
     justify-content: center;
     position: relative;
     width: 100%;
+    background-color: rgba(0,0,0,0.1);
   }
 }
 

@@ -30,7 +30,7 @@
     padding: 5px;
 
     &[data-sequence-arrow-clickable="true"]{
-      fill: $color-brand-foreground;
+      fill: $color-brand-neutral-2;
       cursor: pointer;
 
       &:hover{
@@ -65,7 +65,7 @@
       background: $color-brand-accent-2;
     }
     &[data-sequence-list-item-type="robot"]{
-      background: $color-brand-accent-1;
+      background: $color-brand-neutral-3;
     }
     // &[data-sequence-list-item-type="preview"]{
     //   background: $color-brand-neutral-1;
