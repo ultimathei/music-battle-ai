@@ -156,6 +156,10 @@ export default {
       }
     },
 
+    update2() {
+      //
+    },
+
     clearMusicSheetNotes() {
       let note_cells_all_DOM = this.$el.querySelectorAll(
         "[data-note-cell-index]"
