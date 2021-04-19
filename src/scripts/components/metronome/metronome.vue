@@ -21,7 +21,7 @@
 
 <script>
 /**
- * This Metronome component is based oaround the idea in this code repository
+ * This Metronome component is based around the idea in this code repository
  * https://github.com/grantjames/metronome by grantjames.
  *
  * Demisemiquaver is a synonim for the 1/32rd musical note
@@ -49,43 +49,19 @@ export default {
   },
   computed: {
     ...mapState("mainClockStore", [
-      "audioContext",
-      "bipsInQueue",
       "currentBar",
       "currentDemisemiquaver",
       "currentPatternInd",
-      "denominator",
-      "intervalID",
       "isRunning",
-      "lookahead",
-      "nextBipTime",
-      "scheduleAheadTime",
-      "scheduleAheadTime",
       "soundOn",
       "tempo",
     ]),
   },
   methods: {
-    /**
-     * Mapping mutation functions - essentially synhcronous setters
-     *  */
     ...mapActions("mainClockStore", {
       'startStop': CLOCK_ACTION_STARTSTOP,
       'backToStart': CLOCK_ACTION_RESET,
     }),
-
-    // backToStart() {
-    //   this[CLOCK_ACTION_RESET]();
-    //   // dispatch(CLOCK_ACTION_RESET);
-    // },
-
-    // /**
-    //  * Flip stop/start for the metronome
-    //  */
-    // startStop() {
-    //   this[CLOCK_ACTION_STARTSTOP]();
-    //   // this.$store.dispatch(CLOCK_ACTION_STARTSTOP);
-    // },
   },
 };
 </script>

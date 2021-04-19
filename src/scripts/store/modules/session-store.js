@@ -29,10 +29,6 @@ export default {
   }),
 
   getters: {
-    // current user pattern should consist two halves
-    // currentPattern(state) {
-    //   return state.currentPattern;
-    // },
     session(state) {
       return state.session;
     },
@@ -158,7 +154,7 @@ export default {
     ////////
     
     // IDEA
-    // for prematureNotes: is not userTurn and MIDI not receieved:
+    // for prematureNotes: if not userTurn and MIDI not receieved:
     // collect theese notes to an array with start value 0.
     // is end note message received for same pitch, remove from array
     // at the start of a new user pattern, push the content of this array to 
