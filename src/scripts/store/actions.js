@@ -11,9 +11,18 @@ export const PIANO_ACTION_SET_SIDE_PANEL_WIDTH =
 export const PIANO_ACTION_SET_WIDTH = "piano_action_set_width";
 
 // -- clock store actions --
-export const CLOCK_ACTION_UPDATE_CURRENT_DEMISEMIQUAVER =
-  "clock_action_update_current_demisemiquaver";
-export const CLOCK_ACTION_UPDATE_CURRENT_BAR =
-  "clock_action_update_current_bar";
-export const CLOCK_ACTION_UPDATE_CURRENT_PATTERN_IND =
-  "clock_action_update_current_pattern_ind";
+export const CLOCK_ACTION_NEXT_BIP = "clock_action_next_bip";
+export const CLOCK_ACTION_SCHEDULE_BIP = "clock_action_schedule_bip";
+export const CLOCK_ACTION_PLAY_METRONOME = "clock_action_play_metronome";
+export const CLOCK_ACTION_ADVANCE_SCHEDULER = "clock_action_advance_scheduler";
+export const CLOCK_ACTION_START = "clock_action_start";
+export const CLOCK_ACTION_STOP = "clock_action_stop";
+export const CLOCK_ACTION_STARTSTOP = "clock_action_startstop";
+export const CLOCK_ACTION_RESET = "clock_action_reset";
+
+// -- session store actions --
+export const SESSION_ACTION_CLEAR_SESSION = "session_action_clear_session";
+export const SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE =
+  "session_action_generate_first_half_response";
+export const SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE =
+  "session_action_generate_second_half_response";

@@ -10,11 +10,13 @@
 
 import {
   SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN,
-  SESSION_MUTATION_CLEAR_SESSION,
-  SESSION_MUTATION_SET_USER_TURN,
-  SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE,
-  SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE,
+  // SESSION_MUTATION_SET_USER_TURN,
 } from "../mutations";
+import {
+  SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE,
+  SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE,
+  SESSION_ACTION_CLEAR_SESSION,
+} from "../actions";
 
 export default {
   namespaced: true,
@@ -36,51 +38,8 @@ export default {
     },
   },
 
-  // basiacally setters
-  // using the ES2015 computed property name feature
-  mutations: {
-    // add new incoming notes (either start or end msg) ONLY when in user turn
-    [SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](state, data) {
-      if (!state.userTurn) return; // safety check
-
-      // its a start message push it straight to the pattern
-      if (data.start) {
-        state.currentPattern.push({
-          ...data,
-          start: Math.max(data.start - 1, 0),
-        });
-        return;
-      }
-      // else it's end message so
-      // find the note that has no end yet (its start pair)
-      for (let i in state.currentPattern) {
-        let s = state.currentPattern[i];
-        if (s.note === data.note && !s.end) {
-          // // if end and start is same, let's add one to start
-          // if(data.end === s.start) {
-          //   data.end+=1;
-          // }
-          state.currentPattern[i] = {
-            ...state.currentPattern[i],
-            end: data.end,
-          };
-          return;
-        }
-      }
-    },
-
-    ////////
-    
-    // IDEA
-    // for prematureNotes: is not userTurn and MIDI not receieved:
-    // collect theese notes to an array with start value 0.
-    // is end note message received for same pitch, remove from array
-    // at the start of a new user pattern, push the content of this array to 
-    // the currentPattern array
-
-    ////////
-
-    [SESSION_MUTATION_GENERATE_FIRST_HALF_RESPONSE](state) {
+  actions: {
+    [SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE]({state}) {
       if (!state.userTurn) return; // safety check
 
       // take a snapshot of notes in the first half of the user's pattern
@@ -102,7 +61,7 @@ export default {
       }, 1000);
     },
 
-    [SESSION_MUTATION_GENERATE_SECOND_HALF_RESPONSE](state) {
+    [SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE]({state}) {
       // transitioning from user turn to response turn..
       if (state.userTurn) {
         // get notes in the second half of the pattern
@@ -154,17 +113,62 @@ export default {
     },
 
     // clear/empty the current pattern
-    [SESSION_MUTATION_CLEAR_SESSION](state) {
+    [SESSION_ACTION_CLEAR_SESSION]({state}) {
       state.currentPattern = [];
       state.userTurn = true;
       state.currentPattern = [];
       state.responsePatternHalf = [];
       state.session = [];
     },
+  },
 
-    // switch between user or robot turn
-    [SESSION_MUTATION_SET_USER_TURN](state, data) {
-      state.userTurn = data;
+  // basiacally setters
+  // using the ES2015 computed property name feature
+  mutations: {
+    // add new incoming notes (either start or end msg) ONLY when in user turn
+    [SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](state, data) {
+      if (!state.userTurn) return; // safety check
+
+      // its a start message push it straight to the pattern
+      if (data.start) {
+        state.currentPattern.push({
+          ...data,
+          start: Math.max(data.start - 1, 0),
+        });
+        return;
+      }
+      // else it's end message so
+      // find the note that has no end yet (its start pair)
+      for (let i in state.currentPattern) {
+        let s = state.currentPattern[i];
+        if (s.note === data.note && !s.end) {
+          // // if end and start is same, let's add one to start
+          // if(data.end === s.start) {
+          //   data.end+=1;
+          // }
+          state.currentPattern[i] = {
+            ...state.currentPattern[i],
+            end: data.end,
+          };
+          return;
+        }
+      }
     },
+
+    ////////
+    
+    // IDEA
+    // for prematureNotes: is not userTurn and MIDI not receieved:
+    // collect theese notes to an array with start value 0.
+    // is end note message received for same pitch, remove from array
+    // at the start of a new user pattern, push the content of this array to 
+    // the currentPattern array
+
+    ////////
+
+    // // switch between user or robot turn
+    // [SESSION_MUTATION_SET_USER_TURN](state, data) {
+    //   state.userTurn = data;
+    // },
   },
 };
