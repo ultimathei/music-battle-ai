@@ -12,9 +12,10 @@
   height: 100vh;
   justify-content: space-around;
   width: 100vw;
+  padding: 0 30px;
 
   &__header {
-    padding: 20px;
+    padding: 20px 0;
     font-size: 30px;
     width: 100%;
     display: flex;
@@ -31,7 +32,6 @@
 
   &__music-sheet-wrap {
     width: 100%;
-    padding: 0 30px;
   }
 
   &__pattern-sequence {
@@ -46,7 +46,6 @@
 .app-header {
   &__logo {
     width: 140px;
-    margin: 0 15px;
   }
 
   &__controls {
@@ -61,9 +60,8 @@
   &__control {
     // border: 1px dashed white;
     border-radius: 5px;
-    padding: 10px;
+    padding: 10px 0 10px 20px;
     font-size: 16px;
-    margin-left: 10px;
     display: flex;
     justify-content: center;
     align-items: center;

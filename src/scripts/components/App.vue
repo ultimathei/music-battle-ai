@@ -10,9 +10,9 @@
         <Metronome class="header-controls__control" />
       </div>
     </div>
+    <Sequencer class="app__pattern-sequence"/>
     <MusicSheet class="app__music-sheet-wrap" />
     <Piano class="app__piano" ref="piano" />
-
     <p class="app__footer">
       created by Mate Krisztian for the final year project QMUL @ 2021
     </p>
@@ -25,6 +25,7 @@ import Metronome from "./metronome/metronome.vue";
 import MidiController from "./midi/midi-controller.vue";
 import MusicSheet from "./music-sheet/music-sheet.vue";
 import Piano from "./piano/Piano.vue";
+import Sequencer from "./music-sheet/sequencer.vue";
 
 export default {
   name: "app",
@@ -34,6 +35,7 @@ export default {
     MidiController,
     MusicSheet,
     Piano,
+    Sequencer,
   },
   methods: {
     /**
