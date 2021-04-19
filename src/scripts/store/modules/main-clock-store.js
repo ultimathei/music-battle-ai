@@ -267,6 +267,8 @@ export default {
         commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
         commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
       }
+      // commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
+      // commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
       clearInterval(state.intervalID);
     },
 

@@ -135,7 +135,7 @@ export default {
       else data.end = this.convertToPatternTime(currentMusicalTime);
       // send data here to store
       this[SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](data);
-      // this.printNoteSignal(on_message, currentMusicalTime)
+      this.printNoteSignal(on_message, currentMusicalTime)
     },
 
     /**

@@ -5,10 +5,10 @@
       {{ currentPatternInd + 1 }}/{{ currentBar + 1 }}
       {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
     </div>
-    <div class="playback_control" v-if="currentPatternInd > 0">
+    <!-- <div class="playback_control" v-if="currentPatternInd > 0">
       <PauseIcon v-if="isRunning" @click="startStop" />
       <PlayIcon v-else @click="startStop" />
-    </div>
+    </div> -->
     <div class="playback_control">
       <PauseIcon v-if="isRunning" @click="startStop" />
       <RecordIcon v-else @click="startStop" />
