@@ -66,12 +66,15 @@
           </div>
         </div>
       </div>
+      <div class="music-sheet__precount-wrap" v-if="isPrecountVisible">
+        <div class="music-sheet__precount">{{precountDisplayValue}}</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import BattleIcon from "../graphics/match.svg";
 import NotesIcon from "../graphics/notes.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
@@ -91,8 +94,13 @@ export default {
     };
   },
   computed: {
-    ...mapState("mainClockStore", ["currentBar", "currentDemisemiquaver"]),
-    ...mapState("sessionStore", ["currentPattern", "session", "userTurn"]),
+    ...mapGetters("mainClockStore", [
+      "currentBar",
+      "currentDemisemiquaver",
+      "isRunning",
+      "precountDemisemiquaver",
+    ]),
+    ...mapGetters("sessionStore", ["currentPattern", "session", "userTurn"]),
     currentCursorPos() {
       return this.currentBar * 32 + this.currentDemisemiquaver;
     },
@@ -105,6 +113,12 @@ export default {
       if (this.session.length > 0)
         return this.session[this.session.length - 1].pattern;
       return [];
+    },
+    isPrecountVisible() {
+      return this.isRunning && this.precountDisplayValue > 0;
+    },
+    precountDisplayValue(){
+      return 4-Math.floor(this.precountDemisemiquaver / 8);
     },
   },
   methods: {
@@ -127,49 +141,49 @@ export default {
      */
     getNoteName(noteIndex) {
       let pitchName;
-      switch (noteIndex%12) {
+      switch (noteIndex % 12) {
         case 0:
-          pitchName="C";
+          pitchName = "C";
           break;
         case 1:
-          pitchName= "C#";
+          pitchName = "C#";
           break;
         case 2:
-          pitchName= "D" ;
+          pitchName = "D";
           break;
         case 3:
-          pitchName= "D#" ;
+          pitchName = "D#";
           break;
         case 4:
-          pitchName= "E" ;
+          pitchName = "E";
           break;
         case 5:
-          pitchName= "F" ;
+          pitchName = "F";
           break;
         case 6:
-          pitchName= "F#" ;
+          pitchName = "F#";
           break;
         case 7:
-          pitchName= "G" ;
+          pitchName = "G";
           break;
         case 8:
-          pitchName= "G#";
+          pitchName = "G#";
           break;
         case 9:
-          pitchName= "A" ;
+          pitchName = "A";
           break;
         case 10:
-          pitchName= "A#" ;
+          pitchName = "A#";
           break;
         case 11:
-          pitchName= "B";
+          pitchName = "B";
           break;
         default:
-          pitchName= "missing";
+          pitchName = "missing";
           break;
       }
-      let octaveIndex = Math.floor(noteIndex/12) -5;
-      return pitchName+octaveIndex;
+      let octaveIndex = Math.floor(noteIndex / 12) - 5;
+      return pitchName + octaveIndex;
     },
 
     getMarkerType(c) {

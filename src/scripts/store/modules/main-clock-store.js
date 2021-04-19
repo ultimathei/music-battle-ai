@@ -44,6 +44,8 @@ export default {
     scheduleAheadTime: 0.1,
     soundOn: true,
     tempo: 120, // fixed value for now
+
+    precountDemisemiquaver: 0,
   }),
 
   getters: {
@@ -62,6 +64,18 @@ export default {
         bar: state.currentBar,
         demisemi: state.currentDemisemiquaver,
       };
+    },
+    isRunning(state) {
+      return state.isRunning;
+    },
+    soundOn(state) {
+      return state.soundOn;
+    },
+    tempo(state) {
+      return state.tempo;
+    },
+    precountDemisemiquaver(state) {
+      return state.precountDemisemiquaver;
     },
   },
 
@@ -98,6 +112,10 @@ export default {
   },
 
   actions: {
+    /**
+     * Advanced the time to the next bip (by demisemiquaver)
+     * @param {*} param0
+     */
     [CLOCK_ACTION_NEXT_BIP]({ commit, state }) {
       const secondsPerBeat = 60.0 / state.tempo; // as tempo is in bpm
       commit(
@@ -105,6 +123,13 @@ export default {
         state.nextBipTime + secondsPerBeat / state.denominator
       );
 
+      // before precount finished:
+      if (state.precountDemisemiquaver < 32) {
+        state.precountDemisemiquaver++;
+        return; // without further tasks
+      }
+
+      // after the precount:
       if (state.currentDemisemiquaver + 1 == 32) {
         commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
 
@@ -117,7 +142,9 @@ export default {
           );
           // push current pattern to session, clear current pattern
           // end of whole pattern
-          this.dispatch(SESSION_STORE_LOC+SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE);
+          this.dispatch(
+            SESSION_STORE_LOC + SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE
+          );
         } else {
           commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, state.currentBar + 1);
         }
@@ -126,7 +153,9 @@ export default {
         if (state.currentBar == 2) {
           // generate first half of response
           // end of half pattern
-          this.dispatch(SESSION_STORE_LOC+SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE);
+          this.dispatch(
+            SESSION_STORE_LOC + SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE
+          );
         }
       } else {
         commit(
@@ -136,9 +165,18 @@ export default {
       }
     },
 
+    /**
+     * Schedule the next bip for given time
+     * @param {*} time
+     */
     [CLOCK_ACTION_SCHEDULE_BIP]({ commit, dispatch, state }, time) {
-      // push the note on the queue, even if we're not playing.
-      const demisemi = state.currentDemisemiquaver;
+      // push the note on the queue, even if we're not playing sound
+      // if precount is active, we do not progress currentDemisemi,
+      // but progress the precount Demisemi instead
+      const demisemi =
+        state.precountDemisemiquaver < 32
+          ? state.precountDemisemiquaver
+          : state.currentDemisemiquaver;
       commit(CLOCK_MUTATION_UPDATE_BIPS_IN_QUEQUE, {
         bip: demisemi,
         time: time,
@@ -147,6 +185,10 @@ export default {
         dispatch(CLOCK_ACTION_PLAY_METRONOME, time);
     },
 
+    /**
+     * Sounding the metronome at given time
+     * @param {*} time
+     */
     [CLOCK_ACTION_PLAY_METRONOME]({ state }, time) {
       // create an oscillator for the bip sound
       const osc = state.audioContext.createOscillator();
@@ -172,6 +214,9 @@ export default {
       osc.stop(time + 0.03);
     },
 
+    /**
+     * Advance the scheduler to the next bip
+     */
     [CLOCK_ACTION_ADVANCE_SCHEDULER]({ state, dispatch }) {
       while (
         state.nextBipTime <
@@ -182,6 +227,10 @@ export default {
       }
     },
 
+    /**
+     * Starts the clock
+     * @returns early if the clock is already running
+     */
     [CLOCK_ACTION_START]({ state, dispatch, commit }) {
       if (state.isRunning) return;
 
@@ -197,7 +246,6 @@ export default {
         CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
         state.audioContext.currentTime + 0.05
       );
-
       commit(
         CLOCK_MUTATION_UPDATE_INTERVAL_ID,
         setInterval(
@@ -207,11 +255,24 @@ export default {
       );
     },
 
+    /**
+     * Stop the clock
+     */
     [CLOCK_ACTION_STOP]({ state, commit }) {
       commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, false);
+      // if precount is not over yet
+      if (state.precountDemisemiquaver < 32) {
+        state.precountDemisemiquaver = 0;
+        commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
+        commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
+        commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
+      }
       clearInterval(state.intervalID);
     },
 
+    /**
+     * Start or Stop the clock dependant on isRunning
+     */
     [CLOCK_ACTION_STARTSTOP]({ state, dispatch }) {
       if (state.isRunning) {
         dispatch(CLOCK_ACTION_STOP);
@@ -220,10 +281,14 @@ export default {
       }
     },
 
-    [CLOCK_ACTION_RESET]({ commit, dispatch }) {
+    /**
+     * Reset the clock to 0 and empty the session
+     */
+    [CLOCK_ACTION_RESET]({ state, commit, dispatch }) {
       dispatch(CLOCK_ACTION_STOP);
-      this.dispatch(SESSION_STORE_LOC+SESSION_ACTION_CLEAR_SESSION);
+      this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_CLEAR_SESSION);
       // reset time pointers
+      state.precountDemisemiquaver = 0;
       commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
       commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
       commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);

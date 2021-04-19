@@ -8,7 +8,7 @@
 <script>
 // import MidiIcon from '../graphics/midi-controller.svg';
 import MidiIcon from "../graphics/midi.svg";
-import { mapGetters, mapMutations, mapState } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../../store/mutations";
 
 export default {
@@ -20,13 +20,13 @@ export default {
     this.getMIDI();
   },
   computed: {
-    ...mapState("sessionStore", ["userTurn"]),
+    ...mapGetters("sessionStore", ["userTurn"]),
+    ...mapGetters("mainClockStore", ["currentMusicalTime"]),
   },
   methods: {
     /**
      * Mapping the getters (not the state) to limit ability of modifications to actions
      */
-    ...mapGetters("mainClockStore", ["currentMusicalTime"]),
     ...mapMutations("sessionStore", [
       SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN,
     ]),
@@ -121,10 +121,8 @@ export default {
       };
       // emit to parent so the dom can be updated
       this.$emit("note-toggle", payload);
-      // get current musical time position (using the global metronome)
-      const currentMusicalTime = this.currentMusicalTime();
-      // record to store
-      this.recordNoteChanges(on_message, note, currentMusicalTime);
+      // record to store at current time
+      this.recordNoteChanges(on_message, note, this.currentMusicalTime);
     },
 
     /**

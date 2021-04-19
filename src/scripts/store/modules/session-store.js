@@ -32,6 +32,12 @@ export default {
     session(state) {
       return state.session;
     },
+    userTurn(state) {
+      return state.userTurn;
+    },
+    currentPattern(state) {
+      return state.currentPattern;
+    },
   },
 
   actions: {

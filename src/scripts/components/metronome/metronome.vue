@@ -26,8 +26,7 @@
  *
  * Demisemiquaver is a synonim for the 1/32rd musical note
  */
-
-import { mapState, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import MetronomeIcon from "../graphics/metronome.svg";
 import PauseIcon from "../graphics/pause.svg";
 import PlayIcon from "../graphics/play.svg";
@@ -48,13 +47,14 @@ export default {
     RecordIcon,
   },
   computed: {
-    ...mapState("mainClockStore", [
+    ...mapGetters("mainClockStore", [
       "currentBar",
       "currentDemisemiquaver",
       "currentPatternInd",
       "isRunning",
       "soundOn",
       "tempo",
+      "precountDemisemiquaver",
     ]),
   },
   methods: {

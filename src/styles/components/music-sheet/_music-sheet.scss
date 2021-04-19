@@ -16,6 +16,34 @@ $ms_header-height: 25px;
   overflow: hidden;
   font-family: 'Montserrat', sans-serif;
   padding: 5px;
+  position: relative;
+
+  &__precount-wrap{
+    position: absolute;
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99;
+  }
+
+  &__precount{
+    width: 100px;
+    height: 100px;
+    background-color: $color-brand-accent-1;
+    color: $color-brand-neutral-3;
+    font-size: 30px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+    opacity: 0.75;
+  }
 
   &__notes{
     position: absolute;
