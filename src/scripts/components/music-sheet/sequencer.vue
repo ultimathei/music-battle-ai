@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import BattleIcon from "../graphics/match.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
@@ -51,7 +51,7 @@ export default {
     SequencerItem,
   },
   computed: {
-    ...mapState("sessionStore", ["session", "userTurn"]),
+    ...mapGetters("sessionStore", ["session", "userTurn"]),
   },
 };
 </script>
