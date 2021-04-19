@@ -47,7 +47,7 @@ $ms_header-height: 25px;
     width: $ms_side-width;
     border-right: 0.5px solid rgba(0, 0, 0, 0.5);
     background-color: $color-brand-neutral-1;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   &__side &__header {
@@ -96,6 +96,7 @@ $ms_header-height: 25px;
     background-color: $color-brand-neutral-1;
     display: flex;
     flex-flow: row nowrap;
+    flex-shrink: 0;
     position: relative;
   }
 

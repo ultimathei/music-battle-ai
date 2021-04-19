@@ -12,20 +12,18 @@
         class="pattern-sequence__scrollable"
         :style="{ width: `${session.length * 50}px` }"
       >
-        <div
+        <SequencerItem
           class="pattern-sequence__list-item"
           v-for="(pattern, index) in session"
-          :data-sequence-list-item-type="pattern.type"
           :key="`sequence-item-${index}`"
-        >
-          {{ Math.floor(index / 2) + 1 }}
-        </div>
-        <div
+          :type="pattern.type"
+          :index="index"
+        />
+        <SequencerItem
           class="pattern-sequence__list-item | active"
-          :data-sequence-list-item-type="userTurn ? 'human' : 'robot'"
-        >
-          {{ Math.floor(session.length / 2) + 1 }}
-        </div>
+          :type="userTurn ? 'human' : 'robot'"
+          :index="session.length"
+        />
       </div>
       <div
         class="pattern-sequence__arrow"
@@ -42,6 +40,7 @@ import { mapState } from "vuex";
 import BattleIcon from "../graphics/match.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
+import SequencerItem from "./sequencer-item.vue";
 
 export default {
   name: "Sequencer",
@@ -49,6 +48,7 @@ export default {
     BattleIcon,
     LeftArrowIcon,
     RightArrowIcon,
+    SequencerItem,
   },
   computed: {
     ...mapState("sessionStore", ["session", "userTurn"]),
