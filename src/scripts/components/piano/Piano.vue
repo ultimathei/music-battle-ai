@@ -15,8 +15,10 @@
 </template>
 
 <script>
+// import * as Tone from 'tone';
 import PianoKeyboard from "./PianoKeyboard.vue";
 import { mapGetters, mapActions } from "vuex";
+
 import {
   PIANO_ACTION_SET_HEIGHT,
   PIANO_ACTION_SET_KEYSIZE,

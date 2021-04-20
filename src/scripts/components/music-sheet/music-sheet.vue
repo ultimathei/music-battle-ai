@@ -10,7 +10,7 @@
           v-for="r of visibleNotes"
           :key="`row-${r}`"
         >
-          {{ getNoteName(r) }}
+          {{ noteName(r) }}
         </div>
       </div>
       <div class="music-sheet__body">
@@ -79,6 +79,7 @@ import BattleIcon from "../graphics/match.svg";
 import NotesIcon from "../graphics/notes.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
+import {getNoteName} from "../../utils/utils";
 
 export default {
   name: "MusicSheet",
@@ -136,58 +137,12 @@ export default {
       };
     },
 
-    /**
-     * Returns a string associated to tha given note (in given octave)
-     */
-    getNoteName(noteIndex) {
-      let pitchName;
-      switch (noteIndex % 12) {
-        case 0:
-          pitchName = "C";
-          break;
-        case 1:
-          pitchName = "C#";
-          break;
-        case 2:
-          pitchName = "D";
-          break;
-        case 3:
-          pitchName = "D#";
-          break;
-        case 4:
-          pitchName = "E";
-          break;
-        case 5:
-          pitchName = "F";
-          break;
-        case 6:
-          pitchName = "F#";
-          break;
-        case 7:
-          pitchName = "G";
-          break;
-        case 8:
-          pitchName = "G#";
-          break;
-        case 9:
-          pitchName = "A";
-          break;
-        case 10:
-          pitchName = "A#";
-          break;
-        case 11:
-          pitchName = "B";
-          break;
-        default:
-          pitchName = "missing";
-          break;
-      }
-      let octaveIndex = Math.floor(noteIndex / 12) - 5;
-      return pitchName + octaveIndex;
-    },
-
     getMarkerType(c) {
       return c % 32 == 0 ? "bar" : c % 8 == 0 ? "beat" : "";
+    },
+
+    noteName(noteIndex) {
+      return getNoteName(noteIndex);
     },
 
     getRowType(r) {

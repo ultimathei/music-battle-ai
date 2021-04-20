@@ -16,7 +16,12 @@ import {
   SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE,
   SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE,
   SESSION_ACTION_CLEAR_SESSION,
+  SESSION_ACTION_PLAY_CURRENT_NOTES,
+  INSTRUMENT_ACTION_START_NOTE,
+  INSTRUMENT_ACTION_END_NOTE,
 } from "../actions";
+
+const INSTRUMENT_STORE_LOC = "instrumentStore/";
 
 export default {
   namespaced: true,
@@ -41,6 +46,29 @@ export default {
   },
 
   actions: {
+    /**
+     * Playback of current pattern sound
+     * @param {*} time 
+     */
+    [SESSION_ACTION_PLAY_CURRENT_NOTES]({state}, currentTime) {
+      for (let note of state.currentPattern) {
+        if(note.start && note.start == currentTime) {
+          // play sound for note
+          this.dispatch(
+            INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+            note.note
+          );
+        }
+        else if(note.end && note.end == currentTime) {
+          // stop sound for note
+          this.dispatch(
+            INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+            note.note
+          );
+        }
+      }
+    },
+
     [SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE]({state}) {
       if (!state.userTurn) return; // safety check
 

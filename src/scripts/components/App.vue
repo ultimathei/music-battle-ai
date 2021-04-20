@@ -10,7 +10,7 @@
         <Metronome class="header-controls__control" />
       </div>
     </div>
-    <Sequencer class="app__pattern-sequence"/>
+    <Sequencer class="app__pattern-sequence" />
     <MusicSheet class="app__music-sheet-wrap" />
     <Piano class="app__piano" ref="piano" />
     <p class="app__footer">
@@ -26,6 +26,11 @@ import MidiController from "./midi/midi-controller.vue";
 import MusicSheet from "./music-sheet/music-sheet.vue";
 import Piano from "./piano/Piano.vue";
 import Sequencer from "./music-sheet/sequencer.vue";
+import { mapActions } from "vuex";
+import {
+  INSTRUMENT_ACTION_START_NOTE,
+  INSTRUMENT_ACTION_END_NOTE,
+} from "../store/actions";
 
 export default {
   name: "app",
@@ -38,6 +43,10 @@ export default {
     Sequencer,
   },
   methods: {
+    ...mapActions("instrumentStore", [
+      INSTRUMENT_ACTION_START_NOTE,
+      INSTRUMENT_ACTION_END_NOTE
+    ]),
     /**
      * Updating the keyboard UI to refelct changes in currently played MIDI notes.
      */
@@ -46,11 +55,16 @@ export default {
       let pressed_key_DOM = this.$el.querySelector(
         `[data-note-index='${payload.note}']`
       );
-      if (pressed_key_DOM)
+      if (pressed_key_DOM) {
         pressed_key_DOM.setAttribute(
           "data-piano-key-pressed",
           payload.on_message
         );
+
+        // play/stop sound for note
+        if (payload.on_message) this[INSTRUMENT_ACTION_START_NOTE](payload.note);
+        else this[INSTRUMENT_ACTION_END_NOTE](payload.note);
+      }
     },
   },
 };

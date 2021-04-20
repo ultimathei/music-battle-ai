@@ -91,7 +91,7 @@ export default {
       switch (command) {
         // noteOn
         case 144:
-          if(note < 60 || note >= 72){
+          if(note < 60 || note > 72){
             return;
           }
           else if (velocity > 0) {
@@ -135,7 +135,7 @@ export default {
       else data.end = this.convertToPatternTime(currentMusicalTime);
       // send data here to store
       this[SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](data);
-      this.printNoteSignal(on_message, currentMusicalTime)
+      // this.printNoteSignal(on_message, currentMusicalTime)
     },
 
     /**

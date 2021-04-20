@@ -24,9 +24,12 @@ import {
   SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE,
   SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE,
   SESSION_ACTION_CLEAR_SESSION,
+  SESSION_ACTION_PLAY_CURRENT_NOTES,
+  INSTRUMENT_ACTION_END_ALL_NOTES,
 } from "../actions";
 
 const SESSION_STORE_LOC = "sessionStore/";
+const INSTRUMENT_STORE_LOC = "instrumentStore/";
 
 export default {
   namespaced: true,
@@ -163,6 +166,12 @@ export default {
           state.currentDemisemiquaver + 1
         );
       }
+
+      // dispatch action to sessionStore to activate notes now
+      this.dispatch(
+        SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
+        state.currentBar * 32 + state.currentDemisemiquaver
+      );
     },
 
     /**
@@ -260,6 +269,8 @@ export default {
      */
     [CLOCK_ACTION_STOP]({ state, commit }) {
       commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, false);
+      // dispatch action to sessionStore to activate notes now
+      this.dispatch(INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_ALL_NOTES);
       // if precount is not over yet
       if (state.precountDemisemiquaver < 32) {
         state.precountDemisemiquaver = 0;

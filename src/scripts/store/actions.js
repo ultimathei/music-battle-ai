@@ -26,3 +26,10 @@ export const SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE =
   "session_action_generate_first_half_response";
 export const SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE =
   "session_action_generate_second_half_response";
+export const SESSION_ACTION_PLAY_CURRENT_NOTES =
+  "session_action_play_current_notes";
+
+// -- instrument store --
+export const INSTRUMENT_ACTION_START_NOTE = "instrument_mutation_start_note";
+export const INSTRUMENT_ACTION_END_NOTE = "instrument_mutation_end_note";
+export const INSTRUMENT_ACTION_END_ALL_NOTES = "instrument_mutation_end_all_notes";
