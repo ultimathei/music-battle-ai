@@ -1,7 +1,7 @@
 /**
  * Returns a string associated to tha given note (in given octave)
  */
- export const getNoteName = (noteIndex) => {
+export const getNoteName = (noteIndex) => {
   let pitchName;
   switch (noteIndex % 12) {
     case 0:
@@ -46,4 +46,14 @@
   }
   let octaveIndex = Math.floor(noteIndex / 12) - 2;
   return pitchName + octaveIndex;
-}
+};
+
+/**
+ * Converts a note object to a single int value
+ */
+export const convertToPatternTime = (musicalTime) => {
+  return (
+    // musicalTime.pattern * 128 +
+    musicalTime.bar * 32 + musicalTime.demisemi
+  );
+};

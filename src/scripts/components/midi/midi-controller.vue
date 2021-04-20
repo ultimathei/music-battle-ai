@@ -10,6 +10,7 @@
 import MidiIcon from "../graphics/midi.svg";
 import { mapGetters, mapMutations } from "vuex";
 import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../../store/mutations";
+import {convertToPatternTime} from "../../utils/utils";
 
 export default {
   name: "MidiController",
@@ -21,7 +22,7 @@ export default {
   },
   computed: {
     ...mapGetters("sessionStore", ["userTurn"]),
-    ...mapGetters("mainClockStore", ["currentMusicalTime"]),
+    ...mapGetters("mainClockStore", ["currentMusicalTime", "isRunning"]),
   },
   methods: {
     /**
@@ -72,7 +73,7 @@ export default {
      */
     getMIDIMessage(midiMsg) {
       // early exit if its not the user's turn
-      if(!this.userTurn) return;
+      if(this.isRunning && !this.userTurn) return;
 
       // console.log(midiMsg);
       const command = midiMsg.data[0];
@@ -122,7 +123,8 @@ export default {
       // emit to parent so the dom can be updated
       this.$emit("note-toggle", payload);
       // record to store at current time
-      this.recordNoteChanges(on_message, note, this.currentMusicalTime);
+      if(this.isRunning && this.userTurn)
+        this.recordNoteChanges(on_message, note, this.currentMusicalTime);
     },
 
     /**
@@ -131,21 +133,11 @@ export default {
     recordNoteChanges(on_message, note, currentMusicalTime) {
       let data = { note: note };
       if (on_message)
-        data.start = this.convertToPatternTime(currentMusicalTime);
-      else data.end = this.convertToPatternTime(currentMusicalTime);
+        data.start = convertToPatternTime(currentMusicalTime);
+      else data.end = convertToPatternTime(currentMusicalTime);
       // send data here to store
       this[SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](data);
       // this.printNoteSignal(on_message, currentMusicalTime)
-    },
-
-    /**
-     * Converts a note object to a single int value
-     */
-    convertToPatternTime(musicalTime) {
-      return (
-        // musicalTime.pattern * 128 + 
-        musicalTime.bar * 32 + musicalTime.demisemi
-      );
     },
 
     /**
