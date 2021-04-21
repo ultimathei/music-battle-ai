@@ -36,8 +36,6 @@
       The app currently is only supported with Google Chrome
     </div>
 
-    <!-- <div @click="goToRoute">Go to Battle</div> -->
-
     <div class="loading-page__credits | credits">
       <p class="credits__text">Photo by</p>
       <a
