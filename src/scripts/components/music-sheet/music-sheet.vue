@@ -1,100 +1,83 @@
 <template>
-  <div>
-    <div
-      class="app__start-widget | start-widget"
-      v-if="!hasBasePattern && !isRunning"
-    >
-      <div class="start-widget__box">
-        <p class="start-widget__title">Hey, Mate!</p>
-        <p class="start-widget__subtitle">
-          Record the first four bars of the tune and let's battle!
-        </p>
-        <div class="start-widget__button" @click="startRecord">Start</div>
+  <div :class="'| music-sheet'">
+    <div class="music-sheet__side">
+      <div class="music-sheet__header">
+        <NotesIcon class="music-sheet__header-icon" />
+      </div>
+      <div
+        class="music-sheet__side-row"
+        v-for="r of visibleNotes"
+        :key="`row-${r}`"
+      >
+        {{ noteName(r) }}
       </div>
     </div>
-    <div class="app__music-sheet | music-sheet">
-      <div class="music-sheet__side">
-        <div class="music-sheet__header">
-          <NotesIcon class="music-sheet__header-icon" />
-        </div>
+    <div class="music-sheet__body">
+      <div class="music-sheet__base-grid-cols | music-sheet-grid-cols">
         <div
-          class="music-sheet__side-row"
-          v-for="r of visibleNotes"
-          :key="`row-${r}`"
+          v-for="c in 128"
+          :key="`col-${c}`"
+          :data-ms-col-marker="getMarkerType(c)"
+          class="music-sheet-grid-cols__col"
+        ></div>
+      </div>
+
+      <div class="music-sheet__cursor" :style="cursorLeftPosStyle"></div>
+      <div class="music-sheet__header">
+        <div
+          v-for="i in 4"
+          :key="`bar-count-${i}`"
+          class="music-sheet__header-bar"
         >
-          {{ noteName(r) }}
+          {{ i }}
         </div>
       </div>
-      <div class="music-sheet__body">
-        <div class="music-sheet__base-grid-cols | music-sheet-grid-cols">
+      <div class="music-sheet__content">
+        <!-- current pattern -->
+        <div class="music-sheet__notes | pattern-notes">
           <div
-            v-for="c in 128"
-            :key="`col-${c}`"
-            :data-ms-col-marker="getMarkerType(c)"
-            class="music-sheet-grid-cols__col"
+            class="pattern-notes__note"
+            v-for="(note, index) in currentPattern"
+            :key="`note-${index}`"
+            :style="displayNote(note)"
+            :data-note-user-type="userTurn"
           ></div>
         </div>
 
-        <div class="music-sheet__cursor" :style="cursorLeftPosStyle"></div>
-        <div class="music-sheet__header">
+        <!-- previous pattern -->
+        <div class="music-sheet__notes | pattern-notes">
           <div
-            v-for="i in 4"
-            :key="`bar-count-${i}`"
-            class="music-sheet__header-bar"
-          >
-            {{ i }}
-          </div>
+            class="pattern-notes__note | pattern-notes__note--previous"
+            v-for="(note, index) in previousPattern"
+            :key="`note-${index}`"
+            :style="displayNote(note)"
+            :data-note-user-type="!userTurn"
+          ></div>
         </div>
-        <div class="music-sheet__content">
-          <!-- current pattern -->
-          <div class="music-sheet__notes | pattern-notes">
-            <div
-              class="pattern-notes__note"
-              v-for="(note, index) in currentPattern"
-              :key="`note-${index}`"
-              :style="displayNote(note)"
-              :data-note-user-type="userTurn"
-            ></div>
-          </div>
 
-          <!-- previous pattern -->
-          <div class="music-sheet__notes | pattern-notes">
-            <div
-              class="pattern-notes__note | pattern-notes__note--previous"
-              v-for="(note, index) in previousPattern"
-              :key="`note-${index}`"
-              :style="displayNote(note)"
-              :data-note-user-type="!userTurn"
-            ></div>
-          </div>
-
-          <div class="music-sheet__base-grid-rows | music-sheet-grid-rows">
-            <div
-              class="music-sheet-grid-rows__row"
-              v-for="(r, index) of visibleNotes"
-              :key="`col-${index}`"
-              :data-ms-row-type="getRowType(r)"
-            ></div>
-          </div>
+        <div class="music-sheet__base-grid-rows | music-sheet-grid-rows">
+          <div
+            class="music-sheet-grid-rows__row"
+            v-for="(r, index) of visibleNotes"
+            :key="`col-${index}`"
+            :data-ms-row-type="getRowType(r)"
+          ></div>
         </div>
       </div>
-      <div class="music-sheet__precount-wrap" v-if="isPrecountVisible">
-        <div class="music-sheet__precount">{{ precountDisplayValue }}</div>
-      </div>
+    </div>
+    <div class="music-sheet__precount-wrap" v-if="isPrecountVisible">
+      <div class="music-sheet__precount">{{ precountDisplayValue }}</div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import BattleIcon from "../graphics/match.svg";
 import NotesIcon from "../graphics/notes.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
 import { getNoteName } from "../../utils/utils";
-import {
-  CLOCK_ACTION_STARTSTOP,
-} from "../../store/actions";
 
 export default {
   name: "MusicSheet",
@@ -115,7 +98,6 @@ export default {
       "currentDemisemiquaver",
       "isRunning",
       "precountDemisemiquaver",
-      "hasBasePattern",
     ]),
     ...mapGetters("sessionStore", ["currentPattern", "session", "userTurn"]),
     currentCursorPos() {
@@ -139,9 +121,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions("mainClockStore", {
-      'startRecord': CLOCK_ACTION_STARTSTOP,
-    }),
     displayNote(note) {
       // don't display if no end and cursor is behind the start of note
       if (!note.end && note.start > this.currentCursorPos) return {};

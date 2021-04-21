@@ -4,3 +4,20 @@
  * This contains the typography, fonts and typefaces for the website.
  */
 
+@mixin typography-1-s {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+}
+@mixin typography-1-m {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+}
+@mixin typography-1-l {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+}
+@mixin typography-1-xl {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+}
+

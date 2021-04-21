@@ -4,7 +4,8 @@
 * A list of components used across the site
 */
 
-@import './app/app';
+@import './pages/app';
+@import './pages/loading-page';
 @import './generic/generic';
 @import './music-sheet/music-sheet';
 @import './pattern-sequence/pattern-sequence';

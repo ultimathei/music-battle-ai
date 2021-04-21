@@ -11,7 +11,13 @@
       </div>
     </div>
     <Sequencer class="app__pattern-sequence" />
-    <MusicSheet class="app__music-sheet-wrap" />
+    <div class="app__music-sheet-wrap">
+      <StartWidget
+        class="app__start-widget"
+        v-if="!hasBasePattern && !isRunning"
+      />
+      <MusicSheet class="app__music-sheet" />
+    </div>
     <Piano class="app__piano" ref="piano" />
     <p class="app__footer">
       created by Mate Krisztian for the final year project QMUL @ 2021
@@ -26,7 +32,9 @@ import MidiController from "./midi/midi-controller.vue";
 import MusicSheet from "./music-sheet/music-sheet.vue";
 import Piano from "./piano/Piano.vue";
 import Sequencer from "./music-sheet/sequencer.vue";
-import { mapActions } from "vuex";
+import StartWidget from "./start-widget/start-widget.vue";
+
+import { mapActions, mapGetters } from "vuex";
 import {
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
@@ -42,17 +50,21 @@ export default {
     MusicSheet,
     Piano,
     Sequencer,
+    StartWidget,
   },
   data() {
     return {
-      musicalScale: "Cmaj7",
+      // musicalScale: "Cmaj7",
       magentaModel: null,
       player: new core.Player(),
-      responseSequenceArray: [],
     };
   },
+  computed: {
+    ...mapGetters("mainClockStore", ["isRunning", "hasBasePattern"]),
+  },
   mounted() {
-    this.initModel(); // maybe store it in local storage, so to not loadit every time
+    // maybe store it in local storage, so to not load it every time
+    this.initModel();
   },
   methods: {
     ...mapActions("instrumentStore", [
@@ -60,7 +72,7 @@ export default {
       INSTRUMENT_ACTION_END_NOTE,
     ]),
     ...mapActions("sessionStore", {
-      'initModel': SESSION_ACTION_INIT_MODEL_VAE
+      initModel: SESSION_ACTION_INIT_MODEL_VAE,
     }),
     /**
      * Updating the keyboard UI to refelct changes in currently played MIDI notes.

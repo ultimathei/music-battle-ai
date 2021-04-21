@@ -115,7 +115,7 @@ export default {
     },
 
     [SESSION_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
-      let numberOfSamples = 6;
+      let numberOfSamples = 2;
       let similarity = 0.85;
       state.magentaModel
         .similar(noteSequence, numberOfSamples, similarity)
@@ -249,7 +249,8 @@ export default {
       state.currentPattern = [];
       state.userTurn = true;
       state.currentPattern = [];
-      state.responsePatternHalf = [];
+      // state.responsePatternHalf = [];
+      state.responseSequenceArray = [];
       state.session = [];
     },
   },

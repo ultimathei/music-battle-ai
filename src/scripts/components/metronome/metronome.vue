@@ -11,7 +11,7 @@
     </div> -->
     <div class="playback_control">
       <PauseIcon v-if="isRunning" @click="startStop" />
-      <RecordIcon v-else @click="startStop" />
+      <PlayIcon v-else @click="startStop" />
     </div>
     <div class="playback_control">
       <RestartIcon @click="backToStart" />

@@ -1,0 +1,133 @@
+.loading-page {
+  align-items: center;
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100vh;
+  justify-content: center;
+  width: 100vw;
+  padding: 0 30px;
+
+  &::before {
+    content: "";
+    background-image: url("../images/loading_bg.jpg");
+    background-size: cover;
+    background-position: bottom center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.75;
+  }
+
+  &__logo {
+    width: 300px;
+    max-width: 80%;
+    padding: 20px;
+  }
+
+  &__login-form{
+    width: 300px;
+  }
+
+  &__unsupported-browser{
+    @include typography-1-m;
+    font-weight: 300;
+    width: 300px;
+    text-align: center;
+  }
+
+  &__credits {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.login-form{
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+
+  &__field{
+    backdrop-filter: blur(5px); // glass effect
+    background-color: rgba(white, 0.15);
+    border-radius: 999px;
+    border: none;
+    height: 30px;
+    margin: 5px 0;
+    width: 80%;
+    padding: 5px 10px;
+    color: $color-brand-background;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  &__field-icon{
+    width: 15px;
+    height: 100%;
+    flex-shrink: 0;
+    fill: $color-brand-background;
+    opacity: 0.6;
+  }
+  &__field-input{
+    background: transparent;
+    border: none;
+    padding: 0 8px;
+    flex-grow: 1;
+    font-weight: 500;
+
+    &::placeholder{
+      color: rgba($color-brand-background, 0.5);
+    }
+  }
+
+  &__button{
+    @include typography-1-l;
+    border-radius: 5px;
+    min-width: 100px;
+    height: 30px;
+    background-color: $color-brand-accent-1;
+    color: $color-brand-background;
+    padding: 5px 15px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    cursor: pointer;
+    mix-blend-mode: multiply;
+
+    &:hover{
+      background-color: $color-brand-accent-2;
+    }
+
+    &[data-disabled="true"]{
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+}
+
+.credits {
+  @include typography-1-s;
+  background: linear-gradient(transparent, black);
+
+  &__text,
+  &__link {
+    padding: 10px 0.2em;
+  }
+
+  &__link {
+    color: $color-brand-accent-2;
+
+    &--main {
+      color: $color-brand-accent-1;
+    }
+  }
+}
