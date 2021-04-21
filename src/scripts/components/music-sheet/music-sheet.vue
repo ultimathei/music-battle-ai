@@ -2,7 +2,7 @@
   <div>
     <div class="app__start-widget | start-widget">
       <div class="start-widget__box">
-        <p class="start-widget__title">Hey there, Mate!</p>
+        <p class="start-widget__title">Hey, Mate!</p>
         <p class="start-widget__subtitle">
           Record the first four bars of the tune and let's battle!
         </p>
