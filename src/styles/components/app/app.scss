@@ -61,7 +61,7 @@
 
   &__box {
     align-items: center;
-    // background-color: rgba($color-brand-accent-1, 0.25);
+    background-color: $color-brand-neutral-2;
     border-radius: 20px;
     box-shadow: 0 0 30px rgba(black, 0.5);
     display: flex;
@@ -74,7 +74,7 @@
   }
 
   &__title{
-    color: $color-brand-neutral-2;
+    color: $color-brand-background;
     font-family: "Montserrat", sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -84,7 +84,7 @@
   }
 
   &__subtitle{
-    color: $color-brand-neutral-2;
+    color: $color-brand-background;
     font-family: "Montserrat", sans-serif;
     font-size: 12px;
     max-width: 80%;

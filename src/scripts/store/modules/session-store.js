@@ -23,12 +23,19 @@ import {
   SESSION_ACTION_GENERATE_SIMILARS,
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
+  SESSION_ACTION_PREVIEW_BASE_PATTERN,
+  SESSION_ACTION_CONFIRM_BASE_PATTERN,
 } from "../actions";
 import {
   improv_checkpoint,
   musicVAE_checkpoint_2bar,
+  musicVAE_checkpoint_med_4bar,
   musicVAE_checkpoint,
 } from "../../services/magenta-services";
+import {
+  convertToMagentaSample,
+  convertFromMagentaSequence,
+} from "../../utils/utils";
 
 const INSTRUMENT_STORE_LOC = "instrumentStore/";
 
@@ -40,11 +47,13 @@ export default {
     currentPattern: [],
     responsePatternHalf: [], // a list of notes in the response pattern (for first half)
     session: [], // a list of alternating user/response patterns
-    
+
     magentaModel: null, // new
     responseSequenceArray: [], // new
     currentPatternFirstHalf: null,
     currentPatternSecondHalf: null, // maybe not needed, reuse firsthalf
+    isBaseConfirmed: false,
+    coreNoteSequence: null,
   }),
 
   getters: {
@@ -57,16 +66,19 @@ export default {
     currentPattern(state) {
       return state.currentPattern;
     },
-    magentaModel(state){
+    magentaModel(state) {
       return state.magentaModel;
+    },
+    isBaseConfirmed(state) {
+      return state.isBaseConfirmed;
     },
   },
 
   actions: {
     ////// IDEA ///////
     // idea for VAE interpolate
-    // 1. take user's input first 
-    //  1.a from_sequence = user input notes 
+    // 1. take user's input first
+    //  1.a from_sequence = user input notes
     //  1.b determine scale eg. scale = 'CM'
     // 2. get a sample: to_sequence = model.sample(1, 1.0, [scale]) ?? how to sepcify scale?
     // 3. results = vae.interpolate([from_sequence, to_sequence], num_of_interppolation_steps, 1.0, [scale])
@@ -75,20 +87,25 @@ export default {
     /**
      * Initialise the model to RNN
      */
-    [SESSION_ACTION_INIT_MODEL_RNN]({ state }) {
+    [SESSION_ACTION_INIT_MODEL_RNN]({ state, dispatch }) {
       state.magentaModel = new music_rnn.MusicRNN(improv_checkpoint);
-      state.magentaModel.initialize().then(() => console.log("rnn init done"));
+      state.magentaModel.initialize().then(() => {
+        console.log("rnn init done");
+        dispatch(SESSION_ACTION_GENERATE_CONTINUATION);
+      });
     },
 
     /**
      * Initialise the model to VAE
      */
     [SESSION_ACTION_INIT_MODEL_VAE]({ state }) {
-      state.magentaModel = new music_vae.MusicVAE(musicVAE_checkpoint);
-      state.magentaModel.initialize().then(() => console.log("vae init done"));
+      state.magentaModel = new music_vae.MusicVAE(musicVAE_checkpoint_med_4bar);
+      state.magentaModel.initialize().then(() => {
+        console.log("vae init done");
+      });
     },
 
-    [SESSION_ACTION_GENERATE_CONTINUATION]({state}) {
+    [SESSION_ACTION_GENERATE_CONTINUATION]({ state }) {
       state.magentaModel
         .continueSequence(sampleSequence, 60, 0.5, ["CM"])
         .then((resp) => {
@@ -97,15 +114,15 @@ export default {
         });
     },
 
-    [SESSION_ACTION_GENERATE_SIMILARS]({state}) {
-      let numberOfSamples = 2;
-      let similarity = 0.9;
+    [SESSION_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
+      let numberOfSamples = 6;
+      let similarity = 0.85;
       state.magentaModel
-        .similar(state.coreNoteSequence, numberOfSamples, similarity)
+        .similar(noteSequence, numberOfSamples, similarity)
         .then((samples) => {
           // state.player.start(samples[0]);
           state.responseSequenceArray = samples;
-          console.log(state.responseSequenceArray[0].notes);
+          console.log(state.responseSequenceArray);
         });
     },
 
@@ -131,6 +148,39 @@ export default {
       }
     },
 
+    // TEST
+    [SESSION_ACTION_PREVIEW_BASE_PATTERN]({ state, commit }) {
+      console.log("confirm/edit here..");
+      // closing off unfinished notes
+      commit("closeUnfinishedNotes");
+
+      // ask to confirm/edit?
+
+      // // push to session
+      // const patternToArchive = {
+      //   type: "user",
+      //   pattern: [...state.currentPattern],
+      // };
+      // state.session.push(patternToArchive);
+
+      // // generate responses once confirmed
+      // // ..
+    },
+
+    [SESSION_ACTION_CONFIRM_BASE_PATTERN]({ state, dispatch }) {
+      // init model
+      // set isLoadingSession = true;
+      dispatch(
+        SESSION_ACTION_GENERATE_SIMILARS,
+        convertToMagentaSample(state.currentPattern, 120, 8)
+      ).then(() => {
+        state.isBaseConfirmed = true;
+        // set isloadingSession = false;
+        // start here
+      });
+    },
+
+    // not used now
     [SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE]({ state }) {
       if (!state.userTurn) return; // safety check
 
@@ -153,19 +203,15 @@ export default {
       }, 1000);
     },
 
-    [SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE]({ state }) {
+    // modified now
+    [SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE]({ state, commit }) {
       // transitioning from user turn to response turn..
       if (state.userTurn) {
         // get notes in the second half of the pattern
         // generate the second half of the response based on it
         // when done, add it to current pattern (updating it)
         console.log("generate second half response here..");
-        // 0. closing unfinished notes
-        for (let n of state.currentPattern) {
-          if (!n.end) {
-            n.end = 128;
-          }
-        }
+        commit("closeUnfinishedNotes");
         // 1. push old previous current pattern to session
         const patternToArchive = {
           type: "user",
@@ -174,20 +220,14 @@ export default {
         state.session.push(patternToArchive);
 
         // 2. response pattern becomes the new current pattern
-        state.currentPattern = [...state.responsePatternHalf];
-        // clear response pattern
-        state.responsePatternHalf = [];
-
-        // this should be asynch!
-        // get second half of response while playing the first half already
-        setTimeout(() => {
-          state.currentPattern = patternToArchive.pattern.map((note) => {
-            return {
-              ...note,
-              note: note.note + 1,
-            };
-          });
-        }, 1000);
+        // state.currentPattern = [...state.responsePatternHalf];
+        if (state.responseSequenceArray.length < 1) {
+          // stop playback
+          // TODO
+        }
+        state.currentPattern = convertFromMagentaSequence(
+          state.responseSequenceArray.shift()
+        );
       } else {
         // transitioning from response turn to user turn..
         // 1. push old current pattern to session
@@ -243,6 +283,17 @@ export default {
             end: data.end,
           };
           return;
+        }
+      }
+    },
+
+    closeUnfinishedNotes(state) {
+      for (let n of state.currentPattern) {
+        if (!n.end) {
+          n.end = 128;
+        }
+        if (!n.start) {
+          n.start = 0;
         }
       }
     },

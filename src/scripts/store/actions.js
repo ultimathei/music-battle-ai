@@ -33,6 +33,8 @@ export const SESSION_ACTION_INIT_MODEL_RNN = "session_action_init_model_rnn";
 export const SESSION_ACTION_INIT_MODEL_VAE = "session_action_init_model_vae";
 export const SESSION_ACTION_GENERATE_CONTINUATION = "session_action_generate_continuation";
 export const SESSION_ACTION_GENERATE_SIMILARS = "session_action_generate_similars";
+export const SESSION_ACTION_PREVIEW_BASE_PATTERN = "session_action_preview_base_pattern";
+export const SESSION_ACTION_CONFIRM_BASE_PATTERN = "session_action_confirm_base_pattern";
 
 // -- instrument store --
 export const INSTRUMENT_ACTION_START_NOTE = "instrument_mutation_start_note";

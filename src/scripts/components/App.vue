@@ -30,6 +30,7 @@ import { mapActions } from "vuex";
 import {
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
+  SESSION_ACTION_INIT_MODEL_VAE,
 } from "../store/actions";
 
 export default {
@@ -50,11 +51,17 @@ export default {
       responseSequenceArray: [],
     };
   },
+  mounted() {
+    this.initModel(); // maybe store it in local storage, so to not loadit every time
+  },
   methods: {
     ...mapActions("instrumentStore", [
       INSTRUMENT_ACTION_START_NOTE,
       INSTRUMENT_ACTION_END_NOTE,
     ]),
+    ...mapActions("sessionStore", {
+      'initModel': SESSION_ACTION_INIT_MODEL_VAE
+    }),
     /**
      * Updating the keyboard UI to refelct changes in currently played MIDI notes.
      */

@@ -24,6 +24,14 @@
           :type="userTurn ? 'human' : 'robot'"
           :index="session.length"
         />
+        <div
+          class="pattern-sequence__controls"
+          v-if="hasBasePattern && !isBaseConfirmed"
+        >
+          <div class="pattern-sequence__control" @click="confirm">Confirm</div>
+          <div class="pattern-sequence__control">Quantize</div>
+          <div class="pattern-sequence__control">Discard</div>
+        </div>
       </div>
       <div
         class="pattern-sequence__arrow"
@@ -36,11 +44,16 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import BattleIcon from "../graphics/match.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
 import SequencerItem from "./sequencer-item.vue";
+
+import {
+  CLOCK_ACTION_STARTSTOP,
+  SESSION_ACTION_CONFIRM_BASE_PATTERN,
+} from "../../store/actions";
 
 export default {
   name: "Sequencer",
@@ -51,7 +64,21 @@ export default {
     SequencerItem,
   },
   computed: {
-    ...mapGetters("sessionStore", ["session", "userTurn"]),
+    ...mapGetters("sessionStore", ["session", "userTurn", "isBaseConfirmed"]),
+    ...mapGetters("mainClockStore", ["hasBasePattern"]),
+  },
+  methods: {
+    ...mapActions("mainClockStore", {
+      'startStop': CLOCK_ACTION_STARTSTOP,
+    }),
+    ...mapActions("sessionStore", {
+      'confirmBase': SESSION_ACTION_CONFIRM_BASE_PATTERN,
+    }),
+
+    confirm() {
+      this.confirmBase();
+      // this.startStop();
+    },
   },
 };
 </script>

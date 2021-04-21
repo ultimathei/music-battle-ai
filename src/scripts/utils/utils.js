@@ -93,7 +93,17 @@ export const convertToMagentaSample = (pattern, tempo, stepsPerQuarter) => {
   return {
     tempos: [{ qpm: tempo }],
     quantizationInfo: { stepsPerQuarter: stepsPerQuarter },
-    totalQuantizedSteps: "32",
+    totalQuantizedSteps: "128",
     notes: notes,
   };
 };
+
+export const convertFromMagentaSequence = (magentaSeq) => {
+  return magentaSeq.notes.map(note => {
+    return {
+      note: note.pitch,
+      start: note.quantizedStartStep,
+      end: note.quantizedEndStep
+    }
+  })
+}

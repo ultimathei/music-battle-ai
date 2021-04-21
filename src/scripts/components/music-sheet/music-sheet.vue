@@ -1,14 +1,15 @@
 <template>
   <div>
-    <div class="app__start-widget | start-widget">
+    <div
+      class="app__start-widget | start-widget"
+      v-if="!hasBasePattern && !isRunning"
+    >
       <div class="start-widget__box">
         <p class="start-widget__title">Hey, Mate!</p>
         <p class="start-widget__subtitle">
           Record the first four bars of the tune and let's battle!
         </p>
-        <div class="start-widget__button">
-          Start
-        </div>
+        <div class="start-widget__button" @click="startRecord">Start</div>
       </div>
     </div>
     <div class="app__music-sheet | music-sheet">
@@ -85,12 +86,15 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import BattleIcon from "../graphics/match.svg";
 import NotesIcon from "../graphics/notes.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
 import { getNoteName } from "../../utils/utils";
+import {
+  CLOCK_ACTION_STARTSTOP,
+} from "../../store/actions";
 
 export default {
   name: "MusicSheet",
@@ -111,6 +115,7 @@ export default {
       "currentDemisemiquaver",
       "isRunning",
       "precountDemisemiquaver",
+      "hasBasePattern",
     ]),
     ...mapGetters("sessionStore", ["currentPattern", "session", "userTurn"]),
     currentCursorPos() {
@@ -134,6 +139,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions("mainClockStore", {
+      'startRecord': CLOCK_ACTION_STARTSTOP,
+    }),
     displayNote(note) {
       // don't display if no end and cursor is behind the start of note
       if (!note.end && note.start > this.currentCursorPos) return {};

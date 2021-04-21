@@ -26,6 +26,7 @@ import {
   SESSION_ACTION_CLEAR_SESSION,
   SESSION_ACTION_PLAY_CURRENT_NOTES,
   INSTRUMENT_ACTION_END_ALL_NOTES,
+  SESSION_ACTION_PREVIEW_BASE_PATTERN,
 } from "../actions";
 
 const SESSION_STORE_LOC = "sessionStore/";
@@ -49,6 +50,7 @@ export default {
     tempo: 120, // fixed value for now
 
     precountDemisemiquaver: 0,
+    hasBasePattern: false, // new
   }),
 
   getters: {
@@ -79,6 +81,9 @@ export default {
     },
     precountDemisemiquaver(state) {
       return state.precountDemisemiquaver;
+    },
+    hasBasePattern(state) {
+      return state.hasBasePattern;
     },
   },
 
@@ -119,7 +124,7 @@ export default {
      * Advanced the time to the next bip (by demisemiquaver)
      * @param {*} param0
      */
-    [CLOCK_ACTION_NEXT_BIP]({ commit, state }) {
+    [CLOCK_ACTION_NEXT_BIP]({ commit, state, dispatch}) {
       const secondsPerBeat = 60.0 / state.tempo; // as tempo is in bpm
       commit(
         CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
@@ -138,28 +143,42 @@ export default {
 
         if (state.currentBar + 1 == 4) {
           commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
-          // update pattern ind in store
-          commit(
-            CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
-            state.currentPatternInd + 1
-          );
-          // push current pattern to session, clear current pattern
-          // end of whole pattern
-          this.dispatch(
-            SESSION_STORE_LOC + SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE
-          );
+          
+          // if no base pattern yet
+          // add this pattern to basePattern
+          // and set hasBasePattern to true
+          // stop the playback
+          // (display confirm/edit pattern menu) -- in session store
+          if(!state.hasBasePattern) {
+            this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_PREVIEW_BASE_PATTERN);
+            state.hasBasePattern = true;
+            dispatch(CLOCK_ACTION_STOP);
+          }
+          else{
+            // else (we already have basepattern)
+            // update pattern ind in store
+            commit(
+              CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
+              state.currentPatternInd + 1
+            );
+            // push current pattern to session, clear current pattern
+            // end of whole pattern
+            this.dispatch(
+              SESSION_STORE_LOC + SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE
+            );
+          }
         } else {
           commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, state.currentBar + 1);
         }
         // if end of half pattern
         // add half pattern to current pattern?
-        if (state.currentBar == 2) {
-          // generate first half of response
-          // end of half pattern
-          this.dispatch(
-            SESSION_STORE_LOC + SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE
-          );
-        }
+        // if (state.currentBar == 2) {
+        //   // generate first half of response
+        //   // end of half pattern
+        //   this.dispatch(
+        //     SESSION_STORE_LOC + SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE
+        //   );
+        // }
       } else {
         commit(
           CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
