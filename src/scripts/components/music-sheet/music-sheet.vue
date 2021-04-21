@@ -1,5 +1,16 @@
 <template>
   <div>
+    <div class="app__start-widget | start-widget">
+      <div class="start-widget__box">
+        <p class="start-widget__title">Hey there, Mate!</p>
+        <p class="start-widget__subtitle">
+          Record the first four bars of the tune and let's battle!
+        </p>
+        <div class="start-widget__button">
+          Start
+        </div>
+      </div>
+    </div>
     <div class="app__music-sheet | music-sheet">
       <div class="music-sheet__side">
         <div class="music-sheet__header">
@@ -67,7 +78,7 @@
         </div>
       </div>
       <div class="music-sheet__precount-wrap" v-if="isPrecountVisible">
-        <div class="music-sheet__precount">{{precountDisplayValue}}</div>
+        <div class="music-sheet__precount">{{ precountDisplayValue }}</div>
       </div>
     </div>
   </div>
@@ -79,7 +90,7 @@ import BattleIcon from "../graphics/match.svg";
 import NotesIcon from "../graphics/notes.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
-import {getNoteName} from "../../utils/utils";
+import { getNoteName } from "../../utils/utils";
 
 export default {
   name: "MusicSheet",
@@ -118,8 +129,8 @@ export default {
     isPrecountVisible() {
       return this.isRunning && this.precountDisplayValue > 0;
     },
-    precountDisplayValue(){
-      return 4-Math.floor(this.precountDemisemiquaver / 8);
+    precountDisplayValue() {
+      return 4 - Math.floor(this.precountDemisemiquaver / 8);
     },
   },
   methods: {

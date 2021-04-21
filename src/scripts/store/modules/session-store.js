@@ -17,9 +17,18 @@ import {
   SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE,
   SESSION_ACTION_CLEAR_SESSION,
   SESSION_ACTION_PLAY_CURRENT_NOTES,
+  SESSION_ACTION_INIT_MODEL_RNN,
+  SESSION_ACTION_INIT_MODEL_VAE,
+  SESSION_ACTION_GENERATE_CONTINUATION,
+  SESSION_ACTION_GENERATE_SIMILARS,
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
 } from "../actions";
+import {
+  improv_checkpoint,
+  musicVAE_checkpoint_2bar,
+  musicVAE_checkpoint,
+} from "../../services/magenta-services";
 
 const INSTRUMENT_STORE_LOC = "instrumentStore/";
 
@@ -31,6 +40,11 @@ export default {
     currentPattern: [],
     responsePatternHalf: [], // a list of notes in the response pattern (for first half)
     session: [], // a list of alternating user/response patterns
+    
+    magentaModel: null, // new
+    responseSequenceArray: [], // new
+    currentPatternFirstHalf: null,
+    currentPatternSecondHalf: null, // maybe not needed, reuse firsthalf
   }),
 
   getters: {
@@ -43,23 +57,71 @@ export default {
     currentPattern(state) {
       return state.currentPattern;
     },
+    magentaModel(state){
+      return state.magentaModel;
+    },
   },
 
   actions: {
+    ////// IDEA ///////
+    // idea for VAE interpolate
+    // 1. take user's input first 
+    //  1.a from_sequence = user input notes 
+    //  1.b determine scale eg. scale = 'CM'
+    // 2. get a sample: to_sequence = model.sample(1, 1.0, [scale]) ?? how to sepcify scale?
+    // 3. results = vae.interpolate([from_sequence, to_sequence], num_of_interppolation_steps, 1.0, [scale])
+    //////////////////
+
+    /**
+     * Initialise the model to RNN
+     */
+    [SESSION_ACTION_INIT_MODEL_RNN]({ state }) {
+      state.magentaModel = new music_rnn.MusicRNN(improv_checkpoint);
+      state.magentaModel.initialize().then(() => console.log("rnn init done"));
+    },
+
+    /**
+     * Initialise the model to VAE
+     */
+    [SESSION_ACTION_INIT_MODEL_VAE]({ state }) {
+      state.magentaModel = new music_vae.MusicVAE(musicVAE_checkpoint);
+      state.magentaModel.initialize().then(() => console.log("vae init done"));
+    },
+
+    [SESSION_ACTION_GENERATE_CONTINUATION]({state}) {
+      state.magentaModel
+        .continueSequence(sampleSequence, 60, 0.5, ["CM"])
+        .then((resp) => {
+          console.log(resp);
+          // state.player.start(resp);
+        });
+    },
+
+    [SESSION_ACTION_GENERATE_SIMILARS]({state}) {
+      let numberOfSamples = 2;
+      let similarity = 0.9;
+      state.magentaModel
+        .similar(state.coreNoteSequence, numberOfSamples, similarity)
+        .then((samples) => {
+          // state.player.start(samples[0]);
+          state.responseSequenceArray = samples;
+          console.log(state.responseSequenceArray[0].notes);
+        });
+    },
+
     /**
      * Playback of current pattern sound
-     * @param {*} time 
+     * @param {*} time
      */
-    [SESSION_ACTION_PLAY_CURRENT_NOTES]({state}, currentTime) {
+    [SESSION_ACTION_PLAY_CURRENT_NOTES]({ state }, currentTime) {
       for (let note of state.currentPattern) {
-        if(note.start && note.start == currentTime) {
+        if (note.start && note.start == currentTime) {
           // play sound for note
           this.dispatch(
             INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
             note.note
           );
-        }
-        else if(note.end && note.end == currentTime) {
+        } else if (note.end && note.end == currentTime) {
           // stop sound for note
           this.dispatch(
             INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
@@ -69,7 +131,7 @@ export default {
       }
     },
 
-    [SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE]({state}) {
+    [SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE]({ state }) {
       if (!state.userTurn) return; // safety check
 
       // take a snapshot of notes in the first half of the user's pattern
@@ -91,7 +153,7 @@ export default {
       }, 1000);
     },
 
-    [SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE]({state}) {
+    [SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE]({ state }) {
       // transitioning from user turn to response turn..
       if (state.userTurn) {
         // get notes in the second half of the pattern
@@ -143,7 +205,7 @@ export default {
     },
 
     // clear/empty the current pattern
-    [SESSION_ACTION_CLEAR_SESSION]({state}) {
+    [SESSION_ACTION_CLEAR_SESSION]({ state }) {
       state.currentPattern = [];
       state.userTurn = true;
       state.currentPattern = [];
@@ -186,12 +248,12 @@ export default {
     },
 
     ////////
-    
+
     // IDEA
     // for prematureNotes: if not userTurn and MIDI not receieved:
     // collect theese notes to an array with start value 0.
     // is end note message received for same pitch, remove from array
-    // at the start of a new user pattern, push the content of this array to 
+    // at the start of a new user pattern, push the content of this array to
     // the currentPattern array
 
     ////////

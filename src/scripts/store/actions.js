@@ -29,6 +29,11 @@ export const SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE =
 export const SESSION_ACTION_PLAY_CURRENT_NOTES =
   "session_action_play_current_notes";
 
+export const SESSION_ACTION_INIT_MODEL_RNN = "session_action_init_model_rnn";
+export const SESSION_ACTION_INIT_MODEL_VAE = "session_action_init_model_vae";
+export const SESSION_ACTION_GENERATE_CONTINUATION = "session_action_generate_continuation";
+export const SESSION_ACTION_GENERATE_SIMILARS = "session_action_generate_similars";
+
 // -- instrument store --
 export const INSTRUMENT_ACTION_START_NOTE = "instrument_mutation_start_note";
 export const INSTRUMENT_ACTION_END_NOTE = "instrument_mutation_end_note";
