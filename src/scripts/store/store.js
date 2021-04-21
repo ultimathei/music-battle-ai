@@ -4,6 +4,7 @@ import pianoStore from "./modules/piano-store";
 import mainClockStore from "./modules/main-clock-store";
 import sessionStore from "./modules/session-store";
 import instrumentStore from "./modules/instrument-store";
+import modelStore from "./modules/model-store";
 
 Vue.use(Vuex);
 
@@ -14,6 +15,7 @@ export default new Vuex.Store({
     mainClockStore,
     sessionStore,
     instrumentStore,
+    modelStore,
   },
 
   // other, non module stores if any

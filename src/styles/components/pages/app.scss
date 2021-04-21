@@ -51,6 +51,42 @@
     background: $color-brand-neutral-1;
     border-radius: 10px;
   }
+
+  &__preload {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    padding: 0 30px;
+  }
+}
+
+.app-preload {
+  align-items: center;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+
+  // &::before {
+  //   content: "";
+  //   background-image: url("../images/loading_bg.jpg");
+  //   background-size: cover;
+  //   background-position: bottom center;
+  //   position: absolute;
+  //   width: 100%;
+  //   height: 100%;
+  //   z-index: -1;
+  //   opacity: 0.75;
+  // }
+
+  &__logo {
+    width: 300px;
+    max-width: 80%;
+    padding: 20px;
+  }
+
+  &__info{
+    @include typography-1-m;
+  }
 }
 
 .start-widget {
@@ -73,7 +109,7 @@
     width: 80%;
   }
 
-  &__title{
+  &__title {
     color: $color-brand-background;
     font-family: "Montserrat", sans-serif;
     font-size: 16px;
@@ -83,7 +119,7 @@
     text-transform: uppercase;
   }
 
-  &__subtitle{
+  &__subtitle {
     color: $color-brand-background;
     font-family: "Montserrat", sans-serif;
     font-size: 12px;
@@ -91,8 +127,8 @@
     padding-bottom: 20px;
     text-align: center;
   }
-  
-  &__button{
+
+  &__button {
     background-color: $color-brand-accent-2;
     border-radius: 5px;
     box-shadow: 0 0 15px rgba(black, 0.15);
@@ -103,7 +139,7 @@
     padding: 10px 30px;
     text-transform: uppercase;
 
-    &:hover{
+    &:hover {
       background-color: $color-brand-accent-4;
     }
   }

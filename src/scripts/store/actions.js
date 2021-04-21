@@ -28,15 +28,20 @@ export const SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE =
   "session_action_generate_second_half_response";
 export const SESSION_ACTION_PLAY_CURRENT_NOTES =
   "session_action_play_current_notes";
+export const SESSION_ACTION_PREVIEW_BASE_PATTERN =
+  "session_action_preview_base_pattern";
+export const SESSION_ACTION_CONFIRM_BASE_PATTERN =
+  "session_action_confirm_base_pattern";
 
-export const SESSION_ACTION_INIT_MODEL_RNN = "session_action_init_model_rnn";
-export const SESSION_ACTION_INIT_MODEL_VAE = "session_action_init_model_vae";
-export const SESSION_ACTION_GENERATE_CONTINUATION = "session_action_generate_continuation";
-export const SESSION_ACTION_GENERATE_SIMILARS = "session_action_generate_similars";
-export const SESSION_ACTION_PREVIEW_BASE_PATTERN = "session_action_preview_base_pattern";
-export const SESSION_ACTION_CONFIRM_BASE_PATTERN = "session_action_confirm_base_pattern";
+  // -- model actions --
+export const MODEL_ACTION_INIT_RNN = "model_action_init_rnn";
+export const MODEL_ACTION_INIT_VAE = "model_action_init_vae";
+export const MODEL_ACTION_GENERATE_CONTINUATION =
+  "model_action_generate_continuation";
+export const MODEL_ACTION_GENERATE_SIMILARS = "model_action_generate_similars";
 
-// -- instrument store --
+// -- instrument actions --
 export const INSTRUMENT_ACTION_START_NOTE = "instrument_mutation_start_note";
 export const INSTRUMENT_ACTION_END_NOTE = "instrument_mutation_end_note";
-export const INSTRUMENT_ACTION_END_ALL_NOTES = "instrument_mutation_end_all_notes";
+export const INSTRUMENT_ACTION_END_ALL_NOTES =
+  "instrument_mutation_end_all_notes";

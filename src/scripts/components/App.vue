@@ -1,5 +1,10 @@
 <template>
-  <div id="app" class="app">
+  <div v-if="!isModelLoaded" class="app__preload | app-preload">
+    <Logo class="app-preload__logo | logo" />
+    <p class="app-preload__info">Loading AI model..</p>
+  </div>
+
+  <div v-else id="app" class="app">
     <div class="app__header">
       <Logo class="app-header__logo | logo" />
       <div class="app-header__controls | header-controls">
@@ -34,11 +39,11 @@ import Piano from "./piano/Piano.vue";
 import Sequencer from "./music-sheet/sequencer.vue";
 import StartWidget from "./start-widget/start-widget.vue";
 
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import {
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
-  SESSION_ACTION_INIT_MODEL_VAE,
+  MODEL_ACTION_INIT_VAE,
 } from "../store/actions";
 
 export default {
@@ -55,12 +60,12 @@ export default {
   data() {
     return {
       // musicalScale: "Cmaj7",
-      magentaModel: null,
       player: new core.Player(),
     };
   },
   computed: {
     ...mapGetters("mainClockStore", ["isRunning", "hasBasePattern"]),
+    ...mapGetters("modelStore", ["isModelLoaded"]),
   },
   mounted() {
     // maybe store it in local storage, so to not load it every time
@@ -71,8 +76,8 @@ export default {
       INSTRUMENT_ACTION_START_NOTE,
       INSTRUMENT_ACTION_END_NOTE,
     ]),
-    ...mapActions("sessionStore", {
-      initModel: SESSION_ACTION_INIT_MODEL_VAE,
+    ...mapActions("modelStore", {
+      initModel: MODEL_ACTION_INIT_VAE,
     }),
     /**
      * Updating the keyboard UI to refelct changes in currently played MIDI notes.

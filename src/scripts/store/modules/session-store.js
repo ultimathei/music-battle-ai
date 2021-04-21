@@ -10,34 +10,24 @@
 
 import {
   SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN,
-  // SESSION_MUTATION_SET_USER_TURN,
 } from "../mutations";
 import {
-  SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE,
   SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE,
   SESSION_ACTION_CLEAR_SESSION,
   SESSION_ACTION_PLAY_CURRENT_NOTES,
-  SESSION_ACTION_INIT_MODEL_RNN,
-  SESSION_ACTION_INIT_MODEL_VAE,
-  SESSION_ACTION_GENERATE_CONTINUATION,
-  SESSION_ACTION_GENERATE_SIMILARS,
-  INSTRUMENT_ACTION_START_NOTE,
-  INSTRUMENT_ACTION_END_NOTE,
   SESSION_ACTION_PREVIEW_BASE_PATTERN,
   SESSION_ACTION_CONFIRM_BASE_PATTERN,
+  INSTRUMENT_ACTION_START_NOTE,
+  INSTRUMENT_ACTION_END_NOTE,
+  MODEL_ACTION_GENERATE_SIMILARS,
 } from "../actions";
-import {
-  improv_checkpoint,
-  musicVAE_checkpoint_2bar,
-  musicVAE_checkpoint_med_4bar,
-  musicVAE_checkpoint,
-} from "../../services/magenta-services";
 import {
   convertToMagentaSample,
   convertFromMagentaSequence,
 } from "../../utils/utils";
 
 const INSTRUMENT_STORE_LOC = "instrumentStore/";
+const MODEL_STORE_LOC = "modelStore/";
 
 export default {
   namespaced: true,
@@ -83,49 +73,6 @@ export default {
     // 2. get a sample: to_sequence = model.sample(1, 1.0, [scale]) ?? how to sepcify scale?
     // 3. results = vae.interpolate([from_sequence, to_sequence], num_of_interppolation_steps, 1.0, [scale])
     //////////////////
-
-    /**
-     * Initialise the model to RNN
-     */
-    [SESSION_ACTION_INIT_MODEL_RNN]({ state, dispatch }) {
-      state.magentaModel = new music_rnn.MusicRNN(improv_checkpoint);
-      state.magentaModel.initialize().then(() => {
-        console.log("rnn init done");
-        dispatch(SESSION_ACTION_GENERATE_CONTINUATION);
-      });
-    },
-
-    /**
-     * Initialise the model to VAE
-     */
-    [SESSION_ACTION_INIT_MODEL_VAE]({ state }) {
-      state.magentaModel = new music_vae.MusicVAE(musicVAE_checkpoint_med_4bar);
-      state.magentaModel.initialize().then(() => {
-        console.log("vae init done");
-      });
-    },
-
-    [SESSION_ACTION_GENERATE_CONTINUATION]({ state }) {
-      state.magentaModel
-        .continueSequence(sampleSequence, 60, 0.5, ["CM"])
-        .then((resp) => {
-          console.log(resp);
-          // state.player.start(resp);
-        });
-    },
-
-    [SESSION_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
-      let numberOfSamples = 2;
-      let similarity = 0.85;
-      state.magentaModel
-        .similar(noteSequence, numberOfSamples, similarity)
-        .then((samples) => {
-          // state.player.start(samples[0]);
-          state.responseSequenceArray = samples;
-          console.log(state.responseSequenceArray);
-        });
-    },
-
     /**
      * Playback of current pattern sound
      * @param {*} time
@@ -167,11 +114,12 @@ export default {
       // // ..
     },
 
-    [SESSION_ACTION_CONFIRM_BASE_PATTERN]({ state, dispatch }) {
+    [SESSION_ACTION_CONFIRM_BASE_PATTERN]({ state }) {
       // init model
       // set isLoadingSession = true;
-      dispatch(
-        SESSION_ACTION_GENERATE_SIMILARS,
+      
+      this.dispatch(
+        MODEL_STORE_LOC+MODEL_ACTION_GENERATE_SIMILARS,
         convertToMagentaSample(state.currentPattern, 120, 8)
       ).then(() => {
         state.isBaseConfirmed = true;
@@ -180,28 +128,28 @@ export default {
       });
     },
 
-    // not used now
-    [SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE]({ state }) {
-      if (!state.userTurn) return; // safety check
+    // // not used now
+    // [SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE]({ state }) {
+    //   if (!state.userTurn) return; // safety check
 
-      // take a snapshot of notes in the first half of the user's pattern
-      // generate the first half of the response based on it
-      // store it locally by adding it to current response pattern
+    //   // take a snapshot of notes in the first half of the user's pattern
+    //   // generate the first half of the response based on it
+    //   // store it locally by adding it to current response pattern
 
-      // for now we simply return same pattern shifted half note up
-      console.log("generate first half response here..");
-      // TODO deal with unfinished notes pls..
+    //   // for now we simply return same pattern shifted half note up
+    //   console.log("generate first half response here..");
+    //   // TODO deal with unfinished notes pls..
 
-      // should be asynch
-      setTimeout(() => {
-        state.responsePatternHalf = state.currentPattern.map((note) => {
-          return {
-            ...note,
-            note: note.note + 1,
-          };
-        });
-      }, 1000);
-    },
+    //   // should be asynch
+    //   setTimeout(() => {
+    //     state.responsePatternHalf = state.currentPattern.map((note) => {
+    //       return {
+    //         ...note,
+    //         note: note.note + 1,
+    //       };
+    //     });
+    //   }, 1000);
+    // },
 
     // modified now
     [SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE]({ state, commit }) {
