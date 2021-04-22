@@ -21,12 +21,12 @@ import {
   CLOCK_ACTION_STOP,
   CLOCK_ACTION_STARTSTOP,
   CLOCK_ACTION_RESET,
-  SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE,
   SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE,
   SESSION_ACTION_CLEAR_SESSION,
   SESSION_ACTION_PLAY_CURRENT_NOTES,
-  INSTRUMENT_ACTION_END_ALL_NOTES,
+  SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
   SESSION_ACTION_PREVIEW_BASE_PATTERN,
+  INSTRUMENT_ACTION_END_ALL_NOTES,
 } from "../actions";
 
 const SESSION_STORE_LOC = "sessionStore/";
@@ -290,6 +290,7 @@ export default {
       commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, false);
       // dispatch action to sessionStore to activate notes now
       this.dispatch(INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_ALL_NOTES);
+      this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
       // if precount is not over yet
       if (state.precountDemisemiquaver < 32) {
         state.precountDemisemiquaver = 0;

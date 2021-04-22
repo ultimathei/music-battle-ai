@@ -8,18 +8,18 @@
  * the app for the pattern.
  */
 
-import {
-  SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN,
-} from "../mutations";
+import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../mutations";
 import {
   SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE,
   SESSION_ACTION_CLEAR_SESSION,
   SESSION_ACTION_PLAY_CURRENT_NOTES,
   SESSION_ACTION_PREVIEW_BASE_PATTERN,
   SESSION_ACTION_CONFIRM_BASE_PATTERN,
+  SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
   MODEL_ACTION_GENERATE_SIMILARS,
+  CLOCK_ACTION_STARTSTOP,
 } from "../actions";
 import {
   convertToMagentaSample,
@@ -28,6 +28,7 @@ import {
 
 const INSTRUMENT_STORE_LOC = "instrumentStore/";
 const MODEL_STORE_LOC = "modelStore/";
+const CLOCK_STORE_LOC = "mainClockStore/";
 
 export default {
   namespaced: true,
@@ -40,10 +41,9 @@ export default {
 
     magentaModel: null, // new
     responseSequenceArray: [], // new
-    currentPatternFirstHalf: null,
-    currentPatternSecondHalf: null, // maybe not needed, reuse firsthalf
     isBaseConfirmed: false,
     coreNoteSequence: null,
+    isSessionLoading: false,
   }),
 
   getters: {
@@ -96,36 +96,25 @@ export default {
     },
 
     // TEST
-    [SESSION_ACTION_PREVIEW_BASE_PATTERN]({ state, commit }) {
+    [SESSION_ACTION_PREVIEW_BASE_PATTERN]({ dispatch }) {
       console.log("confirm/edit here..");
       // closing off unfinished notes
-      commit("closeUnfinishedNotes");
-
-      // ask to confirm/edit?
-
-      // // push to session
-      // const patternToArchive = {
-      //   type: "user",
-      //   pattern: [...state.currentPattern],
-      // };
-      // state.session.push(patternToArchive);
-
-      // // generate responses once confirmed
-      // // ..
+      dispatch(SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
     },
 
-    [SESSION_ACTION_CONFIRM_BASE_PATTERN]({ state }) {
+    async [SESSION_ACTION_CONFIRM_BASE_PATTERN]({ state }) {
       // init model
-      // set isLoadingSession = true;
-      
-      this.dispatch(
-        MODEL_STORE_LOC+MODEL_ACTION_GENERATE_SIMILARS,
+      state.isSessionLoading = true;
+
+      let result = await this.dispatch(
+        MODEL_STORE_LOC + MODEL_ACTION_GENERATE_SIMILARS,
         convertToMagentaSample(state.currentPattern, 120, 8)
-      ).then(() => {
-        state.isBaseConfirmed = true;
-        // set isloadingSession = false;
-        // start here
-      });
+      );
+
+      console.log('samples in session', result);
+      state.responseSequenceArray = result;
+      state.isBaseConfirmed = true;
+
     },
 
     // // not used now
@@ -152,15 +141,12 @@ export default {
     // },
 
     // modified now
-    [SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE]({ state, commit }) {
+    [SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE]({ state, dispatch }) {
       // transitioning from user turn to response turn..
       if (state.userTurn) {
-        // get notes in the second half of the pattern
-        // generate the second half of the response based on it
-        // when done, add it to current pattern (updating it)
-        console.log("generate second half response here..");
-        commit("closeUnfinishedNotes");
-        // 1. push old previous current pattern to session
+        console.log("generate ai patterns here..");
+        dispatch(SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
+        // 1. push old current pattern to session
         const patternToArchive = {
           type: "user",
           pattern: [...state.currentPattern],
@@ -171,11 +157,14 @@ export default {
         // state.currentPattern = [...state.responsePatternHalf];
         if (state.responseSequenceArray.length < 1) {
           // stop playback
-          // TODO
+          this.dispatch(CLOCK_STORE_LOC+CLOCK_ACTION_STARTSTOP);
+          return;
         }
-        state.currentPattern = convertFromMagentaSequence(
-          state.responseSequenceArray.shift()
-        );
+
+        let sample = state.responseSequenceArray.shift();
+        console.log(sample);
+
+        state.currentPattern = convertFromMagentaSequence(sample);
       } else {
         // transitioning from response turn to user turn..
         // 1. push old current pattern to session
@@ -195,11 +184,22 @@ export default {
     // clear/empty the current pattern
     [SESSION_ACTION_CLEAR_SESSION]({ state }) {
       state.currentPattern = [];
-      state.userTurn = true;
-      state.currentPattern = [];
-      // state.responsePatternHalf = [];
       state.responseSequenceArray = [];
       state.session = [];
+      state.userTurn = true;
+      state.isBaseConfirmed = false;
+      state.coreNoteSequence = null;
+    },
+
+    async [SESSION_ACTION_CLOSE_UNFINISHED_NOTES]({state}) {
+      for (let n of state.currentPattern) {
+        if (!n.end) {
+          n.end = 128;
+        }
+        if (!n.start) {
+          n.start = 0;
+        }
+      }
     },
   },
 
@@ -232,17 +232,6 @@ export default {
             end: data.end,
           };
           return;
-        }
-      }
-    },
-
-    closeUnfinishedNotes(state) {
-      for (let n of state.currentPattern) {
-        if (!n.end) {
-          n.end = 128;
-        }
-        if (!n.start) {
-          n.start = 0;
         }
       }
     },

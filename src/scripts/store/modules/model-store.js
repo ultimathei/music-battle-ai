@@ -14,19 +14,36 @@ import {
   musicVAE_checkpoint,
 } from "../../services/magenta-services";
 
+const ModelConfigJSON = {
+  type: "MusicVAE",
+  dataConverter: {
+    type: "MelodyConverter",
+    args: {
+      numSteps: 256,
+      numSegments: 16,
+      minPitch: 60,
+      maxPitch: 72,
+    },
+  },
+};
+
 export default {
   namespaced: true,
   state: () => ({
     magentaModel: null, // new
     isModelReady: false,
+
+    // game level specific values
+    numberOfSamples: 2,
+    similarity: 0.9,
   }),
 
   getters: {
     magentaModel(state) {
       return state.magentaModel;
     },
-    isModelLoaded(state) {
-      return state.magentaModel && state.magentaModel.initialized;
+    isModelReady(state) {
+      return state.isModelReady;
     },
   },
   // basiacally setters
@@ -67,7 +84,7 @@ export default {
     /**
      * Initialise the model to VAE
      */
-    [MODEL_ACTION_INIT_VAE]({ state }) {
+    async [MODEL_ACTION_INIT_VAE]({ state }) {
       // check for model in localstorage
       // let lc_model = localStorage.getItem('model_VAE');
       // if(lc_model) {
@@ -84,37 +101,36 @@ export default {
       //   }
       // }
 
-      
-      // // create new model and initialise
-      let model = new music_vae.MusicVAE('src/model-checkpoint');
-      model.initialize().then(() => {
-      // let model = new music_vae.MusicVAE(musicVAE_checkpoint_med_4bar);
+      // // trying to use downloaded model
+      // let model = new music_vae.MusicVAE("src/model-checkpoint");
       // model.initialize().then(() => {
-        // console.log('before',model.spec.dataConverter.args)
-        
-        // console.log(model)
-        // setting limits
-        // model.spec.dataConverter.args.maxPitch = 72;
-        // model.spec.dataConverter.args.minPitch = 60;
+      let model = new music_vae.MusicVAE(musicVAE_checkpoint_med_4bar); //ModelConfigJSON
+      await model.initialize();
+      // console.log('before',model.spec.dataConverter.args)
+      // console.log(model);
+      // setting limits
+      model.spec.dataConverter.args.maxPitch = 72;
+      model.spec.dataConverter.args.minPitch = 60;
 
-        // store in lc
-        // localStorage.setItem('model_VAE', JSON.stringify(model));
-        state.magentaModel = model;
+      // could we store in lc?
+      // localStorage.setItem('model_VAE', JSON.stringify(model));
+      state.magentaModel = model;
+      console.log("vae init done");
+
+      setTimeout(() => {
         state.isModelReady = true;
-        console.log("vae init done");
-      });
+        console.log('fadeout complete, element removed');
+      }, 800);
     },
 
-    [MODEL_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
-      let numberOfSamples = 2;
-      let similarity = 0.85;
-      state.magentaModel
-        .similar(noteSequence, numberOfSamples, similarity)
-        .then((samples) => {
-          // state.player.start(samples[0]);
-          state.responseSequenceArray = samples;
-          console.log(state.responseSequenceArray);
-        });
+    async [MODEL_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
+      let samples = await state.magentaModel.similar(
+        noteSequence,
+        state.numberOfSamples,
+        state.similarity
+      );
+      // console.log("samples in model store: ", samples);
+      return samples; // this will be returned to session store?
     },
   },
 };

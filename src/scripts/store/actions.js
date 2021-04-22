@@ -32,6 +32,8 @@ export const SESSION_ACTION_PREVIEW_BASE_PATTERN =
   "session_action_preview_base_pattern";
 export const SESSION_ACTION_CONFIRM_BASE_PATTERN =
   "session_action_confirm_base_pattern";
+export const SESSION_ACTION_CLOSE_UNFINISHED_NOTES =
+  "session_action_close_unfinished_notes";
 
   // -- model actions --
 export const MODEL_ACTION_INIT_RNN = "model_action_init_rnn";
