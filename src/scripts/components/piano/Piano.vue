@@ -1,7 +1,6 @@
 <template>
   <div
     :class="['|', 'piano']"
-    :style="sizeStyle"
     :data-input-disabled="isInputDisabled"
   >
     <div class="piano__blocked | blocked-message" v-if="isInputDisabled">
@@ -12,13 +11,20 @@
         </div>
       </div>
     </div>
+    
     <div class="piano__content">
-      <div class="piano__side-panel">
-        <div class="piano__side-panel-bottom"></div>
+      <!-- <div class="piano__side-panel"> -->
+        <!-- <div class="piano__side-panel-bottom"></div> -->
+      <!-- </div> -->
+      <div class="piano__side | piano-side piano-side--left">
+        <div class="piano-side__front"></div>
       </div>
       <div class="piano__main">
         <div class="piano__top-panel"></div>
         <piano-keyboard class="piano__keyboard" />
+      </div>
+      <div class="piano__side | piano-side piano-side--right">
+        <div class="piano-side__front"></div>
       </div>
     </div>
   </div>
@@ -49,16 +55,16 @@ export default {
   computed: {
     ...mapGetters("sessionStore", ["userTurn"]),
     ...mapGetters("mainClockStore", ["currentMusicalTime", "isRunning"]),
-    ...mapGetters("pianoStore", [
-      "aspectRatio",
-      "blackKeySize",
-      "height",
-      "keySize",
-      "octaveCount",
-      "scale",
-      "sidePanelWidth",
-      "width",
-    ]),
+    // ...mapGetters("pianoStore", [
+    //   "aspectRatio",
+    //   "blackKeySize",
+    //   "height",
+    //   "keySize",
+    //   "octaveCount",
+    //   "scale",
+    //   "sidePanelWidth",
+    //   "width",
+    // ]),
     isInputDisabled() {
       return this.isRunning && !this.userTurn;
     },
@@ -66,13 +72,13 @@ export default {
       return 16 - Math.floor(convertToPatternTime(this.currentMusicalTime) / 8);
     },
     // local computed
-    sizeStyle() {
-      return {
-        height: `${this.height}px`,
-        width: `${this.width}px`,
-        // paddingTop: `${this.aspectRatio * 100}%`,
-      };
-    },
+    // sizeStyle() {
+    //   return {
+    //     height: `${this.height}px`,
+    //     width: `${this.width}px`,
+    //     // paddingTop: `${this.aspectRatio * 100}%`,
+    //   };
+    // },
   },
   // methods: {
   //   ...mapActions("pianoStore", [

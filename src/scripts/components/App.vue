@@ -1,14 +1,7 @@
 <template>
   <div id="app" class="app">
-    <template v-if="!isModelReady">
-      <div
-        class="app__preload | app-preload"
-        :data-fadeout="magentaModel != null"
-      >
-        <Logo class="app-preload__logo | logo" />
-        <p class="app-preload__info">Loading AI model..</p>
-      </div>
-    </template>
+    <Preload class="app__preload" v-if="!isModelReady" />
+
     <template v-if="magentaModel">
       <div class="app__header">
         <Logo class="app-header__logo | logo" />
@@ -17,33 +10,44 @@
             class="header-controls__control"
             @note-toggle="updateKeyboardUI"
           />
-          <Metronome class="header-controls__control" />
+          <Controls class="header-controls__control" />
         </div>
       </div>
-      <Sequencer class="app__pattern-sequence" />
-      <div class="app__music-sheet-wrap">
-        <StartWidget
-          class="app__start-widget"
-          v-if="!hasBasePattern && !isRunning"
-        />
-        <MusicSheet class="app__music-sheet" />
+      <div class="app__body | app-body">       
+        
+        <div class="app-body__instrument | instrument">
+          <div class="instrument__container | instrument-container">
+            <Piano class="instrument-container__content" ref="piano" />
+          </div>
+        </div>
+
+
+        <div class="app-body__music-sheet-wrap">
+          <StartWidget
+            class="app-body__start-widget"
+            v-if="currentPattern.length == 0 && !seedMelody && !isRunning"
+          />
+          <MusicSheet class="app-body__music-sheet" />
+        </div>
+        <Sequencer class="app-body__pattern-sequence" />
+        <!-- <Sequencer2 class="app__pattern-sequence" /> -->
       </div>
-      <Piano class="app__piano" ref="piano" />
-      <p class="app__footer">
-        created by Mate Krisztian for the final year project QMUL @ 2021
-      </p>
+      <Footer class="app__footer" />
     </template>
   </div>
 </template>
 
 <script>
 import Logo from "./graphics/logo.svg";
-import Metronome from "./metronome/metronome.vue";
+import Controls from "./controls/controls.vue";
 import MidiController from "./midi/midi-controller.vue";
 import MusicSheet from "./music-sheet/music-sheet.vue";
+import Preload from "./preload/preload.vue";
 import Piano from "./piano/Piano.vue";
 import Sequencer from "./music-sheet/sequencer.vue";
+import Sequencer2 from "./music-sheet/sequencer2.vue";
 import StartWidget from "./start-widget/start-widget.vue";
+import Footer from "./footer/footer.vue";
 
 import { mapActions, mapGetters } from "vuex";
 import {
@@ -56,22 +60,20 @@ export default {
   name: "app",
   components: {
     Logo,
-    Metronome,
+    Controls,
     MidiController,
     MusicSheet,
     Piano,
+    Preload,
     Sequencer,
+    Sequencer2,
     StartWidget,
-  },
-  data() {
-    return {
-      // musicalScale: "Cmaj7",
-      // player: new core.Player(),
-    };
+    Footer,
   },
   computed: {
-    ...mapGetters("mainClockStore", ["isRunning", "hasBasePattern"]),
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
+    ...mapGetters("mainClockStore", ["isRunning"]),
+    ...mapGetters("sessionStore", ["currentPattern", "seedMelody"]),
   },
   mounted() {
     // maybe store it in local storage, so to not load it every time
@@ -82,7 +84,7 @@ export default {
       INSTRUMENT_ACTION_START_NOTE,
       INSTRUMENT_ACTION_END_NOTE,
     ]),
-    ...mapActions("modelStore", [MODEL_ACTION_INIT_VAE,]),
+    ...mapActions("modelStore", [MODEL_ACTION_INIT_VAE]),
     /**
      * Updating the keyboard UI to refelct changes in currently played MIDI notes.
      */
@@ -97,7 +99,7 @@ export default {
           payload.on_message
         );
 
-        // play/stop sound for note for interim playback
+        // play/stop sound note for playback
         if (payload.on_message)
           this[INSTRUMENT_ACTION_START_NOTE](payload.note);
         else this[INSTRUMENT_ACTION_END_NOTE](payload.note);

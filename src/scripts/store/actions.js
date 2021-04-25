@@ -19,21 +19,24 @@ export const CLOCK_ACTION_START = "clock_action_start";
 export const CLOCK_ACTION_STOP = "clock_action_stop";
 export const CLOCK_ACTION_STARTSTOP = "clock_action_startstop";
 export const CLOCK_ACTION_RESET = "clock_action_reset";
+export const CLOCK_ACTION_RESET_PRECOUNT = "clock_action_reset_precount";
 
 // -- session store actions --
 export const SESSION_ACTION_CLEAR_SESSION = "session_action_clear_session";
 export const SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE =
   "session_action_generate_first_half_response";
-export const SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE =
-  "session_action_generate_second_half_response";
+export const SESSION_ACTION_GENERATE_RESPONSES =
+  "session_action_generate_responses";
 export const SESSION_ACTION_PLAY_CURRENT_NOTES =
   "session_action_play_current_notes";
 export const SESSION_ACTION_PREVIEW_BASE_PATTERN =
   "session_action_preview_base_pattern";
-export const SESSION_ACTION_CONFIRM_BASE_PATTERN =
-  "session_action_confirm_base_pattern";
+export const SESSION_ACTION_CONFIRM_SEED =
+  "session_action_confirm_seed";
 export const SESSION_ACTION_CLOSE_UNFINISHED_NOTES =
   "session_action_close_unfinished_notes";
+
+export const SESSION_ACTION_FINISHED_MELODY = "session_action_finished_melody";
 
   // -- model actions --
 export const MODEL_ACTION_INIT_RNN = "model_action_init_rnn";

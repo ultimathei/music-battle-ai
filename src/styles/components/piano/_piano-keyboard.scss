@@ -3,13 +3,21 @@
 * --
 */
 
-$piano-white-key-size: 80px;
-$piano-black-key-size: 40px;
 $piano-number-of-keys: 8;
+$piano-white-key-size: 100% / 7; // in one octave
+$piano-black-key-size: 100% / 11;
 
 .piano-keyboard {
   position: relative;
-  width: calc(#{$piano-white-key-size} * #{$piano-number-of-keys} + 0px);
+  // width: calc(#{$piano-white-key-size} * #{$piano-number-of-keys} + 0px);
+  width: 100%;
+  height: 50%;
+
+  &__octave{
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
 
   &__white-keys {
     @extend %click-throw-component;
@@ -26,14 +34,15 @@ $piano-number-of-keys: 8;
     flex-flow: column;
     float: left;
     height: 100%;
-    width: $piano-white-key-size;
+    // width: $piano-white-key-size;
+    width: calc(#{$piano-white-key-size});
   }
 
   &__black-key {
     display: flex;
     flex-flow: column;
     height: 50%;
-    width: $piano-black-key-size;
+    width: calc(#{$piano-black-key-size});
   }
 }
 

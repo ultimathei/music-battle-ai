@@ -21,11 +21,13 @@ import {
   CLOCK_ACTION_STOP,
   CLOCK_ACTION_STARTSTOP,
   CLOCK_ACTION_RESET,
-  SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE,
+  CLOCK_ACTION_RESET_PRECOUNT,
+  SESSION_ACTION_GENERATE_RESPONSES,
   SESSION_ACTION_CLEAR_SESSION,
   SESSION_ACTION_PLAY_CURRENT_NOTES,
   SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
   SESSION_ACTION_PREVIEW_BASE_PATTERN,
+  SESSION_ACTION_FINISHED_MELODY,
   INSTRUMENT_ACTION_END_ALL_NOTES,
 } from "../actions";
 
@@ -37,9 +39,10 @@ export default {
   state: () => ({
     audioContext: null,
     bipsInQueue: [],
+    precountDemisemiquaver: 0,
     currentBar: 0,
     currentDemisemiquaver: 0,
-    currentPatternInd: 0,
+    // currentPatternInd: 0, // this should be in session store as melodyIndex?
     denominator: 8,
     intervalID: null,
     isRunning: false,
@@ -49,8 +52,6 @@ export default {
     soundOn: true,
     tempo: 120, // fixed value for now
 
-    precountDemisemiquaver: 0,
-    hasBasePattern: false, // new
   }),
 
   getters: {
@@ -60,12 +61,12 @@ export default {
     currentBar(state) {
       return state.currentBar;
     },
-    currentPatternInd(state) {
-      return state.currentPatternInd;
-    },
+    // currentPatternInd(state) {
+    //   return state.currentPatternInd;
+    // },
     currentMusicalTime(state) {
       return {
-        pattern: state.currentPatternInd,
+        // pattern: state.currentPatternInd,
         bar: state.currentBar,
         demisemi: state.currentDemisemiquaver,
       };
@@ -81,9 +82,6 @@ export default {
     },
     precountDemisemiquaver(state) {
       return state.precountDemisemiquaver;
-    },
-    hasBasePattern(state) {
-      return state.hasBasePattern;
     },
   },
 
@@ -102,9 +100,9 @@ export default {
     [CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](state, data) {
       state.currentDemisemiquaver = data;
     },
-    [CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](state, data) {
-      state.currentPatternInd = data;
-    },
+    // [CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](state, data) {
+    //   state.currentPatternInd = data;
+    // },
     [CLOCK_MUTATION_UPDATE_INTERVAL_ID](state, data) {
       state.intervalID = data;
     },
@@ -124,7 +122,7 @@ export default {
      * Advanced the time to the next bip (by demisemiquaver)
      * @param {*} param0
      */
-    [CLOCK_ACTION_NEXT_BIP]({ commit, state, dispatch}) {
+    [CLOCK_ACTION_NEXT_BIP]({ commit, state, dispatch }) {
       const secondsPerBeat = 60.0 / state.tempo; // as tempo is in bpm
       commit(
         CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
@@ -137,60 +135,62 @@ export default {
         return; // without further tasks
       }
 
+      // the clock should not play the notes?
+      // instead instrument store should have a reference to current time and isRunning
+      // dispatch action to sessionStore to activate notes now
+      this.dispatch(
+        SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
+        state.currentBar * 32 + state.currentDemisemiquaver
+      );
+      // and only then increase demisemi
+
       // after the precount:
       if (state.currentDemisemiquaver + 1 == 32) {
         commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
 
         if (state.currentBar + 1 == 4) {
           commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
-          
+          // 1. send message to session store that one full melody has completed
+          // 2. session store should return current melody index
+          //    if currentMelodyIndex < 1 --> stop the clock, display edit mode
+          //    else continue clock
+          this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_FINISHED_MELODY);
+
           // if no base pattern yet
           // add this pattern to basePattern
           // and set hasBasePattern to true
           // stop the playback
           // (display confirm/edit pattern menu) -- in session store
-          if(!state.hasBasePattern) {
-            this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_PREVIEW_BASE_PATTERN);
-            state.hasBasePattern = true;
-            dispatch(CLOCK_ACTION_STOP);
-          }
-          else{
-            // else (we already have basepattern)
-            // update pattern ind in store
-            commit(
-              CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
-              state.currentPatternInd + 1
-            );
-            // push current pattern to session, clear current pattern
-            // end of whole pattern
-            this.dispatch(
-              SESSION_STORE_LOC + SESSION_ACTION_GENERATE_SECOND_HALF_RESPONSE
-            );
-          }
+          // if (!state.hasBasePattern) {
+
+          //   this.dispatch(
+          //     SESSION_STORE_LOC + SESSION_ACTION_PREVIEW_BASE_PATTERN
+          //   );
+          //   // state.hasBasePattern = true;
+          //   dispatch(CLOCK_ACTION_STOP);
+          // } else {
+          //   // else (we already have basepattern)
+          //   // update pattern ind in store
+          //   // commit(
+          //   //   CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
+          //   //   state.currentPatternInd + 1
+          //   // );
+          //   // push current pattern to session, clear current pattern
+          //   // end of whole pattern
+          //   this.dispatch(
+          //     SESSION_STORE_LOC + SESSION_ACTION_GENERATE_RESPONSES
+          //   );
+          // }
         } else {
           commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, state.currentBar + 1);
         }
-        // if end of half pattern
-        // add half pattern to current pattern?
-        // if (state.currentBar == 2) {
-        //   // generate first half of response
-        //   // end of half pattern
-        //   this.dispatch(
-        //     SESSION_STORE_LOC + SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE
-        //   );
-        // }
       } else {
+        // increase demisemi
         commit(
           CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
           state.currentDemisemiquaver + 1
         );
       }
-
-      // dispatch action to sessionStore to activate notes now
-      this.dispatch(
-        SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
-        state.currentBar * 32 + state.currentDemisemiquaver
-      );
     },
 
     /**
@@ -294,7 +294,7 @@ export default {
       // if precount is not over yet
       if (state.precountDemisemiquaver < 32) {
         state.precountDemisemiquaver = 0;
-        commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
+        // commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
         commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
         commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
       }
@@ -322,9 +322,13 @@ export default {
       this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_CLEAR_SESSION);
       // reset time pointers
       state.precountDemisemiquaver = 0;
-      commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
+      // commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
       commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
       commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
+    },
+
+    [CLOCK_ACTION_RESET_PRECOUNT]({state}) {
+      state.precountDemisemiquaver = 0;
     },
   },
 };

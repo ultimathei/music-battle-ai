@@ -36,27 +36,18 @@
 
         <SequencerItem
           class="pattern-sequence__list-item"
-          v-for="(pattern, index) in session"
+          v-for="(pattern, index) in aiMelodyArray"
           :key="`sequence-item-${index}`"
-          :type="pattern.type"
+          type="human"
           :index="index"
         />
+        <!--
         <SequencerItem
           class="pattern-sequence__list-item | active"
           :type="userTurn ? 'human' : 'robot'"
           :index="session.length"
-        />
+        /> -->
 
-        <div
-          class="pattern-sequence__controls"
-          v-if="currentPattern.length != 0 && !seedMelody && !isRunning"
-        >
-          <div class="pattern-sequence__control" @click="confirm">
-            Confirm and start battle
-          </div>
-          <!-- <div class="pattern-sequence__control">Quantize</div> -->
-          <div class="pattern-sequence__control">Discard</div>
-        </div>
       </div>
       <div
         class="pattern-sequence__arrow"
@@ -81,7 +72,7 @@ import {
 } from "../../store/actions";
 
 export default {
-  name: "Sequencer",
+  name: "Sequencer2",
   components: {
     BattleIcon,
     LeftArrowIcon,
@@ -94,6 +85,8 @@ export default {
       "userTurn",
       "currentPattern",
       "seedMelody",
+      "userMelodyArray",
+      "aiMelodyArray",
     ]),
     ...mapGetters("mainClockStore", ["isRunning"]),
   },
@@ -104,11 +97,6 @@ export default {
     ...mapActions("sessionStore", {
       confirmBase: SESSION_ACTION_CONFIRM_SEED,
     }),
-
-    confirm() {
-      this.confirmBase();
-      // this.startStop();
-    },
   },
 };
 </script>

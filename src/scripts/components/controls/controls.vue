@@ -2,7 +2,7 @@
   <div>
     <MetronomeIcon class="icon-small" />
     <div class="metronome__details">
-      {{ currentPatternInd + 1 }}/{{ currentBar + 1 }}
+      {{ 'todo' }}/{{ currentBar + 1 }}
       {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
     </div>
     <!-- <div class="playback_control" v-if="currentPatternInd > 0">
@@ -38,7 +38,7 @@ import {
 } from "../../store/actions";
 
 export default {
-  name: "Metronome",
+  name: "Controls",
   components: {
     MetronomeIcon,
     PauseIcon,
@@ -50,7 +50,7 @@ export default {
     ...mapGetters("mainClockStore", [
       "currentBar",
       "currentDemisemiquaver",
-      "currentPatternInd",
+      // "currentPatternInd",
       "isRunning",
       "soundOn",
       "tempo",

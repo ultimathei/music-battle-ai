@@ -7,17 +7,9 @@
   background-color: $color-brand-background;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  margin-left: calc(#{$piano-black-key-size} / -2);
+  margin-left: calc(100% / -24 );
   overflow: hidden;
   position: absolute;
-
-  // // defining left offset for all black keys in the octave range
-  // $black-key-locations: 1, 2, 4, 5, 6;
-  // @each $i in $black-key-locations {
-  //   &[data-piano-black-key-index="#{$i}"] {
-  //     left: calc(#{$i} * #{$piano-white-key-size});
-  //   }
-  // }
 
   // test map
   $black-key-notes: (
@@ -52,6 +44,6 @@
   }
   &[data-piano-key-pressed="true"] &__top {
     height: 95%;
-    background: linear-gradient(180deg, $color-brand-background, $color-brand-accent-2 100%);
+    background: linear-gradient(180deg, $color-brand-background, $color-blue 100%);
   }
 }

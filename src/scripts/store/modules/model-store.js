@@ -1,5 +1,5 @@
 /**
- *
+ * MODEL STORE
  */
 import {
   MODEL_ACTION_INIT_RNN,
@@ -120,7 +120,7 @@ export default {
       setTimeout(() => {
         state.isModelReady = true;
         console.log('fadeout complete, element removed');
-      }, 800);
+      }, 500);
     },
 
     async [MODEL_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
