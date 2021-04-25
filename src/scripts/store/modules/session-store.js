@@ -17,6 +17,8 @@ import {
   SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
   SESSION_ACTION_FINISHED_MELODY,
   SESSION_ACTION_LOADING,
+  SESSION_ACTION_SET_AIMELODIES,
+  SESSION_ACTION_PREMATURE_NOTE,
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
   MODEL_ACTION_GENERATE_SIMILARS,
@@ -129,12 +131,12 @@ export default {
       state.seedMelody = state.currentPattern;
 
       // get ai melodies
-      let aiMelodies = await this.dispatch(
+      await this.dispatch(
         MODEL_STORE_LOC + MODEL_ACTION_GENERATE_SIMILARS,
         convertToMagentaSample(state.seedMelody, 120, 8)
       );
-      console.log("samples in session", aiMelodies);
-      state.aiMelodyArray = aiMelodies;
+      // console.log("samples in session", aiMelodies);
+      // state.aiMelodyArray = aiMelodies;
       state.isSessionLoading = false;
 
       dispatch('nextRobotMelody');
@@ -142,6 +144,10 @@ export default {
       // reset precount and start the battle
       this.dispatch(CLOCK_STORE_LOC+CLOCK_ACTION_RESET_PRECOUNT);
       this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STARTSTOP);
+    },
+
+    [SESSION_ACTION_SET_AIMELODIES]({state}, melodiesArray) {
+      state.aiMelodyArray = melodiesArray;
     },
 
     [SESSION_ACTION_LOADING]({state}){
@@ -245,15 +251,29 @@ export default {
       state.userTurn = true;
     },
 
-    async [SESSION_ACTION_CLOSE_UNFINISHED_NOTES]({ state }) {
+    [SESSION_ACTION_CLOSE_UNFINISHED_NOTES]({ state }) {
       for (let n of state.currentPattern) {
-        if (!n.end) {
+        if (!n.end || n.end > 128) {
           n.end = 128;
         }
         if (!n.start) {
           n.start = 0;
         }
       }
+    },
+
+    [SESSION_ACTION_PREMATURE_NOTE]({state}, note) {
+      // console.log(note);
+      if(note.start) {
+        // add to premature array
+        console.log('prem note added');
+        state.prematureNotes.push(note);
+      } else {
+        console.log('prem note removed');
+        // removing the note with same pitch
+        state.prematureNotes = state.prematureNotes.filter(n => n.note != note.note);
+      }
+      // console.log('prem notes: ', state.prematureNotes)
     },
   },
 
@@ -263,6 +283,8 @@ export default {
     // add new incoming notes (either start or end msg) ONLY when in user turn
     [SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](state, data) {
       if (!state.userTurn) return; // safety check
+
+      // console.log(data);
 
       // its a start message push it straight to the pattern
       if (data.start) {

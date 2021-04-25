@@ -6,6 +6,7 @@ import {
   MODEL_ACTION_INIT_VAE,
   MODEL_ACTION_GENERATE_CONTINUATION,
   MODEL_ACTION_GENERATE_SIMILARS,
+  SESSION_ACTION_SET_AIMELODIES,
 } from "../actions";
 import {
   improv_checkpoint,
@@ -13,6 +14,8 @@ import {
   musicVAE_checkpoint_med_4bar,
   musicVAE_checkpoint,
 } from "../../services/magenta-services";
+
+const SESSION_STORE_LOC = "sessionStore/";
 
 const ModelConfigJSON = {
   type: "MusicVAE",
@@ -112,9 +115,10 @@ export default {
         state.numberOfSamples,
         state.similarity
       );
+      this.dispatch(SESSION_STORE_LOC+SESSION_ACTION_SET_AIMELODIES, samples);
       state.isModelLoading = false;
       // console.log("samples in model store: ", samples);
-      return samples; // this will be returned to session store
+      // return samples; // this will be returned to session store
     },
   },
 };

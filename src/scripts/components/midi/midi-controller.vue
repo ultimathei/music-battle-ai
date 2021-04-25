@@ -8,9 +8,10 @@
 <script>
 // import MidiIcon from '../graphics/midi-controller.svg';
 import MidiIcon from "../graphics/midi.svg";
-import { mapGetters, mapMutations } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../../store/mutations";
-import {convertToPatternTime} from "../../utils/utils";
+import { SESSION_ACTION_PREMATURE_NOTE } from "../../store/actions";
+import { convertToPatternTime } from "../../utils/utils";
 
 export default {
   name: "MidiController",
@@ -32,6 +33,9 @@ export default {
     ...mapMutations("sessionStore", [
       SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN,
     ]),
+    ...mapActions("sessionStore", {
+      prematureNote: SESSION_ACTION_PREMATURE_NOTE
+      }),
 
     /**
      *
@@ -74,7 +78,7 @@ export default {
      */
     getMIDIMessage(midiMsg) {
       // early exit if its not the user's turn
-      if(this.isRunning && !this.userTurn) return;
+      // if (this.isRunning && !this.userTurn) return;
 
       // console.log(midiMsg);
       const command = midiMsg.data[0];
@@ -93,10 +97,9 @@ export default {
       switch (command) {
         // noteOn
         case 144:
-          if(note < this.rangeStart || note > this.rangeEnd){
+          if (note < this.rangeStart || note > this.rangeEnd) {
             return;
-          }
-          else if (velocity > 0) {
+          } else if (velocity > 0) {
             this.noteTrigger(note, true, velocity);
           } else {
             this.noteTrigger(note, false);
@@ -124,21 +127,33 @@ export default {
       // emit to parent so the dom can be updated
       this.$emit("note-toggle", payload);
       // record to store at current time
-      if(this.isRunning && this.userTurn)
+      if (this.isRunning && this.userTurn)
         this.recordNoteChanges(on_message, note, this.currentMusicalTime);
+      else {
+        // record premature note change
+        this.recordPrematureNote(on_message, note);
+      }
+    },
+
+    recordPrematureNote(on_message, note) {
+      // console.log('premature note detected..');
+      let data = { note: note };
+      if (on_message) data.start = true;
+      else data.end = true;
+      // send data here to store
+      this.prematureNote(data);
     },
 
     /**
      * Storing note MIDI messaged as they come in
      */
-    recordNoteChanges(on_message, note, currentMusicalTime) {
+    recordNoteChanges(on_message, note, time) {
       let data = { note: note };
-      if (on_message)
-        data.start = convertToPatternTime(currentMusicalTime);
-      else data.end = convertToPatternTime(currentMusicalTime);
+      if (on_message) data.start = convertToPatternTime(time);
+      else data.end = convertToPatternTime(time);
       // send data here to store
       this[SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](data);
-      // this.printNoteSignal(on_message, currentMusicalTime)
+      // this.printNoteSignal(on_message, time)
     },
 
     /**

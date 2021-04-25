@@ -6,7 +6,6 @@ import {
   CLOCK_MUTATION_UPDATE_BIPS_IN_QUEQUE,
   CLOCK_MUTATION_UPDATE_CURRENT_BAR,
   CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
-  CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
   CLOCK_MUTATION_UPDATE_INTERVAL_ID,
   CLOCK_MUTATION_UPDATE_IS_RUNNING,
   CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
@@ -22,11 +21,9 @@ import {
   CLOCK_ACTION_STARTSTOP,
   CLOCK_ACTION_RESET,
   CLOCK_ACTION_RESET_PRECOUNT,
-  SESSION_ACTION_GENERATE_RESPONSES,
   SESSION_ACTION_CLEAR_SESSION,
   SESSION_ACTION_PLAY_CURRENT_NOTES,
   SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
-  SESSION_ACTION_PREVIEW_BASE_PATTERN,
   SESSION_ACTION_FINISHED_MELODY,
   INSTRUMENT_ACTION_END_ALL_NOTES,
 } from "../actions";
@@ -51,7 +48,6 @@ export default {
     scheduleAheadTime: 0.1,
     soundOn: true,
     tempo: 120, // fixed value for now
-
   }),
 
   getters: {
@@ -138,9 +134,11 @@ export default {
       // the clock should not play the notes?
       // instead instrument store should have a reference to current time and isRunning
       // dispatch action to sessionStore to activate notes now
+      let timeWhenPlayed = state.currentBar * 32 + state.currentDemisemiquaver;
+      // console.log(timeWhenPlayed);
       this.dispatch(
         SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
-        state.currentBar * 32 + state.currentDemisemiquaver
+        timeWhenPlayed+1
       );
       // and only then increase demisemi
 
@@ -327,7 +325,7 @@ export default {
       commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
     },
 
-    [CLOCK_ACTION_RESET_PRECOUNT]({state}) {
+    [CLOCK_ACTION_RESET_PRECOUNT]({ state }) {
       state.precountDemisemiquaver = 0;
     },
   },
