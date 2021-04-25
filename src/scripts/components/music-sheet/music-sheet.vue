@@ -87,11 +87,6 @@ export default {
     LeftArrowIcon,
     RightArrowIcon,
   },
-  data() {
-    return {
-      visibleNotes: Array.from(Array(13), (_, index) => 72 - index),
-    };
-  },
   computed: {
     ...mapGetters("mainClockStore", [
       "currentBar",
@@ -99,7 +94,14 @@ export default {
       "isRunning",
       "precountDemisemiquaver",
     ]),
+    ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("sessionStore", ["currentPattern", "session", "userTurn"]),
+    visibleNotes() {
+      return Array.from(
+        Array(this.rangeEnd - this.rangeStart + 1),
+        (_, index) => this.rangeEnd - index
+      );
+    },
     currentCursorPos() {
       return this.currentBar * 32 + this.currentDemisemiquaver;
     },
@@ -131,7 +133,7 @@ export default {
         width: `calc((100% / 128 ) * ${end - note.start})`,
         height: `calc(100% / ${this.visibleNotes.length})`,
         left: `calc((100% / 128 ) * ${note.start})`,
-        top: `calc((100% / 13) * ${72 - note.note})`,
+        top: `calc((100% /  ${this.visibleNotes.length}) * ${this.rangeEnd - note.note})`,
       };
     },
 
