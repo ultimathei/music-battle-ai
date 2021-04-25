@@ -29,7 +29,6 @@
           <MusicSheet class="app-body__music-sheet" />
         </div>
         <Sequencer class="app-body__pattern-sequence" />
-        <!-- <Sequencer2 class="app__pattern-sequence" /> -->
       </div>
       <Footer class="app__footer" />
     </template>
