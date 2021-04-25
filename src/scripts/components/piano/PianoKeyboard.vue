@@ -1,27 +1,25 @@
 <template>
   <div :class="['|', 'piano-keyboard']">
-    <div class="piano-keyboard__octave">
-      <div class="piano-keyboard__white-keys">
-        <piano-white-key
-          v-for="n in whiteKeys"
-          :key="n"
-          class="piano-keyboard__white-key"
-          :data-note-index="n"
-          :ref="n"
-          :style="whiteKeyStyle"
-        ></piano-white-key>
-      </div>
-      <div class="piano-keyboard__black-keys">
-        <piano-black-key
-          v-for="n in blackKeys"
-          :key="`black-key-${n}`"
-          class="piano-keyboard__black-key"
-          :data-piano-black-key-index="n"
-          :data-note-index="n"
-          :style="blackKeyStyle(n)"
-          :ref="n"
-        />
-      </div>
+    <div class="piano-keyboard__white-keys">
+      <piano-white-key
+        v-for="n in whiteKeys"
+        :key="n"
+        class="piano-keyboard__white-key"
+        :data-note-index="n"
+        :ref="n"
+        :style="whiteKeyStyle"
+      ></piano-white-key>
+    </div>
+    <div class="piano-keyboard__black-keys">
+      <piano-black-key
+        v-for="n in blackKeys"
+        :key="`black-key-${n}`"
+        class="piano-keyboard__black-key"
+        :data-piano-black-key-index="n"
+        :data-note-index="n"
+        :style="blackKeyStyle(n)"
+        :ref="n"
+      />
     </div>
   </div>
 </template>
@@ -29,7 +27,7 @@
 <script>
 import PianoWhiteKey from "./PianoWhiteKey.vue";
 import PianoBlackKey from "./PianoBlackKey.vue";
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
   components: { PianoWhiteKey, PianoBlackKey },
