@@ -13,8 +13,7 @@
           <Controls class="header-controls__control" />
         </div>
       </div>
-      <div class="app__body | app-body">       
-        
+      <div class="app__body | app-body">
         <div class="app-body__instrument | instrument">
           <div class="instrument__container | instrument-container">
             <Piano class="instrument-container__content" ref="piano" />
@@ -47,7 +46,7 @@ import Sequencer2 from "./music-sheet/sequencer2.vue";
 import StartWidget from "./start-widget/start-widget.vue";
 import Footer from "./footer/footer.vue";
 
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters} from "vuex";
 import {
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
@@ -71,11 +70,15 @@ export default {
   computed: {
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
     ...mapGetters("mainClockStore", ["isRunning"]),
-    ...mapGetters("sessionStore", ["currentPattern", "seedMelody"]),
+    ...mapGetters("sessionStore", [
+      "currentPattern",
+      "seedMelody",
+    ]),
+    ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
   },
   mounted() {
     // maybe store it in local storage, so to not load it every time
-    this[MODEL_ACTION_INIT_VAE]();
+    this[MODEL_ACTION_INIT_VAE](this.rangeStart, this.rangeEnd);
   },
   methods: {
     ...mapActions("instrumentStore", [

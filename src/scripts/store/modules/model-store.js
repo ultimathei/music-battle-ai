@@ -32,7 +32,7 @@ export default {
   state: () => ({
     magentaModel: null, // new
     isModelReady: false,
-
+    isModelLoading: false,
     // game level specific values
     numberOfSamples: 2,
     similarity: 0.9,
@@ -44,6 +44,9 @@ export default {
     },
     isModelReady(state) {
       return state.isModelReady;
+    },
+    isModelLoading(state) {
+      return state.isModelLoading;
     },
   },
   // basiacally setters
@@ -84,36 +87,15 @@ export default {
     /**
      * Initialise the model to VAE
      */
-    async [MODEL_ACTION_INIT_VAE]({ state }) {
-      // check for model in localstorage
-      // let lc_model = localStorage.getItem('model_VAE');
-      // if(lc_model) {
-      //   try {
-      //     // save to store
-      //     console.log(JSON.parse(lc_model));
-      //     state.magentaModel =  new music_vae.MusicVAE(JSON.parse(lc_model));
-      //     console.log(state.magentaModel);
-      //     state.isModelReady = true;
-      //     console.log("model loaded from local storage..")
-      //     return;
-      //   } catch (error) {
-      //     // continues to creating new model
-      //   }
-      // }
-
-      // // trying to use downloaded model
-      // let model = new music_vae.MusicVAE("src/model-checkpoint");
-      // model.initialize().then(() => {
+    async [MODEL_ACTION_INIT_VAE]({ state }, minPitch, maxPitch) {
       let model = new music_vae.MusicVAE(musicVAE_checkpoint_med_4bar); //ModelConfigJSON
       await model.initialize();
       // console.log('before',model.spec.dataConverter.args)
       // console.log(model);
       // setting limits
-      model.spec.dataConverter.args.maxPitch = 72;
-      model.spec.dataConverter.args.minPitch = 60;
+      model.spec.dataConverter.args.maxPitch = minPitch;
+      model.spec.dataConverter.args.minPitch = maxPitch;
 
-      // could we store in lc?
-      // localStorage.setItem('model_VAE', JSON.stringify(model));
       state.magentaModel = model;
       console.log("vae init done");
 
@@ -124,13 +106,15 @@ export default {
     },
 
     async [MODEL_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
+      state.isModelLoading = true;
       let samples = await state.magentaModel.similar(
         noteSequence,
         state.numberOfSamples,
         state.similarity
       );
+      state.isModelLoading = false;
       // console.log("samples in model store: ", samples);
-      return samples; // this will be returned to session store?
+      return samples; // this will be returned to session store
     },
   },
 };

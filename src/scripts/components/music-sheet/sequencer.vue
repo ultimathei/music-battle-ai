@@ -12,28 +12,6 @@
         class="pattern-sequence__scrollable"
         :style="{ width: `${session.length * 50}px` }"
       >
-        <!-- <div class="pattern-sequence__match-items active">
-          <div
-            class="pattern-sequence__match-item | sequencer-item"
-            data-sequence-list-item-type="robot"
-          ></div>
-          <div
-            class="pattern-sequence__match-item | sequencer-item"
-            data-sequence-list-item-type="human"
-          ></div>
-        </div>
-
-        <div class="pattern-sequence__match-items future">
-          <div
-            class="pattern-sequence__match-item | sequencer-item"
-            data-sequence-list-item-type="robot"
-          ></div>
-          <div
-            class="pattern-sequence__match-item | sequencer-item"
-            data-sequence-list-item-type="human"
-          ></div>
-        </div> -->
-
         <SequencerItem
           class="pattern-sequence__list-item"
           v-for="(pattern, index) in session"
@@ -49,13 +27,19 @@
 
         <div
           class="pattern-sequence__controls"
-          v-if="currentPattern.length != 0 && !seedMelody && !isRunning"
+          v-if="currentPattern.length != 0 && !seedMelody && !isRunning && !isSessionLoading"
         >
           <div class="pattern-sequence__control" @click="confirm">
             Confirm and start battle
           </div>
           <!-- <div class="pattern-sequence__control">Quantize</div> -->
           <div class="pattern-sequence__control">Discard</div>
+        </div>
+
+        <div class="pattern-sequence__controls" v-if="isSessionLoading">
+          <div class="pattern-sequence__control" >
+            Loading..
+          </div>
         </div>
       </div>
       <div
@@ -78,6 +62,7 @@ import SequencerItem from "./sequencer-item.vue";
 import {
   CLOCK_ACTION_STARTSTOP,
   SESSION_ACTION_CONFIRM_SEED,
+  SESSION_ACTION_LOADING,
 } from "../../store/actions";
 
 export default {
@@ -94,6 +79,7 @@ export default {
       "userTurn",
       "currentPattern",
       "seedMelody",
+      "isSessionLoading"
     ]),
     ...mapGetters("mainClockStore", ["isRunning"]),
   },
@@ -103,11 +89,15 @@ export default {
     }),
     ...mapActions("sessionStore", {
       confirmBase: SESSION_ACTION_CONFIRM_SEED,
+      setLoading: SESSION_ACTION_LOADING,
     }),
 
-    confirm() {
-      this.confirmBase();
-      // this.startStop();
+    async confirm() {
+      // set loading to true
+      this.setLoading();
+      setTimeout(() => {
+        this.confirmBase(); // sets loading to false
+      }, 500);
     },
   },
 };

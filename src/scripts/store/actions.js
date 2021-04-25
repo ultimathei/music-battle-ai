@@ -35,8 +35,8 @@ export const SESSION_ACTION_CONFIRM_SEED =
   "session_action_confirm_seed";
 export const SESSION_ACTION_CLOSE_UNFINISHED_NOTES =
   "session_action_close_unfinished_notes";
-
 export const SESSION_ACTION_FINISHED_MELODY = "session_action_finished_melody";
+export const SESSION_ACTION_LOADING = "session_action_loading";
 
   // -- model actions --
 export const MODEL_ACTION_INIT_RNN = "model_action_init_rnn";

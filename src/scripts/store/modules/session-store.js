@@ -16,6 +16,7 @@ import {
   SESSION_ACTION_CONFIRM_SEED,
   SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
   SESSION_ACTION_FINISHED_MELODY,
+  SESSION_ACTION_LOADING,
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
   MODEL_ACTION_GENERATE_SIMILARS,
@@ -71,6 +72,9 @@ export default {
     aiMelodyArray(state){
       return state.aiMelodyArray;
     },
+    isSessionLoading(state){
+      return state.isSessionLoading;
+    },
   },
 
   actions: {
@@ -120,7 +124,7 @@ export default {
     },
 
     async [SESSION_ACTION_CONFIRM_SEED]({ state, dispatch }) {
-      state.isSessionLoading = true; // use this to display loader?
+      // state.isSessionLoading = true; // use this to display loader?
       // as confirmed make current pattern the seed
       state.seedMelody = state.currentPattern;
 
@@ -138,6 +142,10 @@ export default {
       // reset precount and start the battle
       this.dispatch(CLOCK_STORE_LOC+CLOCK_ACTION_RESET_PRECOUNT);
       this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STARTSTOP);
+    },
+
+    [SESSION_ACTION_LOADING]({state}){
+      state.isSessionLoading = true;
     },
 
     // make an action variable for this?
