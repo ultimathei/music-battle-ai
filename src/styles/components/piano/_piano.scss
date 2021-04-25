@@ -5,7 +5,7 @@
 */
 
 .piano {
-  border-radius: 20px;
+  border-radius: 10px;
 
   // blured glow
   &::before {
@@ -35,7 +35,7 @@
       $color-brand-accent-2,
       $color-brand-accent-1
     );
-    border-radius: 20px;
+    border-radius: 10px;
     display: flex;
     flex-flow: row nowrap;
     overflow: hidden;
@@ -106,7 +106,7 @@
     bottom: 0;
     left: 0;
     height: 10%;
-    background-color: black;
+    background: linear-gradient(rgba(black, 0.3), rgba(black, 0.75));
   }
 }
 
@@ -118,7 +118,7 @@
   &__figure {
     width: 150px;
     height: 150px;
-    border-radius: 20px;
+    border-radius: 10px;
     background-color: $color-brand-neutral-2;
     opacity: 0.75;
     padding: 15px;

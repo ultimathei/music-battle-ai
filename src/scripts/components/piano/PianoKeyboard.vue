@@ -29,17 +29,13 @@
 <script>
 import PianoWhiteKey from "./PianoWhiteKey.vue";
 import PianoBlackKey from "./PianoBlackKey.vue";
+import { mapGetters } from 'vuex';
 
 export default {
   components: { PianoWhiteKey, PianoBlackKey },
   name: "PianoKeyboard",
-  data() {
-    return {
-      rangeStart: 60,
-      rangeEnd: 83,
-    };
-  },
   computed: {
+    ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     keyArray() {
       return [...Array(this.rangeEnd - this.rangeStart + 1).keys()].map(
         (x) => x + this.rangeStart
@@ -70,18 +66,18 @@ export default {
       };
     },
     getLeftPos(ind) {
-      let leftPos = {
+      let blackKeyMap = {
         1: 1,
         3: 2,
         6: 4,
         8: 5,
-        10: 6
+        10: 6,
       };
       let multiplier = Math.floor(ind / 12) - 5;
       // 7 white keys in an octave
-      let pos = multiplier*7 + leftPos[ind % 12];
+      let pos = multiplier * 7 + blackKeyMap[ind % 12];
       return pos;
-    }
+    },
   },
 };
 </script>

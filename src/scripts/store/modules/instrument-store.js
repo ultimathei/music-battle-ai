@@ -31,12 +31,14 @@ export default {
     noise: null,
     synth: null,
     synthType: null,
+    rangeStart: 60,
+    rangeEnd: 84,
   }),
 
   getters: {
     volume(state) {
       if (!state.volume) {
-        state.volume = new Tone.Volume(-15);
+        state.volume = new Tone.Volume(-5);
       }
       return state.volume;
     },
@@ -44,7 +46,7 @@ export default {
       if (!state.filter) {
         state.filter = new Tone.Filter({
           type: "notch",
-          frequency: 350,
+          frequency: 300,
           rolloff: -12,
           Q: 3,
         });
@@ -75,12 +77,18 @@ export default {
           .chain(
             getters.volume,
             getters.filter,
-            getters.distortion,
+            // getters.distortion,
             Tone.Master
           )
           .set(synthOptionsArray[getters.synthType]);
       }
       return state.synth;
+    },
+    rangeStart(state) {
+      return state.rangeStart;
+    },
+    rangeEnd(state) {
+      return state.rangeEnd;
     },
   },
 

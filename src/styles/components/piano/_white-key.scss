@@ -31,7 +31,6 @@
   }
   &[data-piano-key-pressed="true"] &__top {
     height: 95%;
-    // height: calc(100% - 15px);
     background: linear-gradient(
       180deg,
       $color-brand-neutral-4,

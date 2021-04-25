@@ -22,6 +22,7 @@ export default {
   },
   computed: {
     ...mapGetters("sessionStore", ["userTurn"]),
+    ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("mainClockStore", ["currentMusicalTime", "isRunning"]),
   },
   methods: {
@@ -92,7 +93,7 @@ export default {
       switch (command) {
         // noteOn
         case 144:
-          if(note < 60 || note > 72){
+          if(note < this.rangeStart || note > this.rangeEnd){
             return;
           }
           else if (velocity > 0) {
