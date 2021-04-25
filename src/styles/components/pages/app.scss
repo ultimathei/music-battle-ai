@@ -101,8 +101,11 @@
   &__instrument{
     flex-grow: 1;
     width: 100%;
+    margin-bottom: 10px;
   }
 }
+
+
 
 @mixin aspect-ratio($width, $height) {
   position: relative;
@@ -128,13 +131,14 @@
   justify-content: center;
 
   &__container{
-    max-width: 60vh;
+    // max-width: 60vh;
+    max-width: 1000px;
     width: 100%;
   }
 }
 
 .instrument-container {
-  @include aspect-ratio(2, 1);
+  @include aspect-ratio(4, 1);
 }
 
 .app-preload {

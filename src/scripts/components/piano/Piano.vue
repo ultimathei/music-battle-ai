@@ -13,9 +13,6 @@
     </div>
     
     <div class="piano__content">
-      <!-- <div class="piano__side-panel"> -->
-        <!-- <div class="piano__side-panel-bottom"></div> -->
-      <!-- </div> -->
       <div class="piano__side | piano-side piano-side--left">
         <div class="piano-side__front"></div>
       </div>

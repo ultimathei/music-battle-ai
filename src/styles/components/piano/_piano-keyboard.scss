@@ -3,15 +3,17 @@
 * --
 */
 
-$piano-number-of-keys: 8;
-$piano-white-key-size: 100% / 7; // in one octave
-$piano-black-key-size: 100% / 11;
+// $piano-number-of-keys: 8;
+// $piano-white-key-size: 100% / $piano-number-of-keys; // in one octave
+// $piano-black-key-size: 100% / 11;
 
 .piano-keyboard {
   position: relative;
   // width: calc(#{$piano-white-key-size} * #{$piano-number-of-keys} + 0px);
   width: 100%;
   height: 50%;
+  display: flex;
+  flex-flow: row nowrap;
 
   &__octave{
     position: relative;
@@ -35,14 +37,14 @@ $piano-black-key-size: 100% / 11;
     float: left;
     height: 100%;
     // width: $piano-white-key-size;
-    width: calc(#{$piano-white-key-size});
+    // width: calc(#{$piano-white-key-size});
   }
 
   &__black-key {
     display: flex;
     flex-flow: column;
     height: 50%;
-    width: calc(#{$piano-black-key-size});
+    // width: calc(#{$piano-black-key-size});
   }
 }
 

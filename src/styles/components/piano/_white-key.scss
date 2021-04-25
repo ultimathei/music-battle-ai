@@ -13,7 +13,7 @@
     flex-grow: 1;
     width: 100%;
   }
-  &:not(:last-child) &__front {
+  &__front {
     border-right: 3px solid $color-blue-deep;
   }
 
@@ -23,11 +23,10 @@
       $color-brand-neutral-4,
       $color-brand-foreground 33%
     );
-    // height: calc(100% - 30px);
     height: 80%;
     width: 100%;
   }
-  &:not(:last-child) &__top {
+  &__top {
     border-right: 3px solid $color-blue;
   }
   &[data-piano-key-pressed="true"] &__top {

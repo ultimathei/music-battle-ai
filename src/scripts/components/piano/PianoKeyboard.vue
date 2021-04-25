@@ -1,23 +1,25 @@
 <template>
   <div :class="['|', 'piano-keyboard']">
-    <div class="piano-keyboard__octave" :style="{width: '100%'}">
+    <div class="piano-keyboard__octave">
       <div class="piano-keyboard__white-keys">
         <piano-white-key
-          v-for="n in [0, 2, 4, 5, 7, 9, 11]"
+          v-for="n in whiteKeys"
           :key="n"
           class="piano-keyboard__white-key"
-          :data-note-index="60 + n"
-          :ref="60 + n"
+          :data-note-index="n"
+          :ref="n"
+          :style="whiteKeyStyle"
         ></piano-white-key>
       </div>
       <div class="piano-keyboard__black-keys">
         <piano-black-key
-          v-for="n of [1, 3, 6, 8, 10]"
+          v-for="n in blackKeys"
           :key="`black-key-${n}`"
           class="piano-keyboard__black-key"
           :data-piano-black-key-index="n"
-          :data-note-index="60 + n"
-          :ref="60 + n"
+          :data-note-index="n"
+          :style="blackKeyStyle(n)"
+          :ref="n"
         />
       </div>
     </div>
@@ -31,5 +33,55 @@ import PianoBlackKey from "./PianoBlackKey.vue";
 export default {
   components: { PianoWhiteKey, PianoBlackKey },
   name: "PianoKeyboard",
+  data() {
+    return {
+      rangeStart: 60,
+      rangeEnd: 83,
+    };
+  },
+  computed: {
+    keyArray() {
+      return [...Array(this.rangeEnd - this.rangeStart + 1).keys()].map(
+        (x) => x + this.rangeStart
+      );
+    },
+    whiteKeys() {
+      return this.keyArray.filter((keyIndex) => {
+        let remainder = keyIndex % 12;
+        return [0, 2, 4, 5, 7, 9, 11].includes(remainder);
+      });
+    },
+    blackKeys() {
+      return this.keyArray.filter((keyIndex) => {
+        let remainder = keyIndex % 12;
+        return [1, 3, 6, 8, 10].includes(remainder);
+      });
+    },
+    whiteKeyStyle() {
+      return { width: `${100 / this.whiteKeys.length}%` };
+    },
+  },
+  methods: {
+    blackKeyStyle(n) {
+      return {
+        width: `${(100 / this.whiteKeys.length) * 0.5}%`,
+        marginLeft: `${(100 / this.whiteKeys.length) * -0.25}%`,
+        left: `${(100 / this.whiteKeys.length) * this.getLeftPos(n)}%`,
+      };
+    },
+    getLeftPos(ind) {
+      let leftPos = {
+        1: 1,
+        3: 2,
+        6: 4,
+        8: 5,
+        10: 6
+      };
+      let multiplier = Math.floor(ind / 12) - 5;
+      // 7 white keys in an octave
+      let pos = multiplier*7 + leftPos[ind % 12];
+      return pos;
+    }
+  },
 };
 </script>

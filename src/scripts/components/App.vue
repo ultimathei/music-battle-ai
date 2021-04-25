@@ -21,6 +21,13 @@
           </div>
         </div>
 
+        <!-- <div class="app-body__instrument | instrument">
+          <div class="instrument__side"></div>
+          <div class="instrument__main">
+
+          </div>
+          <div class="instrument__side"></div>
+        </div> -->
 
         <div class="app-body__music-sheet-wrap">
           <StartWidget
