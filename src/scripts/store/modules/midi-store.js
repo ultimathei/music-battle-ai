@@ -1,8 +1,6 @@
 /**
  * Store module for the MIDI communication
  */
-// import {
-// } from "../actions";
 
 export default {
   namespaced: true,
@@ -10,8 +8,6 @@ export default {
     midiAccess: null,
     midiStatusMsg: "Loading web MIDI..",
     // outputs: null,
-    rangeStart: 60, // from instrument store?
-    rangeEnd: 84, // from instrument store?
   }),
 
   getters: {
@@ -39,30 +35,27 @@ export default {
   },
 
   actions: {
-    // [INSTRUMENT_ACTION_START_NOTE]({getters}, note) {
-    //   getters.synth.triggerAttack(getNoteName(note));
-    // },
-    async getMIDI({ state, getters, dispatch }) {
+    async getMIDI({ state, dispatch }) {
       if (navigator.requestMIDIAccess) {
-        console.log("This browser supports WebMIDI!");
+        // console.log("This browser supports WebMIDI!");
         const midiAccess = await navigator.requestMIDIAccess();
         if (midiAccess.inputs != null && midiAccess.inputs.size > 0)
           dispatch("onMIDISuccess", midiAccess);
         else dispatch("onMIDIFailure");
       } else {
-        console.log("WebMIDI is not supported in this browser.");
+        // console.log("WebMIDI is not supported in this browser.");
         state.midiStatusMsg =
-          "WebMIDI is not supported in this browser. Please use a Google Chrome.";
+          "WebMIDI is not supported in this browser. Please use Google Chrome.";
       }
     },
 
     onMIDIFailure({ state }) {
-      console.log("Could not access your MIDI devices.");
-      state.midiStatusMsg = "Could not access your MIDI devices.";
+      // console.log("Could not access your MIDI devices.");
+      state.midiStatusMsg = "Could not access your MIDI devices. Please try again";
     },
 
     onMIDISuccess({ state, dispatch }, midiAccess) {
-      console.log("MIDI successfully connected", midiAccess);
+      // console.log("MIDI successfully connected", midiAccess);
       state.midiAccess = midiAccess;
       state.midiStatusMsg = "MIDI successfully connected";
       // state.outputs = midiAccess.outputs
@@ -91,7 +84,10 @@ export default {
       switch (command) {
         // noteOn
         case 144:
-          if (note < state.rangeStart || note > state.rangeEnd) {
+          if (
+            note < this.state.instrumentStore.rangeStart ||
+            note > this.state.instrumentStore.rangeEnd
+          ) {
             return;
           } else if (velocity > 0) {
             this.dispatch("noteTrigger", {

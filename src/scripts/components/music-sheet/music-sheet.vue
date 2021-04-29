@@ -45,7 +45,7 @@
         </div>
 
         <!-- previous pattern -->
-        <div class="music-sheet__notes | pattern-notes">
+        <div class="music-sheet__notes | pattern-notes" v-if="userTurn">
           <div
             class="pattern-notes__note | pattern-notes__note--previous"
             v-for="(note, index) in previousPattern"

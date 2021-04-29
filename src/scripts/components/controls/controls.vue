@@ -1,8 +1,9 @@
 <template>
   <div>
+    {{ mode }}
     <MetronomeIcon class="icon-small" />
     <div class="metronome__details">
-      {{ 'todo' }}/{{ currentBar + 1 }}
+      {{ "todo" }}/{{ currentBar + 1 }}
       {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
     </div>
     <!-- <div class="playback_control" v-if="currentPatternInd > 0">
@@ -13,8 +14,20 @@
       <PauseIcon v-if="isRunning" @click="startStop" />
       <PlayIcon v-else @click="startStop" />
     </div>
-    <div class="playback_control">
-      <RestartIcon @click="backToStart" />
+    <div class="playback_control" v-if="mode == 'seed_edit'">
+      <QuantizeIcon @click="quantizeMelody" />
+    </div>
+    <div class="playback_control" v-if="mode == 'seed_edit'">
+      <ConfirmIcon @click="confirmSeed" />
+    </div>
+    <div
+      class="playback_control"
+      v-if="
+        (session.length > 0 || currentPattern.length > 0) &&
+        mode != 'seed_recording'
+      "
+    >
+      <TrashIcon @click="trashSession" />
     </div>
   </div>
 </template>
@@ -27,41 +40,60 @@
  * Demisemiquaver is a synonim for the 1/32rd musical note
  */
 import { mapGetters, mapActions } from "vuex";
+import ConfirmIcon from "../graphics/confirm.svg";
 import MetronomeIcon from "../graphics/metronome.svg";
 import PauseIcon from "../graphics/pause.svg";
 import PlayIcon from "../graphics/play.svg";
 import RecordIcon from "../graphics/record.svg";
 import RestartIcon from "../graphics/restart.svg";
+import QuantizeIcon from "../graphics/quantize.svg";
+import TrashIcon from "../graphics/trash.svg";
+
 import {
   CLOCK_ACTION_STARTSTOP,
   CLOCK_ACTION_RESET,
+  SESSION_ACTION_CONFIRM_SEED,
+  SESSION_ACTION_CLEAR_SESSION,
 } from "../../store/actions";
 
 export default {
   name: "Controls",
   components: {
+    ConfirmIcon,
     MetronomeIcon,
     PauseIcon,
     PlayIcon,
-    RestartIcon,
     RecordIcon,
+    RestartIcon,
+    QuantizeIcon,
+    TrashIcon,
   },
   computed: {
     ...mapGetters("mainClockStore", [
       "currentBar",
       "currentDemisemiquaver",
-      // "currentPatternInd",
       "isRunning",
-      "soundOn",
+      "metronomeSoundOn",
       "tempo",
       "precountDemisemiquaver",
     ]),
+    ...mapGetters(["mode"]),
+    ...mapGetters("sessionStore", ["session", "currentPattern"]),
   },
   methods: {
     ...mapActions("mainClockStore", {
-      'startStop': CLOCK_ACTION_STARTSTOP,
-      'backToStart': CLOCK_ACTION_RESET,
+      startStop: CLOCK_ACTION_STARTSTOP,
+      resetClock: CLOCK_ACTION_RESET,
     }),
+    ...mapActions("sessionStore", {
+      confirmSeed: SESSION_ACTION_CONFIRM_SEED,
+      clearSession: SESSION_ACTION_CLEAR_SESSION,
+    }),
+    quantizeMelody() {},
+    trashSession(){
+      this.clearSession();
+      this.resetClock();
+    }
   },
 };
 </script>

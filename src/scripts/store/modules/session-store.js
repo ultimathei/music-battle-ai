@@ -5,7 +5,7 @@
  *
  * A session is a list of patterns.
  * A pattern is essentially 4 bars played by either the user or the response of
- * the app for the pattern.
+ * the app (ai/robot) for the pattern.
  */
 import { convertToPatternTime } from "../../utils/utils";
 import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../mutations";
@@ -117,18 +117,22 @@ export default {
     // message recieved from clock at the end of each 4-bar cycle
     [SESSION_ACTION_FINISHED_MELODY]({ state, dispatch }) {
       // stop all notes, this prevents overflows
-      console.log(state.currentPattern);
+      // console.log(state.currentPattern);
       dispatch(SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
-      // this.dispatch(INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_ALL_NOTES);
 
       if (!state.seedMelody) {
         // change to modes
         // send stop clock message
         // console.log("at the end of seed melody, stop clock, display edit..");
         this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STOP);
+
+        // if there were notes recorded to currentPattern
+        if (state.currentPattern.length == 0 && this.state.mode == 'seed_recording')
+          this.commit("mutateMode", "initial");
       } else if (state.aiMelodyArray.length < 1 && state.userTurn) {
         // console.log("whole session finished, stop the clock..");
         this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STOP);
+        this.commit("mutateMode", "scoring");
       } else {
         // console.log("still have melodies to play, move to next..");
         dispatch("moveToNextMelody");
@@ -139,6 +143,7 @@ export default {
       // state.isSessionLoading = true; // use this to display loader?
       // as confirmed make current pattern the seed
       state.seedMelody = state.currentPattern;
+      state.isSessionLoading = true;
 
       // get ai melodies
       await this.dispatch(
@@ -152,6 +157,7 @@ export default {
       // reset precount and start the battle
       this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_RESET_PRECOUNT);
       this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STARTSTOP);
+      this.commit("mutateMode", "battle");
     },
 
     [SESSION_ACTION_SET_AIMELODIES]({ state }, melodiesArray) {
@@ -173,8 +179,7 @@ export default {
     },
 
     nextRobotMelody({ state, dispatch }) {
-      console.log("transitioning from USER to ROBOT turn..");
-      // dispatch(SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
+      // console.log("transitioning from USER to ROBOT turn..");
       // 1. push old current pattern to session
       const patternToArchive = {
         type: "user",
@@ -194,7 +199,7 @@ export default {
     },
 
     nextUserMelody({ state }) {
-      console.log("transitioning from ROBOT to USER turn..");
+      // console.log("transitioning from ROBOT to USER turn..");
       // 1. push old current pattern to session
       const patternToArchive = {
         type: "robot",
@@ -214,7 +219,7 @@ export default {
     [SESSION_ACTION_GENERATE_RESPONSES]({ state, dispatch }) {
       // transitioning from user turn to response turn..
       if (state.userTurn) {
-        console.log("generate ai patterns here..");
+        // console.log("generate ai patterns here..");
         // dispatch(SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
         // 1. push old current pattern to session
         const patternToArchive = {
@@ -231,7 +236,7 @@ export default {
         }
 
         let sample = state.responseSequenceArray.shift();
-        console.log(sample);
+        // console.log(sample);
 
         state.currentPattern = convertFromMagentaSequence(sample);
       } else {
@@ -288,10 +293,10 @@ export default {
       // console.log(note);
       if (note.start) {
         // add to premature array
-        console.log("prem note added");
+        // console.log("prem note added");
         state.prematureNotes.push(note);
       } else {
-        console.log("prem note removed");
+        // console.log("prem note removed");
         // removing the note with same pitch
         state.prematureNotes = state.prematureNotes.filter(
           (n) => n.note != note.note

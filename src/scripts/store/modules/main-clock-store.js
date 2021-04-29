@@ -28,7 +28,6 @@ import {
 } from "../actions";
 
 const SESSION_STORE_LOC = "sessionStore/";
-const INSTRUMENT_STORE_LOC = "instrumentStore/";
 
 export default {
   namespaced: true,
@@ -38,14 +37,13 @@ export default {
     precountDemisemiquaver: 0,
     currentBar: 0,
     currentDemisemiquaver: 0,
-    // currentPatternInd: 0, // this should be in session store as melodyIndex?
     denominator: 8,
     intervalID: null,
     isRunning: false,
     lookahead: 25,
     nextBipTime: 0.0,
     scheduleAheadTime: 0.1,
-    soundOn: true,
+    metronomeSoundOn: true,
     tempo: 120, // fixed value for now
   }),
 
@@ -56,12 +54,8 @@ export default {
     currentBar(state) {
       return state.currentBar;
     },
-    // currentPatternInd(state) {
-    //   return state.currentPatternInd;
-    // },
     currentMusicalTime(state) {
       return {
-        // pattern: state.currentPatternInd,
         bar: state.currentBar,
         demisemi: state.currentDemisemiquaver,
       };
@@ -72,8 +66,8 @@ export default {
     isRunning(state) {
       return state.isRunning;
     },
-    soundOn(state) {
-      return state.soundOn;
+    metronomeSoundOn(state) {
+      return state.metronomeSoundOn;
     },
     tempo(state) {
       return state.tempo;
@@ -98,9 +92,6 @@ export default {
     [CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](state, data) {
       state.currentDemisemiquaver = data;
     },
-    // [CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND](state, data) {
-    //   state.currentPatternInd = data;
-    // },
     [CLOCK_MUTATION_UPDATE_INTERVAL_ID](state, data) {
       state.intervalID = data;
     },
@@ -111,7 +102,7 @@ export default {
       state.nextBipTime = data;
     },
     [CLOCK_MUTATION_UPDATE_SOUND_ON](state, data) {
-      state.soundOn = data;
+      state.metronomeSoundOn = data;
     },
   },
 
@@ -122,16 +113,8 @@ export default {
      */
     [CLOCK_ACTION_NEXT_BIP]({ commit, state, getters }) {
       const secondsPerBeat = 60.0 / state.tempo; // as tempo is in bpm
-      // the clock should not play the notes?
-      // instead instrument store should have a reference to current time and isRunning
-      // dispatch action to sessionStore to activate notes now
-      this.dispatch(
-        SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
-        getters.currentCursorPos
-      );
-      // console.log("time now in clock", getters.currentCursorPos); // 0..127
-      // and only then increase demisemi
 
+      // update next bip
       commit(
         CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
         state.nextBipTime + secondsPerBeat / state.denominator
@@ -143,53 +126,29 @@ export default {
         return; // without further tasks
       }
 
+      // play notes current using the session
+      this.dispatch(
+        SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
+        getters.currentCursorPos
+      );
+
       // after the precount:
       if (state.currentDemisemiquaver + 1 == 32) {
         commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
-
         if (state.currentBar + 1 == 4) {
           commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
-          // 1. send message to session store that one full melody has completed
-          // 2. session store should return current melody index
-          //    if currentMelodyIndex < 1 --> stop the clock, display edit mode
-          //    else continue clock
           this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_FINISHED_MELODY);
-
-          // if no base pattern yet
-          // add this pattern to basePattern
-          // and set hasBasePattern to true
-          // stop the playback
-          // (display confirm/edit pattern menu) -- in session store
-          // if (!state.hasBasePattern) {
-
-          //   this.dispatch(
-          //     SESSION_STORE_LOC + SESSION_ACTION_PREVIEW_BASE_PATTERN
-          //   );
-          //   // state.hasBasePattern = true;
-          //   dispatch(CLOCK_ACTION_STOP);
-          // } else {
-          //   // else (we already have basepattern)
-          //   // update pattern ind in store
-          //   // commit(
-          //   //   CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND,
-          //   //   state.currentPatternInd + 1
-          //   // );
-          //   // push current pattern to session, clear current pattern
-          //   // end of whole pattern
-          //   this.dispatch(
-          //     SESSION_STORE_LOC + SESSION_ACTION_GENERATE_RESPONSES
-          //   );
-          // }
-        } else {
-          commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, state.currentBar + 1);
+          return;
         }
-      } else {
-        // increase demisemi
-        commit(
-          CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
-          state.currentDemisemiquaver + 1
-        );
+        commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, state.currentBar + 1);
+        return;
       }
+
+      // increase demisemi
+      commit(
+        CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
+        state.currentDemisemiquaver + 1
+      );
     },
 
     /**
@@ -197,7 +156,7 @@ export default {
      * @param {*} time
      */
     [CLOCK_ACTION_SCHEDULE_BIP]({ commit, dispatch, state }, time) {
-      // push the note on the queue, even if we're not playing sound
+      // push the note on the queue, even if we're not playing bip sound
       // if precount is active, we do not progress currentDemisemi,
       // but progress the precount Demisemi instead
       const demisemi =
@@ -208,7 +167,7 @@ export default {
         bip: demisemi,
         time: time,
       });
-      if (state.soundOn && demisemi % 8 == 0)
+      if (state.metronomeSoundOn && demisemi % 8 == 0)
         dispatch(CLOCK_ACTION_PLAY_METRONOME, time);
     },
 
@@ -268,6 +227,9 @@ export default {
         );
       }
 
+      if (this.state.mode == "initial")
+        this.commit("mutateMode", "seed_recording");
+
       commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, true);
       commit(
         CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
@@ -285,10 +247,9 @@ export default {
     /**
      * Stop the clock
      */
-    [CLOCK_ACTION_STOP]({ state, commit }) {
+    [CLOCK_ACTION_STOP]({ state, commit, dispatch}) {
       commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, false);
       // dispatch action to sessionStore to activate notes now
-      // this.dispatch(INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_ALL_NOTES);
       this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
       // if precount is not over yet
       if (state.precountDemisemiquaver < 32) {
@@ -297,6 +258,21 @@ export default {
         commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
         commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
       }
+      if (
+        this.state.mode == "seed_recording" &&
+        state.precountDemisemiquaver >= 32 &&
+        this.state.sessionStore.currentPattern.length > 0
+      )
+        this.commit("mutateMode", "seed_edit");
+      else if (
+        this.state.mode == "seed_recording" &&
+        (state.precountDemisemiquaver < 32 ||
+          this.state.sessionStore.currentPattern.length == 0)
+      ){
+        this.commit("mutateMode", "initial");
+        dispatch(CLOCK_ACTION_RESET);
+      }
+
       // commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
       // commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
       clearInterval(state.intervalID);
@@ -318,12 +294,12 @@ export default {
      */
     [CLOCK_ACTION_RESET]({ state, commit, dispatch }) {
       dispatch(CLOCK_ACTION_STOP);
-      this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_CLEAR_SESSION);
       // reset time pointers
       state.precountDemisemiquaver = 0;
       // commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
       commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
       commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
+      this.commit("mutateMode", "initial");
     },
 
     [CLOCK_ACTION_RESET_PRECOUNT]({ state }) {

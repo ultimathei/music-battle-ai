@@ -51,5 +51,3 @@ export const MODEL_ACTION_GENERATE_SIMILARS = "model_action_generate_similars";
 // -- instrument actions --
 export const INSTRUMENT_ACTION_START_NOTE = "instrument_mutation_start_note";
 export const INSTRUMENT_ACTION_END_NOTE = "instrument_mutation_end_note";
-export const INSTRUMENT_ACTION_END_ALL_NOTES =
-  "instrument_mutation_end_all_notes";

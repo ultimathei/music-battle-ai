@@ -1,3 +1,6 @@
+/**
+ * The entry level store object
+ */
 import Vue from "vue";
 import Vuex from "vuex";
 import instrumentStore from "./modules/instrument-store";
@@ -17,11 +20,17 @@ const SESSION_STORE_LOC = "sessionStore/";
 const INSTRUMENT_STORE_LOC = "instrumentStore/";
 const CLOCK_STORE_LOC = "mainClockStore/";
 
-// enum
+// enumeration of possible modes
 const modes = {
+  INITIAL: "initial",
+  PAUSED: "paused",
+  SEED_RECORDING: "seed_recording",
+  SEED_EDIT: "seed_edit",
   RECORDING: "recording",
   PLAYBACK: "playback",
-  GAME: "game",
+  BATTLE: "battle",
+  SCORING: "scoring",
+  LOADING: "loading",
 };
 
 export default new Vuex.Store({
@@ -37,7 +46,7 @@ export default new Vuex.Store({
 
   // other, non module generic store objects
   state: {
-    mode: modes.RECORDING, 
+    mode: modes.INITIAL,
     currentlyPressedNotes: [],
   },
   getters: {
@@ -66,7 +75,7 @@ export default new Vuex.Store({
     },
     mutateMode(state, newVal) {
       state.mode = newVal;
-    }
+    },
   },
   // used for asyncronous transactions
   actions: {
@@ -98,7 +107,6 @@ export default new Vuex.Store({
      * @param {*} data the note object
      */
     playSounds({state}, data) {
-      console.log('in play sound method..');
       if (
         (state.mainClockStore.isRunning && state.sessionStore.userTurn) ||
         !state.mainClockStore.isRunning
@@ -121,14 +129,9 @@ export default new Vuex.Store({
      * @param {*} data the note object
      */
     recordNotes({state}, data) {
-      if (state.sessionStore.userTurn && state.mainClockStore.isRunning) {
+      if (state.mainClockStore.isRunning && state.sessionStore.userTurn) {
         this.dispatch(SESSION_STORE_LOC + "recordNoteChanges", data);
-      } 
-      // else {
-      //   // record premature note change
-      //   this.dispatch(SESSION_STORE_LOC + "recordPrematureNote", data);
-      // }
-    }
-
+      }
+    },
   },
 });

@@ -19,7 +19,6 @@ import { getNoteName } from "../../utils/utils";
 import {
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
-  INSTRUMENT_ACTION_END_ALL_NOTES,
 } from "../actions";
 
 export default {
@@ -109,12 +108,6 @@ export default {
     },
     [INSTRUMENT_ACTION_END_NOTE]({getters}, note) {
       getters.synth.triggerRelease(getNoteName(note));
-    },
-    [INSTRUMENT_ACTION_END_ALL_NOTES]({state}) {
-      // if(state.synth) {
-      //   state.synth.dispose();
-      //   state.synth = null;
-      // }
     },
   },
 };

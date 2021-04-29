@@ -75,7 +75,7 @@ export default {
     [MODEL_ACTION_INIT_RNN]({ state }) {
       let model = new music_rnn.MusicRNN(improv_checkpoint);
       model.initialize().then(() => {
-        console.log("rnn init done");
+        // console.log("rnn init done");
         state.magentaModel = model;
         state.isModelReady = true;
         // dispatch(SESSION_ACTION_GENERATE_CONTINUATION);
@@ -86,7 +86,7 @@ export default {
       state.magentaModel
         .continueSequence(sampleSequence, 60, 0.5, ["CM"])
         .then((resp) => {
-          console.log(resp);
+          // console.log(resp);
           // state.player.start(resp);
         });
     },
