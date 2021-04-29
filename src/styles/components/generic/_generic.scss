@@ -2,26 +2,18 @@
 * A list of GENERIC components
 */
 
-@import './logo';
-@import './buttons';
-@import './icons';
+@import "./logo";
+@import "./buttons";
+@import "./icons";
 
-.playback_control{
+.playback_control {
   width: 30px;
   height: 30px;
   margin-left: 10px;
   cursor: pointer;
-  
-  svg{
-    fill: $color-brand-neutral-1;
-    
-    &:hover{
-      fill: $color-brand-accent-2;
-    }
-  }
 }
 
-.metronome__details{
+.metronome__details {
   color: $color-brand-neutral-1;
   font-family: sans-serif;
   font-size: 14px;

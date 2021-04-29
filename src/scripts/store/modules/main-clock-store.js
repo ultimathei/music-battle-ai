@@ -290,7 +290,7 @@ export default {
     },
 
     /**
-     * Reset the clock to 0 and empty the session
+     * Reset the clock to 0
      */
     [CLOCK_ACTION_RESET]({ state, commit, dispatch }) {
       dispatch(CLOCK_ACTION_STOP);

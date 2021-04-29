@@ -5,12 +5,17 @@
     <template v-if="magentaModel">
       <div class="app__header">
         <Logo class="app-header__logo | logo" />
-        <div class="app-header__controls | header-controls">
+        <div class="app-header__controls">
+          <div class="metronome__details">
+            {{ currentBar + 1 }} /
+            {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
+          </div>
+          <MetronomeIcon class="icon-small" />
           <!-- <MidiController
             class="header-controls__control"
             @note-toggle="updateKeyboardUI"
           /> -->
-          <Controls class="header-controls__control" />
+          <!-- <Controls class="playback-controls" /> -->
         </div>
       </div>
       <div class="app__body | app-body">
@@ -36,6 +41,7 @@
 
 <script>
 import Logo from "./graphics/logo.svg";
+import MetronomeIcon from "./graphics/metronome.svg";
 import Controls from "./controls/controls.vue";
 import MidiController from "./midi/midi-controller.vue";
 import MusicSheet from "./music-sheet/music-sheet.vue";
@@ -58,6 +64,7 @@ export default {
     Logo,
     Controls,
     MidiController,
+    MetronomeIcon,
     MusicSheet,
     Piano,
     Preload,
@@ -67,7 +74,7 @@ export default {
   },
   computed: {
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
-    ...mapGetters("mainClockStore", ["isRunning"]),
+    ...mapGetters("mainClockStore", ["isRunning", "currentBar", "currentDemisemiquaver"]),
     ...mapGetters("sessionStore", ["userTurn", "currentPattern", "seedMelody"]),
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("midiStore", ["isMIDIready"]),

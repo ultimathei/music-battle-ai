@@ -1,11 +1,6 @@
 <template>
   <div>
     {{ mode }}
-    <MetronomeIcon class="icon-small" />
-    <div class="metronome__details">
-      {{ "todo" }}/{{ currentBar + 1 }}
-      {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
-    </div>
     <!-- <div class="playback_control" v-if="currentPatternInd > 0">
       <PauseIcon v-if="isRunning" @click="startStop" />
       <PlayIcon v-else @click="startStop" />
@@ -41,7 +36,6 @@
  */
 import { mapGetters, mapActions } from "vuex";
 import ConfirmIcon from "../graphics/confirm.svg";
-import MetronomeIcon from "../graphics/metronome.svg";
 import PauseIcon from "../graphics/pause.svg";
 import PlayIcon from "../graphics/play.svg";
 import RecordIcon from "../graphics/record.svg";
@@ -60,7 +54,6 @@ export default {
   name: "Controls",
   components: {
     ConfirmIcon,
-    MetronomeIcon,
     PauseIcon,
     PlayIcon,
     RecordIcon,
@@ -88,8 +81,8 @@ export default {
     ...mapActions("sessionStore", {
       confirmSeed: SESSION_ACTION_CONFIRM_SEED,
       clearSession: SESSION_ACTION_CLEAR_SESSION,
+      quantizeMelody: 'quantizeSeedMelody'
     }),
-    quantizeMelody() {},
     trashSession(){
       this.clearSession();
       this.resetClock();

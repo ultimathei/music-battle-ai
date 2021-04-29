@@ -22,26 +22,6 @@
           :type="userTurn ? 'human' : 'robot'"
           :index="session.length"
         />
-
-        <div
-          class="pattern-sequence__controls"
-          v-if="
-            currentPattern.length != 0 &&
-            !seedMelody &&
-            !isRunning &&
-            !isSessionLoading
-          "
-        >
-          <div class="pattern-sequence__control" @click="confirm">
-            Confirm and start battle
-          </div>
-          <!-- <div class="pattern-sequence__control">Quantize</div> -->
-          <div class="pattern-sequence__control">Discard</div>
-        </div>
-
-        <div class="pattern-sequence__controls" v-if="isSessionLoading">
-          <div class="pattern-sequence__control">Loading..</div>
-        </div>
       </div>
       <div
         class="pattern-sequence__arrow | arrow-right"
@@ -53,6 +33,10 @@
         <RightArrowIcon />
       </div>
     </div>
+    <Controls
+      class="pattern-sequence__controls | playback-controls"
+      data-dark="true"
+    />
   </div>
 </template>
 
@@ -62,6 +46,7 @@ import BattleIcon from "../graphics/match.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
 import SequencerItem from "./sequencer-item.vue";
+import Controls from "../controls/controls.vue";
 
 import {
   CLOCK_ACTION_STARTSTOP,
@@ -76,6 +61,7 @@ export default {
     LeftArrowIcon,
     RightArrowIcon,
     SequencerItem,
+    Controls,
   },
   data() {
     return {

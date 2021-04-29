@@ -38,7 +38,6 @@ export const SESSION_ACTION_CLOSE_UNFINISHED_NOTES =
 export const SESSION_ACTION_FINISHED_MELODY = "session_action_finished_melody";
 export const SESSION_ACTION_LOADING = "session_action_loading";
 export const SESSION_ACTION_SET_AIMELODIES = "session_action_set_aimelodies";
-export const SESSION_ACTION_PREMATURE_NOTE = "session_action_premature_note";
 
 
   // -- model actions --

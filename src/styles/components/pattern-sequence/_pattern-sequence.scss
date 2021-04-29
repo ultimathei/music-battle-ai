@@ -86,26 +86,28 @@
     align-items: center;
     justify-content: flex-end;
     height: 100%;
-    flex-grow: 1;
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding: 0 15px !important;
   }
 
-  &__control {
-    background-color: white;
-    color: black;
-    font-family: "Montserrat", sans-serif;
-    height: 100%;
-    padding: 5px 20px;
-    margin-left: 5px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  // &__control {
+  //   background-color: white;
+  //   color: black;
+  //   font-family: "Montserrat", sans-serif;
+  //   height: 100%;
+  //   padding: 5px 20px;
+  //   margin-left: 5px;
+  //   border-radius: 5px;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   cursor: pointer;
 
-    &:hover {
-      background-color: $color-brand-accent-1;
-    }
-  }
+  //   &:hover {
+  //     background-color: $color-brand-accent-1;
+  //   }
+  // }
 
   &__match-items {
     border: 2px solid transparent;
