@@ -7,7 +7,7 @@
  * A pattern is essentially 4 bars played by either the user or the response of
  * the app for the pattern.
  */
-
+ import { convertToPatternTime } from "../../utils/utils";
 import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../mutations";
 import {
   SESSION_ACTION_GENERATE_RESPONSES,
@@ -21,6 +21,7 @@ import {
   SESSION_ACTION_PREMATURE_NOTE,
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
+  INSTRUMENT_ACTION_END_ALL_NOTES,
   MODEL_ACTION_GENERATE_SIMILARS,
   CLOCK_ACTION_RESET_PRECOUNT,
   CLOCK_ACTION_STARTSTOP,
@@ -68,13 +69,13 @@ export default {
     seedMelody(state) {
       return state.seedMelody;
     },
-    userMelodyArray(state){
+    userMelodyArray(state) {
       return state.userMelodyArray;
     },
-    aiMelodyArray(state){
+    aiMelodyArray(state) {
       return state.aiMelodyArray;
     },
-    isSessionLoading(state){
+    isSessionLoading(state) {
       return state.isSessionLoading;
     },
   },
@@ -110,8 +111,11 @@ export default {
       }
     },
 
-    // TEST - message recieved from clock at the end of each 4-bar cycle
+    // message recieved from clock at the end of each 4-bar cycle
     [SESSION_ACTION_FINISHED_MELODY]({ state, dispatch }) {
+      // stop all notes, this prevents overflows
+      this.dispatch(INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_ALL_NOTES);
+
       if (!state.seedMelody) {
         // send stop clock message
         console.log("at the end of seed melody, stop clock, display edit..");
@@ -139,18 +143,18 @@ export default {
       // state.aiMelodyArray = aiMelodies;
       state.isSessionLoading = false;
 
-      dispatch('nextRobotMelody');
+      dispatch("nextRobotMelody");
 
       // reset precount and start the battle
-      this.dispatch(CLOCK_STORE_LOC+CLOCK_ACTION_RESET_PRECOUNT);
+      this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_RESET_PRECOUNT);
       this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STARTSTOP);
     },
 
-    [SESSION_ACTION_SET_AIMELODIES]({state}, melodiesArray) {
+    [SESSION_ACTION_SET_AIMELODIES]({ state }, melodiesArray) {
       state.aiMelodyArray = melodiesArray;
     },
 
-    [SESSION_ACTION_LOADING]({state}){
+    [SESSION_ACTION_LOADING]({ state }) {
       state.isSessionLoading = true;
     },
 
@@ -175,7 +179,7 @@ export default {
 
       state.session.push(patternToArchive);
       state.userMelodyArray.push(patternToArchive);
-      
+
       // 2. get the next element from the start of the ai array
       let melody = state.aiMelodyArray.shift();
       // console.log(melody);
@@ -262,18 +266,51 @@ export default {
       }
     },
 
-    [SESSION_ACTION_PREMATURE_NOTE]({state}, note) {
+    [SESSION_ACTION_PREMATURE_NOTE]({ state }, note) {
       // console.log(note);
-      if(note.start) {
+      if (note.start) {
         // add to premature array
-        console.log('prem note added');
+        console.log("prem note added");
         state.prematureNotes.push(note);
       } else {
-        console.log('prem note removed');
+        console.log("prem note removed");
         // removing the note with same pitch
-        state.prematureNotes = state.prematureNotes.filter(n => n.note != note.note);
+        state.prematureNotes = state.prematureNotes.filter(
+          (n) => n.note != note.note
+        );
       }
       // console.log('prem notes: ', state.prematureNotes)
+    },
+
+    // recordNote({ state }) {
+    //   // record to store at current time
+    //   console.log("in here");
+    //   // if (this.isRunning && this.userTurn)
+    //   //   this.recordNoteChanges(on_message, note, this.currentMusicalTime);
+    //   // else {
+    //   //   // record premature note change
+    //   //   this.recordPrematureNote(on_message, note);
+    //   // }
+    // },
+
+    recordPrematureNote({dispatch}, payload) {
+      // console.log('premature note detected..');
+      let data = { note: payload.note };
+      if (payload.on_message) data.start = true;
+      else data.end = true;
+      // send data here to store
+      dispatch(SESSION_ACTION_PREMATURE_NOTE, data);
+    },
+
+    /**
+     * Storing note MIDI messaged as they come in
+     */
+    recordNoteChanges({commit}, payload) {
+      let data = { note: payload.note };
+      if (payload.on_message) data.start = convertToPatternTime(payload.time);
+      else data.end = convertToPatternTime(payload.time);
+      // send data here to store
+      commit(SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN, data);
     },
   },
 

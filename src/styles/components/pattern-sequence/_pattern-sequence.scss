@@ -4,6 +4,7 @@
 .pattern-sequence {
   display: flex;
   flex-flow: row nowrap;
+  overflow: hidden;
 
   &__icon {
     width: 60px;
@@ -13,23 +14,28 @@
   }
 
   &__list {
-    flex-grow: 1;
-    background-color: rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    padding: 8px 6px;
+    // flex-grow: 1;
+    align-items: center;
+    background-color: $color-brand-neutral-5;
     display: flex;
     flex-flow: row nowrap;
-    align-items: center;
+    overflow: hidden;
+    padding: 8px 6px;
+    position: relative;
+    width: calc(100% - 60px);
   }
 
   &__arrow {
-    height: 100%;
-    width: 30px;
-    display: flex;
-    justify-content: center;
     align-items: center;
+    display: flex;
     fill: $color-brand-neutral-1;
-    padding: 5px;
+    height: 100%;
+    justify-content: center;
+    padding: 5px 10px;
+    position: absolute;
+    top: 0;
+    width: 40px;
+    z-index: 12;
 
     &[data-sequence-arrow-clickable="true"] {
       fill: $color-brand-neutral-2;
@@ -39,6 +45,23 @@
         fill: $color-brand-accent-2;
       }
     }
+
+    &.arrow-left {
+      left: 0;
+      background: linear-gradient(
+        90deg,
+        $color-brand-neutral-5 75%,
+        transparent 100%
+      );
+    }
+    &.arrow-right {
+      right: 0;
+      background: linear-gradient(
+        -90deg,
+        $color-brand-neutral-5 75%,
+        transparent 100%
+      );
+    }
   }
 
   &__scrollable {
@@ -47,6 +70,7 @@
     flex-flow: row nowrap;
     align-items: center;
     flex-grow: 1;
+    padding: 0 30px;
   }
 
   &__list-item {
@@ -98,11 +122,11 @@
       border: 2px solid $color-brand-accent-4;
     }
 
-    &.future{
+    &.future {
       opacity: 0.5;
     }
   }
-  &__match-item{
+  &__match-item {
     height: 100%;
     width: 40px;
     z-index: 2;

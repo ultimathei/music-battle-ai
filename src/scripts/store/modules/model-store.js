@@ -37,7 +37,7 @@ export default {
     isModelReady: false,
     isModelLoading: false,
     // game level specific values
-    numberOfSamples: 2,
+    numberOfSamples: 20,
     similarity: 0.9,
   }),
 
@@ -105,7 +105,7 @@ export default {
       setTimeout(() => {
         state.isModelReady = true;
         console.log('fadeout complete, element removed');
-      }, 500);
+      }, 1500);
     },
 
     async [MODEL_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
