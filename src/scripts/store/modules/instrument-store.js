@@ -90,6 +90,12 @@ export default {
     rangeEnd(state) {
       return state.rangeEnd;
     },
+    visibleNotes(state) {
+      return Array.from(
+        Array(state.rangeEnd - state.rangeStart + 1),
+        (_, index) => state.rangeEnd - index
+      );
+    },
   },
 
   mutations: {
@@ -105,10 +111,10 @@ export default {
       getters.synth.triggerRelease(getNoteName(note));
     },
     [INSTRUMENT_ACTION_END_ALL_NOTES]({state}) {
-      if(state.synth) {
-        state.synth.dispose();
-        state.synth = null;
-      }
+      // if(state.synth) {
+      //   state.synth.dispose();
+      //   state.synth = null;
+      // }
     },
   },
 };

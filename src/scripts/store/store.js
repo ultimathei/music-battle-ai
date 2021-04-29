@@ -15,6 +15,14 @@ Vue.use(Vuex);
 
 const SESSION_STORE_LOC = "sessionStore/";
 const INSTRUMENT_STORE_LOC = "instrumentStore/";
+const CLOCK_STORE_LOC = "mainClockStore/";
+
+// enum
+const modes = {
+  RECORDING: "recording",
+  PLAYBACK: "playback",
+  GAME: "game",
+};
 
 export default new Vuex.Store({
   modules: {
@@ -27,9 +35,9 @@ export default new Vuex.Store({
     sessionStore,
   },
 
-  // other, non module stores if any
+  // other, non module generic store objects
   state: {
-    mode: "seed", // seed / playback / game
+    mode: modes.RECORDING, 
     currentlyPressedNotes: [],
   },
   getters: {
@@ -56,12 +64,18 @@ export default new Vuex.Store({
         state.currentlyPressedNotes.push(data.note);
       }
     },
+    mutateMode(state, newVal) {
+      state.mode = newVal;
+    }
   },
   // used for asyncronous transactions
   actions: {
-    // this should be in main store ?
-    noteTrigger({ state, getters, commit }, payload) {
-      let time = getters["mainClockStore/currentMusicalTime"];
+    /**
+     * Trigger a note change
+     * @param {*} payload the note data object
+     */
+    noteTrigger({ getters, commit, dispatch }, payload) {
+      let time = getters[CLOCK_STORE_LOC+"currentMusicalTime"];
       const data = {
         on_message: payload.on_message,
         note: payload.note,
@@ -69,11 +83,22 @@ export default new Vuex.Store({
         velocity: payload.velocity,
       };
 
-      // UI mods
+      // Add note to currently pressed notes array
       commit("mutateCurrentlyPressedNotes", data);
-      // console.log("currentlyPressedNotes: ", state.currentlyPressedNotes);
 
       // SOUND playback
+      dispatch('playSounds', data);
+
+      // RECORDING the note changes
+      dispatch('recordNotes', data);
+    },
+
+    /**
+     * Plays the sounds for the given note
+     * @param {*} data the note object
+     */
+    playSounds({state}, data) {
+      console.log('in play sound method..');
       if (
         (state.mainClockStore.isRunning && state.sessionStore.userTurn) ||
         !state.mainClockStore.isRunning
@@ -89,14 +114,21 @@ export default new Vuex.Store({
             data.note
           );
       }
+    },
 
-      // RECORDING the note changes
+    /**
+     * Records the notes to the appropriate array
+     * @param {*} data the note object
+     */
+    recordNotes({state}, data) {
       if (state.sessionStore.userTurn && state.mainClockStore.isRunning) {
         this.dispatch(SESSION_STORE_LOC + "recordNoteChanges", data);
-      } else {
-        // record premature note change
-        this.dispatch(SESSION_STORE_LOC + "recordPrematureNote", data);
-      }
-    },
+      } 
+      // else {
+      //   // record premature note change
+      //   this.dispatch(SESSION_STORE_LOC + "recordPrematureNote", data);
+      // }
+    }
+
   },
 });

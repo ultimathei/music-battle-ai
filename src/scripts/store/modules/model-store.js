@@ -34,6 +34,7 @@ export default {
   namespaced: true,
   state: () => ({
     magentaModel: null, // new
+    modelMessage: "Loading AI model..",
     isModelReady: false,
     isModelLoading: false,
     // game level specific values
@@ -50,6 +51,9 @@ export default {
     },
     isModelLoading(state) {
       return state.isModelLoading;
+    },
+    modelMessage(state) {
+      return state.modelMessage;
     },
   },
   // basiacally setters
@@ -94,18 +98,22 @@ export default {
       let model = new music_vae.MusicVAE(musicVAE_checkpoint_med_4bar); //ModelConfigJSON
       await model.initialize();
       // console.log('before',model.spec.dataConverter.args)
-      // console.log(model);
-      // setting limits
-      model.spec.dataConverter.args.maxPitch = minPitch;
-      model.spec.dataConverter.args.minPitch = maxPitch;
-
-      state.magentaModel = model;
-      console.log("vae init done");
-
-      setTimeout(() => {
-        state.isModelReady = true;
-        console.log('fadeout complete, element removed');
-      }, 1500);
+      // console.log('model',model)
+      if(model.initialized) {
+        // setting limits
+        model.spec.dataConverter.args.maxPitch = minPitch;
+        model.spec.dataConverter.args.minPitch = maxPitch;
+  
+        state.magentaModel = model;
+        state.modelMessage = "AI model loaded";
+  
+        setTimeout(() => {
+          state.isModelReady = true;
+          console.log('fadeout complete, element removed');
+        }, 1500);
+      } else {
+        state.modelMessage = "Could not initialize AI model";
+      }
     },
 
     async [MODEL_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
@@ -118,7 +126,7 @@ export default {
       this.dispatch(SESSION_STORE_LOC+SESSION_ACTION_SET_AIMELODIES, samples);
       state.isModelLoading = false;
       // console.log("samples in model store: ", samples);
-      // return samples; // this will be returned to session store
+      // return samples; // this could be returned to session store
     },
   },
 };

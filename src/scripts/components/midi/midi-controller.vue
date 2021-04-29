@@ -8,18 +8,12 @@
 <script>
 // import MidiIcon from '../graphics/midi-controller.svg';
 import MidiIcon from "../graphics/midi.svg";
-import { mapActions, mapGetters, mapMutations } from "vuex";
-import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../../store/mutations";
-import { SESSION_ACTION_PREMATURE_NOTE } from "../../store/actions";
-import { convertToPatternTime } from "../../utils/utils";
+import { mapGetters} from "vuex";
 
 export default {
   name: "MidiController",
   components: {
     MidiIcon,
-  },
-  mounted() {
-    this.getMIDI();
   },
   computed: {
     ...mapGetters("sessionStore", ["userTurn"]),
@@ -27,135 +21,6 @@ export default {
     ...mapGetters("mainClockStore", ["currentMusicalTime", "isRunning"]),
   },
   methods: {
-    /**
-     * Mapping the getters (not the state) to limit ability of modifications to actions
-     */
-    ...mapMutations("sessionStore", [
-      SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN,
-    ]),
-    ...mapActions("sessionStore", {
-      prematureNote: SESSION_ACTION_PREMATURE_NOTE
-      }),
-
-    /**
-     *
-     */
-    getMIDI() {
-      if (navigator.requestMIDIAccess) {
-        console.log("This browser supports WebMIDI!");
-      } else {
-        console.log("WebMIDI is not supported in this browser.");
-      }
-
-      navigator
-        .requestMIDIAccess()
-        .then(this.onMIDISuccess, this.onMIDIFailure);
-    },
-
-    /**
-     * MIDI connection failure handler
-     */
-    onMIDIFailure() {
-      console.log("Could not access your MIDI devices.");
-    },
-
-    /**
-     * On successful MIDI connection, we set up event listener for inputs
-     */
-    onMIDISuccess(midiAccess) {
-      console.log("MIDI successfully connected", midiAccess);
-      const inputs = midiAccess.inputs;
-      // console.log("inputs: ", inputs);
-      // const outputs = midiAccess.outputs
-      // console.log('outputs: ', outputs)
-
-      for (let input of inputs.values())
-        input.onmidimessage = this.getMIDIMessage;
-    },
-
-    /**
-     * Handling and elegating the recieved MIDI messages
-     */
-    getMIDIMessage(midiMsg) {
-      // early exit if its not the user's turn
-      // if (this.isRunning && !this.userTurn) return;
-
-      // console.log(midiMsg);
-      const command = midiMsg.data[0];
-      // notes (pitch): 0...127
-      // example: lowest note on an 88-key piano has a value of 21
-      // the highest is 108. A “middle C” is 60.
-      const note = midiMsg.data[1];
-      // velocity: 0..127
-      // minimum velocity for note-on is 1
-      // velocity might not be present for noteoff
-      const velocity = midiMsg.data.length > 2 ? midiMsg.data[2] : 0;
-
-      // command types we are interested in:
-      // 144 marks a “note on” event
-      // 128 marks a “note off” event (or 144 with 0 velocity)
-      switch (command) {
-        // noteOn
-        case 144:
-          if (note < this.rangeStart || note > this.rangeEnd) {
-            return;
-          } else if (velocity > 0) {
-            this.noteTrigger(note, true, velocity);
-          } else {
-            this.noteTrigger(note, false);
-          }
-          break;
-        // noteOff
-        case 128:
-          this.noteTrigger(note, false);
-          break;
-        // expand switch to handle other command types
-      }
-    },
-
-    /**
-     * Toggles the key for given note on/off
-     * Also records the note changes to store
-     */
-    noteTrigger(note, on_message = true, velocity = 0) {
-      const payload = {
-        on_message,
-        note: note,
-        timestamp: new Date().getTime(),
-        velocity,
-      };
-      // emit to parent so the dom can be updated
-      this.$emit("note-toggle", payload);
-      // record to store at current time
-      if (this.isRunning && this.userTurn)
-        this.recordNoteChanges(on_message, note, this.currentMusicalTime);
-      else {
-        // record premature note change
-        this.recordPrematureNote(on_message, note);
-      }
-    },
-
-    recordPrematureNote(on_message, note) {
-      // console.log('premature note detected..');
-      let data = { note: note };
-      if (on_message) data.start = true;
-      else data.end = true;
-      // send data here to store
-      this.prematureNote(data);
-    },
-
-    /**
-     * Storing note MIDI messaged as they come in
-     */
-    recordNoteChanges(on_message, note, time) {
-      let data = { note: note };
-      if (on_message) data.start = convertToPatternTime(time);
-      else data.end = convertToPatternTime(time);
-      // send data here to store
-      this[SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](data);
-      // this.printNoteSignal(on_message, time)
-    },
-
     /**
      * Debugging helper function
      */

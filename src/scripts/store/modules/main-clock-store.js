@@ -25,7 +25,6 @@ import {
   SESSION_ACTION_PLAY_CURRENT_NOTES,
   SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
   SESSION_ACTION_FINISHED_MELODY,
-  INSTRUMENT_ACTION_END_ALL_NOTES,
 } from "../actions";
 
 const SESSION_STORE_LOC = "sessionStore/";
@@ -34,7 +33,7 @@ const INSTRUMENT_STORE_LOC = "instrumentStore/";
 export default {
   namespaced: true,
   state: () => ({
-    audioContext: null,
+    audioContext: null, // move to main store?
     bipsInQueue: [],
     precountDemisemiquaver: 0,
     currentBar: 0,
@@ -66,6 +65,9 @@ export default {
         bar: state.currentBar,
         demisemi: state.currentDemisemiquaver,
       };
+    },
+    currentCursorPos(state) {
+      return state.currentBar * 32 + state.currentDemisemiquaver;
     },
     isRunning(state) {
       return state.isRunning;
@@ -118,8 +120,18 @@ export default {
      * Advanced the time to the next bip (by demisemiquaver)
      * @param {*} param0
      */
-    [CLOCK_ACTION_NEXT_BIP]({ commit, state, dispatch }) {
+    [CLOCK_ACTION_NEXT_BIP]({ commit, state, getters }) {
       const secondsPerBeat = 60.0 / state.tempo; // as tempo is in bpm
+      // the clock should not play the notes?
+      // instead instrument store should have a reference to current time and isRunning
+      // dispatch action to sessionStore to activate notes now
+      this.dispatch(
+        SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
+        getters.currentCursorPos
+      );
+      // console.log("time now in clock", getters.currentCursorPos); // 0..127
+      // and only then increase demisemi
+
       commit(
         CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
         state.nextBipTime + secondsPerBeat / state.denominator
@@ -130,17 +142,6 @@ export default {
         state.precountDemisemiquaver++;
         return; // without further tasks
       }
-
-      // the clock should not play the notes?
-      // instead instrument store should have a reference to current time and isRunning
-      // dispatch action to sessionStore to activate notes now
-      let timeWhenPlayed = state.currentBar * 32 + state.currentDemisemiquaver;
-      // console.log(timeWhenPlayed);
-      this.dispatch(
-        SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
-        timeWhenPlayed+1
-      );
-      // and only then increase demisemi
 
       // after the precount:
       if (state.currentDemisemiquaver + 1 == 32) {
@@ -287,7 +288,7 @@ export default {
     [CLOCK_ACTION_STOP]({ state, commit }) {
       commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, false);
       // dispatch action to sessionStore to activate notes now
-      this.dispatch(INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_ALL_NOTES);
+      // this.dispatch(INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_ALL_NOTES);
       this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
       // if precount is not over yet
       if (state.precountDemisemiquaver < 32) {

@@ -104,25 +104,21 @@ export default {
     ...mapGetters("mainClockStore", [
       "currentBar",
       "currentDemisemiquaver",
+      "currentCursorPos",
       "isRunning",
       "precountDemisemiquaver",
     ]),
-    ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
+    ...mapGetters("instrumentStore", [
+      "rangeStart",
+      "rangeEnd",
+      "visibleNotes",
+    ]),
     ...mapGetters("sessionStore", [
       "currentPattern",
       "session",
       "userTurn",
       "isSessionLoading",
     ]),
-    visibleNotes() {
-      return Array.from(
-        Array(this.rangeEnd - this.rangeStart + 1),
-        (_, index) => this.rangeEnd - index
-      );
-    },
-    currentCursorPos() {
-      return this.currentBar * 32 + this.currentDemisemiquaver;
-    },
     cursorLeftPosStyle() {
       return {
         left: `${this.currentCursorPos * (100 / 128)}%`,
@@ -157,10 +153,6 @@ export default {
       };
     },
 
-    getMarkerType(c) {
-      return c % 32 == 0 ? "bar" : c % 8 == 0 ? "beat" : "";
-    },
-
     noteName(noteIndex) {
       return getNoteName(noteIndex);
     },
@@ -168,6 +160,10 @@ export default {
     getRowType(r) {
       const blackPoses = [1, 3, 6, 8, 10];
       return blackPoses.includes(r % 12) ? "black" : "";
+    },
+
+    getMarkerType(c) {
+      return c % 32 == 0 ? "bar" : c % 8 == 0 ? "beat" : "";
     },
   },
 };
