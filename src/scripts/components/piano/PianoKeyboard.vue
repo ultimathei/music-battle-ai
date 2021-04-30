@@ -6,7 +6,7 @@
         :key="n"
         class="piano-keyboard__white-key"
         :data-note-index="n"
-        :data-piano-key-pressed="currentlyPressedNotes.includes(n)"
+        :data-piano-key-pressed="singleActiveNote == n"
         :style="whiteKeyStyle"
       ></piano-white-key>
     </div>
@@ -17,7 +17,7 @@
         class="piano-keyboard__black-key"
         :data-piano-black-key-index="n"
         :data-note-index="n"
-        :data-piano-key-pressed="currentlyPressedNotes.includes(n)"
+        :data-piano-key-pressed="singleActiveNote == n"
         :style="blackKeyStyle(n)"
       />
     </div>
@@ -34,7 +34,7 @@ export default {
   name: "PianoKeyboard",
   computed: {
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
-    ...mapGetters(["currentlyPressedNotes"]),
+    ...mapGetters(["currentlyPressedNotes", "singleActiveNote"]),
     keyArray() {
       return [...Array(this.rangeEnd - this.rangeStart + 1).keys()].map(
         (x) => x + this.rangeStart

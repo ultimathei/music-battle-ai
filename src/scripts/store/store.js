@@ -14,6 +14,8 @@ import {
   INSTRUMENT_ACTION_END_NOTE,
 } from "../store/actions";
 
+import { convertToPatternTime } from "../utils/utils";
+
 Vue.use(Vuex);
 
 const SESSION_STORE_LOC = "sessionStore/";
@@ -48,6 +50,7 @@ export default new Vuex.Store({
   state: {
     mode: modes.INITIAL,
     currentlyPressedNotes: [],
+    singleActiveNote: null,
   },
   getters: {
     mode(state) {
@@ -56,23 +59,19 @@ export default new Vuex.Store({
     currentlyPressedNotes(state) {
       return state.currentlyPressedNotes;
     },
+    singleActiveNote(state) {
+      return state.singleActiveNote;
+    },
+    isRecordingAllowed(state) {
+      return (
+        (state.mode == modes.SEED_RECORDING || state.mode == modes.BATTLE) &&
+        state.mainClockStore.isRunning &&
+        state.sessionStore.userTurn
+      );
+    },
   },
   // used for syncronous transactions
   mutations: {
-    mutateCurrentlyPressedNotes(state, data) {
-      // console.log("note press change", data);
-      // find the note in the array with same pitch
-      const noteIndex = state.currentlyPressedNotes.findIndex(
-        (el) => el == data.note
-      );
-      // if note is already added and its an off message
-      if (noteIndex > -1 && !data.on_message) {
-        state.currentlyPressedNotes.splice(noteIndex, noteIndex + 1);
-      } else if (noteIndex < 0 && data.on_message) {
-        // add note to array
-        state.currentlyPressedNotes.push(data.note);
-      }
-    },
     mutateMode(state, newVal) {
       state.mode = newVal;
     },
@@ -84,7 +83,7 @@ export default new Vuex.Store({
      * @param {*} payload the note data object
      */
     noteTrigger({ getters, commit, dispatch }, payload) {
-      let time = getters[CLOCK_STORE_LOC+"currentMusicalTime"];
+      let time = getters[CLOCK_STORE_LOC + "currentMusicalTime"];
       const data = {
         on_message: payload.on_message,
         note: payload.note,
@@ -93,44 +92,143 @@ export default new Vuex.Store({
       };
 
       // Add note to currently pressed notes array
-      commit("mutateCurrentlyPressedNotes", data);
+      dispatch("updateCurrentlyPressedNotes", data);
 
-      // SOUND playback
-      dispatch('playSounds', data);
+      // SOUND playback -- ARCHIVED polyphonic
+      // dispatch("playSounds", data);
 
       // RECORDING the note changes
-      dispatch('recordNotes', data);
+      // dispatch("recordNotes");
     },
 
     /**
      * Plays the sounds for the given note
      * @param {*} data the note object
      */
-    playSounds({state}, data) {
-      if (
-        (state.mainClockStore.isRunning && state.sessionStore.userTurn) ||
-        !state.mainClockStore.isRunning
-      ) {
-        if (data.on_message)
+    // playSounds({ state }, data) {
+    //   //// Monophonic way
+    //   if (
+    //     (state.mainClockStore.isRunning && state.sessionStore.userTurn) ||
+    //     !state.mainClockStore.isRunning
+    //   ) {
+
+    //     if(state.singleActiveNote) {
+
+    //     }
+
+    //     if (data.on_message) {
+
+    //       this.dispatch(
+    //         INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+    //         data.note
+    //       );
+
+    //     } else {
+    //       this.dispatch(
+    //         INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+    //         data.note
+    //       );
+    //     }
+    //   }
+
+    //   //// ARCHIVED Polyphonic way
+    //   // if (
+    //   //   (state.mainClockStore.isRunning && state.sessionStore.userTurn) ||
+    //   //   !state.mainClockStore.isRunning
+    //   // ) {
+    //   //   if (data.on_message)
+    //   //     this.dispatch(
+    //   //       INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+    //   //       data.note
+    //   //     );
+    //   //   else
+    //   //     this.dispatch(
+    //   //       INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+    //   //       data.note
+    //   //     );
+    //   // }
+    // },
+
+    updateCurrentlyPressedNotes({ state, dispatch }, data) {
+      //  Monophonic way
+      // console.log(data);
+      let isUserTurn = this.getters["sessionStore/userTurn"];
+      if (data.on_message) {
+        if (state.singleActiveNote) {
+          if (isUserTurn)
+            this.dispatch(
+              INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+              state.singleActiveNote
+            );
+          state.currentlyPressedNotes.push(state.singleActiveNote);
+        }
+        state.singleActiveNote = data.note;
+        if (isUserTurn)
           this.dispatch(
             INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
             data.note
           );
-        else
-          this.dispatch(
-            INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
-            data.note
+      } else {
+        // note ended
+        if (data.note == state.singleActiveNote) {
+          if (isUserTurn)
+            this.dispatch(
+              INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+              state.singleActiveNote
+            );
+          if (state.currentlyPressedNotes.length > 0) {
+            state.singleActiveNote = state.currentlyPressedNotes.pop();
+            if (isUserTurn)
+              this.dispatch(
+                INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+                state.singleActiveNote
+              );
+          } else {
+            state.singleActiveNote = null;
+          }
+        } else {
+          let indexOfRemovable = state.currentlyPressedNotes.findIndex(
+            (note) => note == data.note
           );
+          if (indexOfRemovable > -1) {
+            state.currentlyPressedNotes.splice(indexOfRemovable, 1);
+          }
+        }
       }
+
+      // record change here
+      dispatch("recordNotes");
+
+      ///// ARCHIVED Polyphonic way
+      // // console.log("note press change", data);
+      // // find the note in the array with same pitch
+      // const noteIndex = state.currentlyPressedNotes.findIndex(
+      //   (el) => el == data.note
+      // );
+      // // if note is already added and its an off message
+      // if (noteIndex > -1 && !data.on_message) {
+      //   state.currentlyPressedNotes.splice(noteIndex, noteIndex + 1);
+      // } else if (noteIndex < 0 && data.on_message) {
+      //   // add note to array
+      //   state.currentlyPressedNotes.push(data.note);
+      // }
+      /////////
     },
 
     /**
      * Records the notes to the appropriate array
      * @param {*} data the note object
      */
-    recordNotes({state}, data) {
-      if (state.mainClockStore.isRunning && state.sessionStore.userTurn) {
-        this.dispatch(SESSION_STORE_LOC + "recordNoteChanges", data);
+    recordNotes({ state, getters }) {
+      if (getters.isRecordingAllowed) {
+        const now = convertToPatternTime(
+          this.getters[CLOCK_STORE_LOC + "currentMusicalTime"]
+        );
+
+        this.dispatch(SESSION_STORE_LOC + "switchNote", {
+          pitch: state.singleActiveNote,
+          now,
+        });
       }
     },
   },

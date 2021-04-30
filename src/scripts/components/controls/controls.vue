@@ -9,8 +9,12 @@
       <PauseIcon v-if="isRunning" @click="startStop" />
       <PlayIcon v-else @click="startStop" />
     </div>
-    <div class="playback_control" v-if="mode == 'seed_edit'">
-      <QuantizeIcon @click="quantizeMelody" />
+    <div
+      class="playback_control"
+      v-if="mode == 'seed_edit'"
+    >
+      <QuantizeIcon @click="quantizeMelody" v-if="!useQuantized"/>
+      <QuantizeIconActive @click="quantizeMelody" v-else/>
     </div>
     <div class="playback_control" v-if="mode == 'seed_edit'">
       <ConfirmIcon @click="confirmSeed" />
@@ -41,6 +45,7 @@ import PlayIcon from "../graphics/play.svg";
 import RecordIcon from "../graphics/record.svg";
 import RestartIcon from "../graphics/restart.svg";
 import QuantizeIcon from "../graphics/quantize.svg";
+import QuantizeIconActive from "../graphics/quantize_active.svg";
 import TrashIcon from "../graphics/trash.svg";
 
 import {
@@ -59,6 +64,7 @@ export default {
     RecordIcon,
     RestartIcon,
     QuantizeIcon,
+    QuantizeIconActive,
     TrashIcon,
   },
   computed: {
@@ -71,7 +77,11 @@ export default {
       "precountDemisemiquaver",
     ]),
     ...mapGetters(["mode"]),
-    ...mapGetters("sessionStore", ["session", "currentPattern"]),
+    ...mapGetters("sessionStore", [
+      "session",
+      "currentPattern",
+      "useQuantized",
+    ]),
   },
   methods: {
     ...mapActions("mainClockStore", {
@@ -81,12 +91,12 @@ export default {
     ...mapActions("sessionStore", {
       confirmSeed: SESSION_ACTION_CONFIRM_SEED,
       clearSession: SESSION_ACTION_CLEAR_SESSION,
-      quantizeMelody: 'quantizeSeedMelody'
+      quantizeMelody: "quantizeSeedMelody",
     }),
-    trashSession(){
+    trashSession() {
       this.clearSession();
       this.resetClock();
-    }
+    },
   },
 };
 </script>

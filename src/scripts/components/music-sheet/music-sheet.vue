@@ -37,7 +37,7 @@
         <div class="music-sheet__notes | pattern-notes">
           <div
             class="pattern-notes__note"
-            v-for="(note, index) in currentPattern"
+            v-for="(note, index) in activePattern"
             :key="`note-${index}`"
             :style="displayNote(note)"
             :data-note-user-type="userTurn"
@@ -115,10 +115,19 @@ export default {
     ]),
     ...mapGetters("sessionStore", [
       "currentPattern",
+      "quantizedSeedMelody",
+      "seedMelody",
       "session",
       "userTurn",
       "isSessionLoading",
+      "useQuantized",
     ]),
+    activePattern() {
+      if (!this.seedMelody && this.useQuantized && this.quantizedSeedMelody) {
+        return this.quantizedSeedMelody;
+      }
+      return this.currentPattern;
+    },
     cursorLeftPosStyle() {
       return {
         left: `${this.currentCursorPos * (100 / 128)}%`,
@@ -139,7 +148,11 @@ export default {
   methods: {
     displayNote(note) {
       // don't display if no end and cursor is behind the start of note
-      if (!note.end && note.start > this.currentCursorPos) return {};
+      if (
+        (!note.end && note.start > this.currentCursorPos) ||
+        note.end == note.start
+      )
+        return {};
       // display note til cursor if no end and cursor is after start of note
       let end = note.end ? note.end : this.currentCursorPos;
 

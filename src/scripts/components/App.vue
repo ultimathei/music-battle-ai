@@ -84,8 +84,9 @@ export default {
   },
   mounted() {
     // maybe store it in local storage, so to not load it every time
-    this[MODEL_ACTION_INIT_VAE](this.rangeStart, this.rangeEnd);
+    // console.log(this.rangeStart, this.rangeEnd);
     this.getMIDI();
+    this[MODEL_ACTION_INIT_VAE](this.rangeStart, this.rangeEnd);
   },
   methods: {
     ...mapActions("instrumentStore", [

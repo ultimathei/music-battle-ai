@@ -25,7 +25,7 @@ const ModelConfigJSON = {
       numSteps: 256,
       numSegments: 16,
       minPitch: 60,
-      maxPitch: 72,
+      maxPitch: 84,
     },
   },
 };
@@ -39,7 +39,7 @@ export default {
     isModelLoading: false,
     // game level specific values
     numberOfSamples: 2,
-    similarity: 0.9,
+    similarity: 0.6,
   }),
 
   getters: {
@@ -95,21 +95,44 @@ export default {
      * Initialise the model to VAE
      */
     async [MODEL_ACTION_INIT_VAE]({ state }, minPitch, maxPitch) {
-      let model = new music_vae.MusicVAE(musicVAE_checkpoint_med_4bar); //ModelConfigJSON
-      await model.initialize();
+      state.magentaModel = await new music_vae.MusicVAE(
+        musicVAE_checkpoint_med_4bar
+      ); //ModelConfigJSON
+      // let dataConverter = {
+      //   FIRST_PITCH: 2,
+      //   NOTE_OFF: 1,
+      //   NUM_SPLITS: 0,
+      //   SEGMENTED_BY_TRACK: false,
+      //   depth: 90,
+      //   ignorePolyphony: undefined,
+      //   maxPitch: 84,
+      //   minPitch: 60,
+      //   numSegments: 16,
+      //   numSteps: 256,
+      // };
+      // state.magentaModel.dataConverter = dataConverter;
+      // state.magentaModel.spec = { spec: {dataConverter: dataConverter}};
+      // model.spec = ModelConfigJSON;
+      // state.magentaModel.spec.dataConverter.args.minPitch = 60;
+      // state.magentaModel.spec.dataConverter.args.maxPitch = 84;
+      // state.magentaModel.dataConverter.minPitch = 60;
+      // state.magentaModel.dataConverter.maxPitch = 84;
+      await state.magentaModel.initialize();
+
+      // const testIt = new MelodyConverterArgs();
+      // console.log(testIt);
+      // console.log(mm);
+
       // console.log('before',model.spec.dataConverter.args)
-      // console.log('model',model)
-      if(model.initialized) {
+      if (state.magentaModel.initialized) {
         // setting limits
-        model.spec.dataConverter.args.maxPitch = minPitch;
-        model.spec.dataConverter.args.minPitch = maxPitch;
-  
-        state.magentaModel = model;
+
+        // console.log(state.magentaModel);
         state.modelMessage = "AI model loaded";
-  
+
         setTimeout(() => {
           state.isModelReady = true;
-          console.log('fadeout complete, element removed');
+          console.log("fadeout complete, element removed");
         }, 1500);
       } else {
         state.modelMessage = "Could not initialize AI model";
@@ -123,7 +146,10 @@ export default {
         state.numberOfSamples,
         state.similarity
       );
-      this.dispatch(SESSION_STORE_LOC+SESSION_ACTION_SET_AIMELODIES, samples);
+
+      // console.log(samples);
+
+      this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_SET_AIMELODIES, samples);
       state.isModelLoading = false;
       // console.log("samples in model store: ", samples);
       // return samples; // this could be returned to session store

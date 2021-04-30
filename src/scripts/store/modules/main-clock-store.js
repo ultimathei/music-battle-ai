@@ -126,11 +126,13 @@ export default {
         return; // without further tasks
       }
 
-      // play notes current using the session
-      this.dispatch(
-        SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
-        getters.currentCursorPos
-      );
+      // play current notes using the session if in playback or edit mode or in battle and not user turn
+      if (!this.getters.isRecordingAllowed) {
+        this.dispatch(
+          SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
+          getters.currentCursorPos
+        );
+      }
 
       // after the precount:
       if (state.currentDemisemiquaver + 1 == 32) {
@@ -247,7 +249,7 @@ export default {
     /**
      * Stop the clock
      */
-    [CLOCK_ACTION_STOP]({ state, commit, dispatch}) {
+    [CLOCK_ACTION_STOP]({ state, commit, dispatch }) {
       commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, false);
       // dispatch action to sessionStore to activate notes now
       this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
@@ -268,7 +270,7 @@ export default {
         this.state.mode == "seed_recording" &&
         (state.precountDemisemiquaver < 32 ||
           this.state.sessionStore.currentPattern.length == 0)
-      ){
+      ) {
         this.commit("mutateMode", "initial");
         dispatch(CLOCK_ACTION_RESET);
       }
