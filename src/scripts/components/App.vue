@@ -10,16 +10,16 @@
             {{ currentBar + 1 }} /
             {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
           </div>
+          <div
+            class="metronome__flash"
+            :data-active="metronomeFlashActive"
+            ref="metronome_flash"
+          ></div>
           <MetronomeIcon
             class="metronome__button"
             @click="switchMetronome"
             :data-active="metronomeSoundOn"
           />
-          <!-- <MidiController
-            class="header-controls__control"
-            @note-toggle="updateKeyboardUI"
-          /> -->
-          <!-- <Controls class="playback-controls" /> -->
         </div>
       </div>
       <div class="app__body | app-body">
@@ -63,8 +63,6 @@ import {
 } from "../store/actions";
 import { CLOCK_MUTATION_UPDATE_SOUND_ON } from "../store/mutations";
 
-const CLOCK_STORE_LOC = "mainClockStore/";
-
 export default {
   name: "app",
   components: {
@@ -86,6 +84,7 @@ export default {
       "currentBar",
       "currentDemisemiquaver",
       "metronomeSoundOn",
+      "metronomeFlashActive"
     ]),
     ...mapGetters("sessionStore", ["userTurn", "currentPattern", "seedMelody"]),
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
@@ -108,16 +107,7 @@ export default {
     ...mapActions("modelStore", [MODEL_ACTION_INIT_VAE]),
     ...mapActions("midiStore", ["getMIDI"]),
     ...mapMutations("mainClockStore", [CLOCK_MUTATION_UPDATE_SOUND_ON]),
-    /**
-     * Updating the keyboard UI to refelct changes in currently played MIDI notes.
-     */
-    updateKeyboardUI(payload) {
-      // console.log(payload);
 
-      // play/stop sound note for playback
-      if (payload.on_message) this[INSTRUMENT_ACTION_START_NOTE](payload.note);
-      else this[INSTRUMENT_ACTION_END_NOTE](payload.note);
-    },
     switchMetronome() {
       this[CLOCK_MUTATION_UPDATE_SOUND_ON](!this.metronomeSoundOn);
     },

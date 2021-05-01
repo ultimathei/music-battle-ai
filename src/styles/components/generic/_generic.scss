@@ -18,15 +18,40 @@
   font-family: sans-serif;
   font-size: 14px;
   font-weight: 600;
-  margin: 0 10px;
 }
 
 .metronome__button {
     fill: $color-brand-neutral-1;
     height: 30px;
     opacity: 0.5;
+    cursor: pointer;
+
+    &:hover{
+      opacity: 1;
+      fill: $color-brand-accent-2;
+    }
 
     &[data-active] {
       opacity: 1;
     }
+}
+
+.metronome__flash{
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  margin: 0 10px;
+  background-color: $color-brand-neutral-1;
+
+  &[data-active] {
+    animation-name: flash_metronome_anim;
+    animation-duration: 200ms;
+    animation-iteration-count: 1;
+  }
+}
+
+/* Metronome flash animation */
+@keyframes flash_metronome_anim {
+  from {background-color: red;}
+  to {background-color: $color-brand-neutral-1;}
 }

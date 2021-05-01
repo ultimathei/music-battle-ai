@@ -47,6 +47,7 @@ export default {
     nextBipTime: 0.0,
     scheduleAheadTime: 0.1,
     metronomeSoundOn: true,
+    metronomeFlashActive: false,
     tempo: 120, // fixed value for now
   }),
 
@@ -71,6 +72,9 @@ export default {
     },
     metronomeSoundOn(state) {
       return state.metronomeSoundOn;
+    },
+    metronomeFlashActive(state) {
+      return state.metronomeFlashActive;
     },
     tempo(state) {
       return state.tempo;
@@ -194,8 +198,16 @@ export default {
         bip: demisemi,
         time: time,
       });
-      if (state.metronomeSoundOn && demisemi % 8 == 0)
-        dispatch(CLOCK_ACTION_PLAY_METRONOME, time);
+      if (demisemi % 8 == 0) {
+        // sound it
+        if (state.precountDemisemiquaver < 32 || state.metronomeSoundOn)
+          dispatch(CLOCK_ACTION_PLAY_METRONOME, time);
+        // flash it
+        state.metronomeFlashActive = true;
+        setTimeout(() => {
+          state.metronomeFlashActive = false;
+        }, 200);
+      }
     },
 
     /**
