@@ -1,5 +1,7 @@
 /**
  * A list of all possible mutations of the store objects
+ * All MUTATION names are prefixed with MUT_ (short for mutation)
+ * and the keyword for the sub-store
  */
 // -- piano store mutations --
 export const MUT_pianoHeight = "MUT_pianoHeight";

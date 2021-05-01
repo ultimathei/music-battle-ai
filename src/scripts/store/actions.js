@@ -1,5 +1,7 @@
 /**
  * A list of all possible actions on the store objects
+ * All ACTION names are prefixed with ACT_ (short for action)
+ * and the keyword for the sub-store
  */
 // -- piano store actions --
 export const ACT_pianoSetHeight = "ACT_pianoSetHeight";

@@ -68,27 +68,12 @@ export const convertToPatternTime = (musicalTime) => {
 export const convertToMagentaSample = (pattern, tempo, stepsPerQuarter) => {
   const notes = pattern.map((note) => {
     let magentaNote = {
-      'pitch': note.note,
-      'quantizedStartStep': note.start,
-      'quantizedEndStep': note.end
+      pitch: note.note,
+      quantizedStartStep: note.start,
+      quantizedEndStep: note.end,
     };
     return magentaNote;
   });
-
-  // notes = [
-  //   { pitch: 60, quantizedStartStep: "0", quantizedEndStep: "2" },
-  //   { pitch: 64, quantizedStartStep: "2", quantizedEndStep: "4" },
-  //   { pitch: 60, quantizedStartStep: "4", quantizedEndStep: "6" },
-  //   { pitch: 64, quantizedStartStep: "6", quantizedEndStep: "8" },
-  //   { pitch: 67, quantizedStartStep: "8", quantizedEndStep: "12" },
-  //   { pitch: 67, quantizedStartStep: "12", quantizedEndStep: "16" },
-  //   { pitch: 60, quantizedStartStep: "16", quantizedEndStep: "18" },
-  //   { pitch: 64, quantizedStartStep: "18", quantizedEndStep: "20" },
-  //   { pitch: 60, quantizedStartStep: "20", quantizedEndStep: "22" },
-  //   { pitch: 64, quantizedStartStep: "22", quantizedEndStep: "24" },
-  //   { pitch: 67, quantizedStartStep: "24", quantizedEndStep: "28" },
-  //   { pitch: 67, quantizedStartStep: "28", quantizedEndStep: "32" },
-  // ];
 
   return {
     tempos: [{ qpm: tempo }],
@@ -98,15 +83,40 @@ export const convertToMagentaSample = (pattern, tempo, stepsPerQuarter) => {
   };
 };
 
-export const convertFromMagentaSequence = (magentaSeq) => {
-  return magentaSeq.notes.map(note => {
-    return {
-      note: note.pitch,
-      start: note.quantizedStartStep,
-      end: note.quantizedEndStep
+export const convertFromMagentaSequence = (magentaSeq, minPitch, maxPitch) => {
+  let notes = [];
+
+  magentaSeq.notes.forEach((note, index, object) => {
+    // boundary check for start and end times
+    if (note.quantizedStartStep > 128) {
+      // do not add to array and remove from samples array
+      object.splice(index, 1);
+    } else {
+      if (note.quantizedEndStep > 128) {
+        note.quantizedEndStep = 128;
+      }
+
+      // pitch boundary check -- desctructive to magenta samples too
+      if (note.pitch > maxPitch) {
+        let diff = note.pitch - maxPitch;
+        let numOctavesDown = Math.ceil(diff / 12);
+        note.pitch -= numOctavesDown * 12;
+      } else if (note.pitch < minPitch) {
+        let diff = minPitch - note.pitch;
+        let numOctavesUp = Math.ceil(diff / 12);
+        note.pitch += numOctavesUp * 12;
+      }
+
+      notes.push({
+        note: note.pitch,
+        start: note.quantizedStartStep,
+        end: note.quantizedEndStep,
+      });
     }
-  })
-}
+  });
+
+  return notes;
+};
 
 export const getOffsetAmount = (quantizer, offset) => {
   let directedOffset = -offset;
@@ -114,4 +124,4 @@ export const getOffsetAmount = (quantizer, offset) => {
     directedOffset += quantizer;
   }
   return directedOffset;
-}
+};

@@ -56,6 +56,7 @@ export default {
       if (this.deleteInitiated) return "Delete";
       else if (this.mode == "initial") return "Start new battle";
       else if (this.mode == "scoring") return "Listen whole battle";
+      else if (this.mode == "done") return "Next Battle";
       return "Resume battle";
     },
   },

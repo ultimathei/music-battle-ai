@@ -33,6 +33,7 @@ const modes = {
   BATTLE: "battle",
   SCORING: "scoring",
   LOADING: "loading",
+  DONE: "done",
 };
 
 export default new Vuex.Store({

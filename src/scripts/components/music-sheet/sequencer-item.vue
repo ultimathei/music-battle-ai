@@ -3,7 +3,7 @@
     :class="`sequencer-item`"
     :data-sequence-list-item-type="type"
   >
-    <div class="sequencer-item__index">{{ patternIndex }}</div>
+    <div class="sequencer-item__index">{{ index }}</div>
     <RobotIcon v-if="type=='robot'" class="sequencer-item__icon" />
     <UserIcon v-else class="sequencer-item__icon" />
   </div>
@@ -20,12 +20,7 @@ export default {
   },
   props:{
     type: String,
-    index: Number,
+    index: String,
   },
-  computed: {
-    patternIndex() {
-      return Math.floor(this.index / 2) + 1;
-    }
-  }
 };
 </script>

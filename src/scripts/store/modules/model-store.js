@@ -10,10 +10,12 @@ import {
 } from "../actions";
 import {
   improv_checkpoint,
-  musicVAE_checkpoint_2bar,
+  // musicVAE_checkpoint_2bar,
   musicVAE_checkpoint_med_4bar,
-  musicVAE_checkpoint,
+  // musicVAE_checkpoint,
 } from "../../services/magenta-services";
+
+import { convertFromMagentaSequence } from "../../utils/utils";
 
 const SESSION_STORE_LOC = "sessionStore/";
 
@@ -38,7 +40,7 @@ export default {
     isModelReady: false,
     isModelLoading: false,
     // game level specific values
-    numberOfSamples: 2,
+    numberOfSamples: 1,
     similarity: 0.8,
   }),
 
@@ -70,7 +72,7 @@ export default {
     //////////////////
 
     /**
-     * Initialise the model to RNN
+     * Initialise the model to RNN --  not used right now
      */
     [ACT_modelInitRnn]({ state }) {
       let model = new music_rnn.MusicRNN(improv_checkpoint);
@@ -141,18 +143,26 @@ export default {
 
     async [ACT_modelGenerateSimilarsVae]({ state }, noteSequence) {
       state.isModelLoading = true;
+
       let samples = await state.magentaModel.similar(
         noteSequence,
         state.numberOfSamples,
         state.similarity
       );
 
+      // do conversions here
       // console.log(samples);
+      let melodies = samples.map((sample) =>
+        convertFromMagentaSequence(
+          sample,
+          this.state.instrumentStore.rangeStart,
+          this.state.instrumentStore.rangeEnd
+        )
+      );
+      // console.log(melodies);
 
-      this.dispatch(SESSION_STORE_LOC + ACT_sessionSetAiMelodies, samples);
+      this.dispatch(SESSION_STORE_LOC + ACT_sessionSetAiMelodies, melodies);
       state.isModelLoading = false;
-      // console.log("samples in model store: ", samples);
-      // return samples; // this could be returned to session store
     },
   },
 };

@@ -126,22 +126,56 @@ export default {
       "userTurn",
       "isSessionLoading",
       "useQuantized",
+      "aiMelodyArray",
+      "userMelodyArray",
+      "patternPointer",
     ]),
+    ...mapGetters(["mode"]),
+
+    // local computed
     activePattern() {
-      if (!this.seedMelody && this.useQuantized && this.quantizedSeedMelody) {
-        return this.quantizedSeedMelody;
+      // New aproach
+      // if in seed_edit or seed_recording mode
+      //    if useQuantized --> quantizedPattern
+      //    else --> currentPattern
+      // else (battle mode or playback mode?)
+      //    if userTurn --> currentPattern
+      //    else --> aiMelodyArray[patternPointer]
+      if (this.mode == "seed_recording" || this.mode == "seed_edit") {
+        if (this.useQuantized) {
+          return this.quantizedSeedMelody;
+        } else {
+          return this.currentPattern;
+        }
+      } else if (this.mode == "playback") {
+        if (this.userTurn) {
+          return this.userMelodyArray[this.patternPointer-1] || [];
+        } else {
+          return this.aiMelodyArray[this.patternPointer-1] || [];
+        }
+      } else {
+        if (this.userTurn) {
+          return this.currentPattern;
+        } else {
+          return this.aiMelodyArray[this.patternPointer-1] || [];
+        }
       }
-      return this.currentPattern;
-    },
-    cursorLeftPosStyle() {
-      return {
-        left: `${this.currentCursorPos * (100 / 128)}%`,
-      };
+
+      // old way
+      // if (!this.seedMelody && this.useQuantized && this.quantizedSeedMelody) {
+      //   return this.quantizedSeedMelody;
+      // }
+      // return this.currentPattern;
     },
     previousPattern() {
       if (this.session.length > 0)
         return this.session[this.session.length - 1].pattern;
       return [];
+    },
+    cursorLeftPosStyle() {
+      return {
+        left: `${this.currentCursorPos * (100 / 128)}%`,
+      };
     },
     isPrecountVisible() {
       return this.isRunning && this.precountDisplayValue > 0;

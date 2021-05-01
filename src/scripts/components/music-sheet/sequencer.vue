@@ -4,7 +4,7 @@
     <div class="pattern-sequence__list" ref="sequencer-list">
       <div
         class="pattern-sequence__arrow | arrow-left"
-        :data-sequence-arrow-clickable="currentSequencerPage > 0"
+        :data-sequence-arrow-clickable="isPreviousClickable"
         @click="incrementPager(-1)"
       >
         <LeftArrowIcon />
@@ -12,22 +12,30 @@
       <div class="pattern-sequence__scrollable" :style="pagerStyle">
         <SequencerItem
           class="pattern-sequence__list-item"
-          v-for="(pattern, index) in session"
-          :key="`sequence-item-${index}`"
-          :type="pattern.type"
-          :index="index"
+          :data-active="aiMelodyArray.length == 0"
+          type="human"
+          index="seed"
         />
         <SequencerItem
-          class="pattern-sequence__list-item | active"
-          :type="userTurn ? 'human' : 'robot'"
-          :index="session.length"
+          class="pattern-sequence__list-item"
+          v-for="index in aiMelodyArray.length"
+          :key="`sequence-item-robot-${index}`"
+          type="robot"
+          :data-active="index == patternPointer && !userTurn"
+          :index="`${index}`"
+        />
+        <SequencerItem
+          class="pattern-sequence__list-item"
+          v-for="index in aiMelodyArray.length"
+          :key="`sequence-item-human-${index}`"
+          type="human"
+          :data-active="index == patternPointer && userTurn"
+          :index="`${index}`"
         />
       </div>
       <div
         class="pattern-sequence__arrow | arrow-right"
-        :data-sequence-arrow-clickable="
-          session.length > currentSequencerPage * sequencerItemFitCount
-        "
+        :data-sequence-arrow-clickable="isNextClickable"
         @click="incrementPager(1)"
       >
         <RightArrowIcon />
@@ -35,7 +43,6 @@
     </div>
     <Controls
       class="pattern-sequence__controls | playback-controls"
-      data-dark="true"
     />
   </div>
 </template>
@@ -50,7 +57,6 @@ import Controls from "../controls/controls.vue";
 
 import {
   ACT_clockStartStop,
-  ACT_sessionConfirmSeed,
   ACT_sessionSetLoading,
 } from "../../store/actions";
 
@@ -73,11 +79,11 @@ export default {
     ...mapGetters("sessionStore", [
       "session",
       "userTurn",
-      "currentPattern",
-      "seedMelody",
-      "isSessionLoading",
+      "aiMelodyArray",
+      "userMelodyArray",
+      "patternPointer",
     ]),
-    ...mapGetters("mainClockStore", ["isRunning"]),
+    // local computed
     pagerStyle() {
       return {
         marginLeft: `calc(-${this.currentSequencerPage} * (100% - 40px))`,
@@ -85,6 +91,14 @@ export default {
     },
     sequencerItemFitCount() {
       return Math.floor(this.containerWidth / 40);
+    },
+    isNextClickable() {
+      // return session.length > currentSequencerPage * sequencerItemFitCount;
+      return false;
+    },
+    isPreviousClickable() {
+      // return currentSequencerPage > 0;
+      return false;
     },
   },
   created() {
@@ -101,7 +115,6 @@ export default {
       startStop: ACT_clockStartStop,
     }),
     ...mapActions("sessionStore", {
-      confirmBase: ACT_sessionConfirmSeed,
       setLoading: ACT_sessionSetLoading,
     }),
 
@@ -109,23 +122,16 @@ export default {
       this.containerWidth = this.$refs["sequencer-list"].clientWidth;
     },
 
-    async confirm() {
-      // set loading to true
-      this.setLoading();
-      setTimeout(() => {
-        this.confirmBase(); // sets loading to false
-      }, 500);
-    },
-
     incrementPager(increment) {
-      let upperbound = 2; // ?
-      if (
-        this.currentSequencerPage + increment < 0 ||
-        this.currentSequencerPage + increment > upperbound
-      ) {
-        return;
-      }
-      this.currentSequencerPage += increment;
+      return; // do later
+      // let upperbound = 2; // ?
+      // if (
+      //   this.currentSequencerPage + increment < 0 ||
+      //   this.currentSequencerPage + increment > upperbound
+      // ) {
+      //   return;
+      // }
+      // this.currentSequencerPage += increment;
     },
   },
 };

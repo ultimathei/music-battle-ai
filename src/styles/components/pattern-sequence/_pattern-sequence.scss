@@ -147,6 +147,10 @@
   color: $color-brand-foreground;
   position: relative;
 
+  &[data-active] {
+    border: 2px solid $color-brand-accent-4;
+  }
+
   &[data-sequence-list-item-type="human"] {
     background: $color-brand-accent-2;
   }
@@ -155,23 +159,16 @@
     background: $color-brand-neutral-3;
   }
 
-  &.active {
-    border: 2px solid $color-brand-accent-4;
-  }
-
   &__index {
     position: absolute;
     bottom: 0;
     left: 0;
-    // margin-left: -9px;
-    // margin-top: -9px;
+    text-transform: uppercase;
     background-color: $color-brand-neutral-3;
     border-radius: 4px;
     z-index: 10;
-    // border-radius: 10px;
-    // border-bottom: 2px solid $color-brand-accent-4;
-    // border-right: 2px solid $color-brand-accent-4;
-    width: 14px;
+    min-width: 14px;
+    padding: 0 4px;
     height: 14px;
     display: flex;
     justify-content: center;

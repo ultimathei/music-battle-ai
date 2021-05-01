@@ -118,14 +118,11 @@ export default {
      * Advanced the time to the next bip (by demisemiquaver)
      * @param {*} param0
      */
-    [ACT_clockNextBip]({ commit, state, getters }) {
+    [ACT_clockNextBip]({ state, getters }) {
       const secondsPerBeat = 60.0 / state.tempo; // as tempo is in bpm
 
       // update next bip
-      commit(
-        MUT_clockNextBipTime,
-        state.nextBipTime + secondsPerBeat / state.denominator
-      );
+      state.nextBipTime += secondsPerBeat / state.denominator;
 
       // before precount finished:
       if (state.precountDemisemiquaver < 32) {
@@ -143,13 +140,13 @@ export default {
 
       // after the precount:
       if (state.currentDemisemiquaver + 1 == 32) {
-        commit(MUT_clockCurrentDemisemiquaver, 0);
+        state.currentDemisemiquaver = 0;
         if (state.currentBar + 1 == 4) {
-          commit(MUT_clockCurrentBar, 0);
+          state.currentBar = 0;
           this.dispatch(SESSION_STORE_LOC + ACT_sessionFinishedMelody);
           return;
         }
-        commit(MUT_clockCurrentBar, state.currentBar + 1);
+        state.currentBar += 1;
         return;
       }
 
@@ -176,10 +173,7 @@ export default {
       }
 
       // increase demisemi
-      commit(
-        MUT_clockCurrentDemisemiquaver,
-        state.currentDemisemiquaver + 1
-      );
+      state.currentDemisemiquaver += 1;
     },
 
     /**
@@ -256,14 +250,12 @@ export default {
      * Starts the clock
      * @returns early if the clock is already running
      */
-    [ACT_clockStart]({ state, dispatch, commit }) {
+    [ACT_clockStart]({ state, dispatch }) {
       if (state.isRunning) return;
 
       if (state.audioContext == null) {
-        commit(
-          MUT_clockAudioContext,
-          new (window.AudioContext || window.webkitAudioContext)()
-        );
+        state.audioContext = new (window.AudioContext ||
+          window.webkitAudioContext)();
       }
 
       // update mode
@@ -271,33 +263,26 @@ export default {
         this.commit("mutateMode", "seed_recording");
       else if (this.state.mode == "paused") this.commit("mutateMode", "battle");
 
-      commit(MUT_clockIsRunning, true);
-      commit(
-        MUT_clockNextBipTime,
-        state.audioContext.currentTime + 0.05
-      );
-      commit(
-        MUT_clockIntervalID,
-        setInterval(
-          () => dispatch(ACT_clockAdvanceScheduler),
-          state.lookahead
-        )
+      state.isRunning = true;
+      state.nextBipTime = state.audioContext.currentTime + 0.05;
+      state.intervalID = setInterval(
+        () => dispatch(ACT_clockAdvanceScheduler),
+        state.lookahead
       );
     },
 
     /**
      * Stop the clock
      */
-    [ACT_clockStop]({ state, commit, dispatch }) {
-      commit(MUT_clockIsRunning, false);
+    [ACT_clockStop]({ state, dispatch }) {
+      state.isRunning = false;
       // dispatch action to sessionStore to activate notes now
       this.dispatch(SESSION_STORE_LOC + ACT_sessionCloseUnfinishedNotes);
       // if precount is not over yet
       if (state.precountDemisemiquaver < 32) {
         state.precountDemisemiquaver = 0;
-        // commit(MUT_clockCurrentPatternInd, 0);
-        commit(MUT_clockCurrentBar, 0);
-        commit(MUT_clockCurrentDemisemiquaver, 0);
+        state.currentBar = 0;
+        state.currentDemisemiquaver = 0;
       }
       if (
         this.state.mode == "seed_recording" &&
@@ -314,8 +299,6 @@ export default {
         dispatch(ACT_clockReset);
       }
 
-      // commit(MUT_clockCurrentBar, 0);
-      // commit(MUT_clockCurrentDemisemiquaver, 0);
       clearInterval(state.intervalID);
     },
 
@@ -333,13 +316,12 @@ export default {
     /**
      * Reset the clock to 0
      */
-    [ACT_clockReset]({ state, commit, dispatch }) {
+    [ACT_clockReset]({ state, dispatch }) {
       dispatch(ACT_clockStop);
       // reset time pointers
       state.precountDemisemiquaver = 0;
-      // commit(MUT_clockCurrentPatternInd, 0);
-      commit(MUT_clockCurrentBar, 0);
-      commit(MUT_clockCurrentDemisemiquaver, 0);
+      state.currentBar = 0;
+      state.currentDemisemiquaver = 0;
       this.commit("mutateMode", "initial");
     },
 

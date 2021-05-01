@@ -70,20 +70,12 @@
     width: 30px;
     height: 30px;
     cursor: pointer;
-    fill: $color-brand-neutral-1;
+    fill: $color-black;
     border-radius: 999px;
 
     &:not(:first-of-type) {
       margin-left: 10px;
     }
-
-    &:hover {
-      fill: $color-brand-accent-2;
-    }
-  }
-
-  &[data-dark="true"] .playback_control {
-    fill: $color-black;
 
     &:hover {
       fill: $color-brand-accent-4;
