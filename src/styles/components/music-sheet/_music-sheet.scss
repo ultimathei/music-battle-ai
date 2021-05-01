@@ -121,8 +121,20 @@ $ms_header-height: 25px;
     mix-blend-mode: color;
     transition: left 25ms;
     z-index: 10;
+
+    &[data-active] {
+      animation-name: flash_cursor_anim;
+      animation-duration: 200ms;
+      animation-iteration-count: 1;
+    }
   }
   
+  /* Metronome flash animation */
+  @keyframes flash_cursor_anim {
+    from {background-color: $color-brand-accent-3;}
+    to {background-color: $color-brand-accent-1;}
+  }
+
   &__header{
     height: $ms_header-height;
     width: 100%;

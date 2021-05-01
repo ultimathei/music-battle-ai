@@ -52,6 +52,6 @@
 
 /* Metronome flash animation */
 @keyframes flash_metronome_anim {
-  from {background-color: red;}
+  from {background-color: $color-brand-accent-3;}
   to {background-color: $color-brand-neutral-1;}
 }

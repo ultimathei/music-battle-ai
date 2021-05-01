@@ -22,7 +22,11 @@
         ></div>
       </div>
 
-      <div class="music-sheet__cursor" :style="cursorLeftPosStyle"></div>
+      <div
+        class="music-sheet__cursor"
+        :style="cursorLeftPosStyle"
+        :data-active="metronomeFlashActive"
+      ></div>
       <div class="music-sheet__header">
         <div
           v-for="i in 4"
@@ -107,6 +111,7 @@ export default {
       "currentCursorPos",
       "isRunning",
       "precountDemisemiquaver",
+      "metronomeFlashActive",
     ]),
     ...mapGetters("instrumentStore", [
       "rangeStart",
