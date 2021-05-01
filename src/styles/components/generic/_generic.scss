@@ -20,3 +20,13 @@
   font-weight: 600;
   margin: 0 10px;
 }
+
+.metronome__button {
+    fill: $color-brand-neutral-1;
+    height: 30px;
+    opacity: 0.5;
+
+    &[data-active] {
+      opacity: 1;
+    }
+}

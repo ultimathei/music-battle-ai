@@ -10,7 +10,11 @@
             {{ currentBar + 1 }} /
             {{ Math.floor(currentDemisemiquaver / 8) + 1 }}/4
           </div>
-          <MetronomeIcon class="icon-small" />
+          <MetronomeIcon
+            class="metronome__button"
+            @click="switchMetronome"
+            :data-active="metronomeSoundOn"
+          />
           <!-- <MidiController
             class="header-controls__control"
             @note-toggle="updateKeyboardUI"
@@ -51,12 +55,15 @@ import Sequencer from "./music-sheet/sequencer.vue";
 import StartWidget from "./start-widget/start-widget.vue";
 import Footer from "./footer/footer.vue";
 
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
   INSTRUMENT_ACTION_START_NOTE,
   INSTRUMENT_ACTION_END_NOTE,
   MODEL_ACTION_INIT_VAE,
 } from "../store/actions";
+import { CLOCK_MUTATION_UPDATE_SOUND_ON } from "../store/mutations";
+
+const CLOCK_STORE_LOC = "mainClockStore/";
 
 export default {
   name: "app",
@@ -74,7 +81,12 @@ export default {
   },
   computed: {
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
-    ...mapGetters("mainClockStore", ["isRunning", "currentBar", "currentDemisemiquaver"]),
+    ...mapGetters("mainClockStore", [
+      "isRunning",
+      "currentBar",
+      "currentDemisemiquaver",
+      "metronomeSoundOn",
+    ]),
     ...mapGetters("sessionStore", ["userTurn", "currentPattern", "seedMelody"]),
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("midiStore", ["isMIDIready"]),
@@ -95,6 +107,7 @@ export default {
     ]),
     ...mapActions("modelStore", [MODEL_ACTION_INIT_VAE]),
     ...mapActions("midiStore", ["getMIDI"]),
+    ...mapMutations("mainClockStore", [CLOCK_MUTATION_UPDATE_SOUND_ON]),
     /**
      * Updating the keyboard UI to refelct changes in currently played MIDI notes.
      */
@@ -104,6 +117,9 @@ export default {
       // play/stop sound note for playback
       if (payload.on_message) this[INSTRUMENT_ACTION_START_NOTE](payload.note);
       else this[INSTRUMENT_ACTION_END_NOTE](payload.note);
+    },
+    switchMetronome() {
+      this[CLOCK_MUTATION_UPDATE_SOUND_ON](!this.metronomeSoundOn);
     },
   },
 };

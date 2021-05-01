@@ -386,7 +386,11 @@ export default {
 
           // if a quantized note got reduced to 0, make it minimum length of quantizer size
           if (newStart == newEnd) {
-            newEnd += quantizer;
+            if (newStart == 128) {
+              newStart -= quantizer;
+            } else {
+              newEnd += quantizer;
+            }
           }
 
           // add qunatized note

@@ -72,7 +72,6 @@ export default {
       "currentBar",
       "currentDemisemiquaver",
       "isRunning",
-      "metronomeSoundOn",
       "tempo",
       "precountDemisemiquaver",
     ]),
