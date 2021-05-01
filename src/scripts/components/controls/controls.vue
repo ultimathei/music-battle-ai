@@ -54,9 +54,9 @@ import TrashIcon from "../graphics/trash.svg";
 import TrashIconActive from "../graphics/trash_active.svg";
 
 import {
-  CLOCK_ACTION_STARTSTOP,
-  CLOCK_ACTION_RESET,
-  SESSION_ACTION_CONFIRM_SEED,
+  ACT_clockStartStop,
+  ACT_clockReset,
+  ACT_sessionConfirmSeed,
 } from "../../store/actions";
 
 export default {
@@ -90,11 +90,11 @@ export default {
   },
   methods: {
     ...mapActions("mainClockStore", {
-      startStop: CLOCK_ACTION_STARTSTOP,
-      resetClock: CLOCK_ACTION_RESET,
+      startStop: ACT_clockStartStop,
+      resetClock: ACT_clockReset,
     }),
     ...mapActions("sessionStore", {
-      confirmSeed: SESSION_ACTION_CONFIRM_SEED,
+      confirmSeed: ACT_sessionConfirmSeed,
       quantizeMelody: "quantizeSeedMelody",
     }),
     ...mapMutations("sessionStore", ["mutateDeleteInitiated"]),

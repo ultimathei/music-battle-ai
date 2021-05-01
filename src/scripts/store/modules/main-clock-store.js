@@ -2,30 +2,30 @@
  * Store module for the main clock of the app
  */
 import {
-  CLOCK_MUTATION_UPDATE_AUDIO_CONTEXT,
-  CLOCK_MUTATION_UPDATE_BIPS_IN_QUEQUE,
-  CLOCK_MUTATION_UPDATE_CURRENT_BAR,
-  CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
-  CLOCK_MUTATION_UPDATE_INTERVAL_ID,
-  CLOCK_MUTATION_UPDATE_IS_RUNNING,
-  CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
-  CLOCK_MUTATION_UPDATE_SOUND_ON,
+  MUT_clockAudioContext,
+  MUT_clockBipsInQueue,
+  MUT_clockCurrentBar,
+  MUT_clockCurrentDemisemiquaver,
+  MUT_clockIntervalID,
+  MUT_clockIsRunning,
+  MUT_clockNextBipTime,
+  MUT_clockMetronomeSoundOn,
 } from "../mutations";
 import {
-  CLOCK_ACTION_NEXT_BIP,
-  CLOCK_ACTION_SCHEDULE_BIP,
-  CLOCK_ACTION_PLAY_METRONOME,
-  CLOCK_ACTION_ADVANCE_SCHEDULER,
-  CLOCK_ACTION_START,
-  CLOCK_ACTION_STOP,
-  CLOCK_ACTION_STARTSTOP,
-  CLOCK_ACTION_RESET,
-  CLOCK_ACTION_RESET_PRECOUNT,
-  SESSION_ACTION_PLAY_CURRENT_NOTES,
-  SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
-  SESSION_ACTION_FINISHED_MELODY,
-  INSTRUMENT_ACTION_START_NOTE,
-  INSTRUMENT_ACTION_END_NOTE,
+  ACT_clockNextBip,
+  ACT_clockScheduleBip,
+  ACT_clockPlayMetronome,
+  ACT_clockAdvanceScheduler,
+  ACT_clockStart,
+  ACT_clockStop,
+  ACT_clockStartStop,
+  ACT_clockReset,
+  ACT_clockResetPrecount,
+  ACT_sessionPlayCurrentNotes,
+  ACT_sessionCloseUnfinishedNotes,
+  ACT_sessionFinishedMelody,
+  ACT_instrumentStartNote,
+  ACT_instrumentEndNote,
 } from "../actions";
 
 const SESSION_STORE_LOC = "sessionStore/";
@@ -87,28 +87,28 @@ export default {
   // basiacally setters
   mutations: {
     // using the ES2015 computed property name feature
-    [CLOCK_MUTATION_UPDATE_AUDIO_CONTEXT](state, data) {
+    [MUT_clockAudioContext](state, data) {
       state.audioContext = data;
     },
-    [CLOCK_MUTATION_UPDATE_BIPS_IN_QUEQUE](state, data) {
+    [MUT_clockBipsInQueue](state, data) {
       state.bipsInQueue.push(data);
     },
-    [CLOCK_MUTATION_UPDATE_CURRENT_BAR](state, data) {
+    [MUT_clockCurrentBar](state, data) {
       state.currentBar = data;
     },
-    [CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER](state, data) {
+    [MUT_clockCurrentDemisemiquaver](state, data) {
       state.currentDemisemiquaver = data;
     },
-    [CLOCK_MUTATION_UPDATE_INTERVAL_ID](state, data) {
+    [MUT_clockIntervalID](state, data) {
       state.intervalID = data;
     },
-    [CLOCK_MUTATION_UPDATE_IS_RUNNING](state, data) {
+    [MUT_clockIsRunning](state, data) {
       state.isRunning = data;
     },
-    [CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME](state, data) {
+    [MUT_clockNextBipTime](state, data) {
       state.nextBipTime = data;
     },
-    [CLOCK_MUTATION_UPDATE_SOUND_ON](state, data) {
+    [MUT_clockMetronomeSoundOn](state, data) {
       state.metronomeSoundOn = data;
     },
   },
@@ -118,12 +118,12 @@ export default {
      * Advanced the time to the next bip (by demisemiquaver)
      * @param {*} param0
      */
-    [CLOCK_ACTION_NEXT_BIP]({ commit, state, getters }) {
+    [ACT_clockNextBip]({ commit, state, getters }) {
       const secondsPerBeat = 60.0 / state.tempo; // as tempo is in bpm
 
       // update next bip
       commit(
-        CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
+        MUT_clockNextBipTime,
         state.nextBipTime + secondsPerBeat / state.denominator
       );
 
@@ -136,20 +136,20 @@ export default {
       // play current notes using the session if in playback or edit mode or in battle and not user turn
       if (!this.getters.isRecordingAllowed) {
         this.dispatch(
-          SESSION_STORE_LOC + SESSION_ACTION_PLAY_CURRENT_NOTES,
+          SESSION_STORE_LOC + ACT_sessionPlayCurrentNotes,
           getters.currentCursorPos
         );
       }
 
       // after the precount:
       if (state.currentDemisemiquaver + 1 == 32) {
-        commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
+        commit(MUT_clockCurrentDemisemiquaver, 0);
         if (state.currentBar + 1 == 4) {
-          commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
-          this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_FINISHED_MELODY);
+          commit(MUT_clockCurrentBar, 0);
+          this.dispatch(SESSION_STORE_LOC + ACT_sessionFinishedMelody);
           return;
         }
-        commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, state.currentBar + 1);
+        commit(MUT_clockCurrentBar, state.currentBar + 1);
         return;
       }
 
@@ -166,18 +166,18 @@ export default {
           now: convertToPatternTime(getters.currentMusicalTime),
         });
         this.dispatch(
-          INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+          INSTRUMENT_STORE_LOC + ACT_instrumentEndNote,
           this.getters.singleActiveNote
         );
         this.dispatch(
-          INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+          INSTRUMENT_STORE_LOC + ACT_instrumentStartNote,
           this.getters.singleActiveNote
         );
       }
 
       // increase demisemi
       commit(
-        CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
+        MUT_clockCurrentDemisemiquaver,
         state.currentDemisemiquaver + 1
       );
     },
@@ -186,7 +186,7 @@ export default {
      * Schedule the next bip for given time
      * @param {*} time
      */
-    [CLOCK_ACTION_SCHEDULE_BIP]({ commit, dispatch, state }, time) {
+    [ACT_clockScheduleBip]({ commit, dispatch, state }, time) {
       // push the note on the queue, even if we're not playing bip sound
       // if precount is active, we do not progress currentDemisemi,
       // but progress the precount Demisemi instead
@@ -194,14 +194,14 @@ export default {
         state.precountDemisemiquaver < 32
           ? state.precountDemisemiquaver
           : state.currentDemisemiquaver;
-      commit(CLOCK_MUTATION_UPDATE_BIPS_IN_QUEQUE, {
+      commit(MUT_clockBipsInQueue, {
         bip: demisemi,
         time: time,
       });
       if (demisemi % 8 == 0) {
         // sound it
         if (state.precountDemisemiquaver < 32 || state.metronomeSoundOn)
-          dispatch(CLOCK_ACTION_PLAY_METRONOME, time);
+          dispatch(ACT_clockPlayMetronome, time);
         // flash it
         state.metronomeFlashActive = true;
         setTimeout(() => {
@@ -214,7 +214,7 @@ export default {
      * Sounding the metronome at given time
      * @param {*} time
      */
-    [CLOCK_ACTION_PLAY_METRONOME]({ state }, time) {
+    [ACT_clockPlayMetronome]({ state }, time) {
       // create an oscillator for the bip sound
       const osc = state.audioContext.createOscillator();
       const envelope = state.audioContext.createGain();
@@ -242,13 +242,13 @@ export default {
     /**
      * Advance the scheduler to the next bip
      */
-    [CLOCK_ACTION_ADVANCE_SCHEDULER]({ state, dispatch }) {
+    [ACT_clockAdvanceScheduler]({ state, dispatch }) {
       while (
         state.nextBipTime <
         state.audioContext.currentTime + state.scheduleAheadTime
       ) {
-        dispatch(CLOCK_ACTION_SCHEDULE_BIP, state.nextBipTime);
-        dispatch(CLOCK_ACTION_NEXT_BIP);
+        dispatch(ACT_clockScheduleBip, state.nextBipTime);
+        dispatch(ACT_clockNextBip);
       }
     },
 
@@ -256,12 +256,12 @@ export default {
      * Starts the clock
      * @returns early if the clock is already running
      */
-    [CLOCK_ACTION_START]({ state, dispatch, commit }) {
+    [ACT_clockStart]({ state, dispatch, commit }) {
       if (state.isRunning) return;
 
       if (state.audioContext == null) {
         commit(
-          CLOCK_MUTATION_UPDATE_AUDIO_CONTEXT,
+          MUT_clockAudioContext,
           new (window.AudioContext || window.webkitAudioContext)()
         );
       }
@@ -271,15 +271,15 @@ export default {
         this.commit("mutateMode", "seed_recording");
       else if (this.state.mode == "paused") this.commit("mutateMode", "battle");
 
-      commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, true);
+      commit(MUT_clockIsRunning, true);
       commit(
-        CLOCK_MUTATION_UPDATE_NEXT_BIP_TIME,
+        MUT_clockNextBipTime,
         state.audioContext.currentTime + 0.05
       );
       commit(
-        CLOCK_MUTATION_UPDATE_INTERVAL_ID,
+        MUT_clockIntervalID,
         setInterval(
-          () => dispatch(CLOCK_ACTION_ADVANCE_SCHEDULER),
+          () => dispatch(ACT_clockAdvanceScheduler),
           state.lookahead
         )
       );
@@ -288,16 +288,16 @@ export default {
     /**
      * Stop the clock
      */
-    [CLOCK_ACTION_STOP]({ state, commit, dispatch }) {
-      commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, false);
+    [ACT_clockStop]({ state, commit, dispatch }) {
+      commit(MUT_clockIsRunning, false);
       // dispatch action to sessionStore to activate notes now
-      this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
+      this.dispatch(SESSION_STORE_LOC + ACT_sessionCloseUnfinishedNotes);
       // if precount is not over yet
       if (state.precountDemisemiquaver < 32) {
         state.precountDemisemiquaver = 0;
-        // commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
-        commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
-        commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
+        // commit(MUT_clockCurrentPatternInd, 0);
+        commit(MUT_clockCurrentBar, 0);
+        commit(MUT_clockCurrentDemisemiquaver, 0);
       }
       if (
         this.state.mode == "seed_recording" &&
@@ -311,39 +311,39 @@ export default {
           this.state.sessionStore.currentPattern.length == 0)
       ) {
         this.commit("mutateMode", "initial");
-        dispatch(CLOCK_ACTION_RESET);
+        dispatch(ACT_clockReset);
       }
 
-      // commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
-      // commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
+      // commit(MUT_clockCurrentBar, 0);
+      // commit(MUT_clockCurrentDemisemiquaver, 0);
       clearInterval(state.intervalID);
     },
 
     /**
      * Start or Stop the clock dependant on isRunning
      */
-    [CLOCK_ACTION_STARTSTOP]({ state, dispatch }) {
+    [ACT_clockStartStop]({ state, dispatch }) {
       if (state.isRunning) {
-        dispatch(CLOCK_ACTION_STOP);
+        dispatch(ACT_clockStop);
       } else {
-        dispatch(CLOCK_ACTION_START);
+        dispatch(ACT_clockStart);
       }
     },
 
     /**
      * Reset the clock to 0
      */
-    [CLOCK_ACTION_RESET]({ state, commit, dispatch }) {
-      dispatch(CLOCK_ACTION_STOP);
+    [ACT_clockReset]({ state, commit, dispatch }) {
+      dispatch(ACT_clockStop);
       // reset time pointers
       state.precountDemisemiquaver = 0;
-      // commit(CLOCK_MUTATION_UPDATE_CURRENT_PATTERN_IND, 0);
-      commit(CLOCK_MUTATION_UPDATE_CURRENT_BAR, 0);
-      commit(CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER, 0);
+      // commit(MUT_clockCurrentPatternInd, 0);
+      commit(MUT_clockCurrentBar, 0);
+      commit(MUT_clockCurrentDemisemiquaver, 0);
       this.commit("mutateMode", "initial");
     },
 
-    [CLOCK_ACTION_RESET_PRECOUNT]({ state }) {
+    [ACT_clockResetPrecount]({ state }) {
       state.precountDemisemiquaver = 0;
     },
   },

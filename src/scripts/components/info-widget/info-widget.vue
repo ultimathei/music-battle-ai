@@ -26,9 +26,9 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
-  CLOCK_ACTION_STARTSTOP,
-  CLOCK_ACTION_RESET,
-  SESSION_ACTION_CLEAR_SESSION,
+  ACT_clockStartStop,
+  ACT_clockReset,
+  ACT_sessionClearSession,
 } from "../../store/actions";
 
 export default {
@@ -61,11 +61,11 @@ export default {
   },
   methods: {
     ...mapActions("mainClockStore", {
-      startRecord: CLOCK_ACTION_STARTSTOP,
-      resetClock: CLOCK_ACTION_RESET,
+      startRecord: ACT_clockStartStop,
+      resetClock: ACT_clockReset,
     }),
     ...mapActions("sessionStore", {
-      clearSession: SESSION_ACTION_CLEAR_SESSION,
+      clearSession: ACT_sessionClearSession,
     }),
     ...mapMutations("sessionStore", ["mutateDeleteInitiated"]),
     // local actions

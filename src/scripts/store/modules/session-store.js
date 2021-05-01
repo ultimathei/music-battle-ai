@@ -8,23 +8,23 @@
  * the app (ai/robot) for the pattern.
  */
 import { getOffsetAmount } from "../../utils/utils";
-import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../mutations";
+import { MUT_sessionAddNoteToCurrentPattern } from "../mutations";
 import {
-  SESSION_ACTION_GENERATE_RESPONSES,
-  SESSION_ACTION_CLEAR_SESSION,
-  SESSION_ACTION_PLAY_CURRENT_NOTES,
-  SESSION_ACTION_CONFIRM_SEED,
-  SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
-  SESSION_ACTION_FINISHED_MELODY,
-  SESSION_ACTION_LOADING,
-  SESSION_ACTION_SET_AIMELODIES,
-  INSTRUMENT_ACTION_START_NOTE,
-  INSTRUMENT_ACTION_END_NOTE,
-  MODEL_ACTION_GENERATE_SIMILARS,
-  CLOCK_ACTION_RESET,
-  CLOCK_ACTION_RESET_PRECOUNT,
-  CLOCK_ACTION_STARTSTOP,
-  CLOCK_ACTION_STOP,
+  ACT_sessionGenerateResponses,
+  ACT_sessionClearSession,
+  ACT_sessionPlayCurrentNotes,
+  ACT_sessionConfirmSeed,
+  ACT_sessionCloseUnfinishedNotes,
+  ACT_sessionFinishedMelody,
+  ACT_sessionSetLoading,
+  ACT_sessionSetAiMelodies,
+  ACT_instrumentStartNote,
+  ACT_instrumentEndNote,
+  ACT_modelGenerateSimilarsVae,
+  ACT_clockReset,
+  ACT_clockResetPrecount,
+  ACT_clockStartStop,
+  ACT_clockStop,
 } from "../actions";
 import {
   convertToMagentaSample,
@@ -108,7 +108,7 @@ export default {
      * Playback of current pattern sound
      * @param {*} time
      */
-    [SESSION_ACTION_PLAY_CURRENT_NOTES]({ state }, currentTime) {
+    [ACT_sessionPlayCurrentNotes]({ state }, currentTime) {
       const melodyToPlay = state.useQuantized
         ? state.quantizedSeedMelody
         : state.currentPattern;
@@ -119,13 +119,13 @@ export default {
         } else if (note.start >= 0 && note.start == currentTime) {
           // play sound for note
           this.dispatch(
-            INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+            INSTRUMENT_STORE_LOC + ACT_instrumentStartNote,
             note.note
           );
         } else if (note.end && note.end == currentTime) {
           // stop sound for note
           this.dispatch(
-            INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+            INSTRUMENT_STORE_LOC + ACT_instrumentEndNote,
             note.note
           );
         }
@@ -133,16 +133,16 @@ export default {
     },
 
     // message recieved from clock at the end of each 4-bar cycle
-    [SESSION_ACTION_FINISHED_MELODY]({ state, dispatch }) {
+    [ACT_sessionFinishedMelody]({ state, dispatch }) {
       // stop all notes, this prevents overflows
       // console.log(state.currentPattern);
-      dispatch(SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
+      dispatch(ACT_sessionCloseUnfinishedNotes);
 
       if (!state.seedMelody) {
         // change to modes
         // send stop clock message
         // console.log("at the end of seed melody, stop clock, display edit..");
-        this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STOP);
+        this.dispatch(CLOCK_STORE_LOC + ACT_clockStop);
 
         // if there were notes recorded to currentPattern
         if (
@@ -152,7 +152,7 @@ export default {
           this.commit("mutateMode", "initial");
       } else if (state.aiMelodyArray.length < 1 && state.userTurn) {
         // console.log("whole session finished, stop the clock..");
-        this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STOP);
+        this.dispatch(CLOCK_STORE_LOC + ACT_clockStop);
         this.commit("mutateMode", "scoring");
       } else {
         // console.log("still have melodies to play, move to next..");
@@ -160,7 +160,7 @@ export default {
       }
     },
 
-    async [SESSION_ACTION_CONFIRM_SEED]({ state, dispatch }) {
+    async [ACT_sessionConfirmSeed]({ state, dispatch }) {
       // state.isSessionLoading = true; // use this to display loader?
       // as confirmed make current pattern the seed
       state.seedMelody = state.useQuantized
@@ -173,7 +173,7 @@ export default {
 
       // get ai melodies
       await this.dispatch(
-        MODEL_STORE_LOC + MODEL_ACTION_GENERATE_SIMILARS,
+        MODEL_STORE_LOC + ACT_modelGenerateSimilarsVae,
         convertToMagentaSample(state.seedMelody, 120, 8)
       );
       state.isSessionLoading = false;
@@ -181,17 +181,17 @@ export default {
       dispatch("nextRobotMelody");
 
       // reset precount and start the battle
-      this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_RESET);
-      this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_RESET_PRECOUNT);
-      this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STARTSTOP);
+      this.dispatch(CLOCK_STORE_LOC + ACT_clockReset);
+      this.dispatch(CLOCK_STORE_LOC + ACT_clockResetPrecount);
+      this.dispatch(CLOCK_STORE_LOC + ACT_clockStartStop);
       this.commit("mutateMode", "battle");
     },
 
-    [SESSION_ACTION_SET_AIMELODIES]({ state }, melodiesArray) {
+    [ACT_sessionSetAiMelodies]({ state }, melodiesArray) {
       state.aiMelodyArray = melodiesArray;
     },
 
-    [SESSION_ACTION_LOADING]({ state }) {
+    [ACT_sessionSetLoading]({ state }) {
       state.isSessionLoading = true;
     },
 
@@ -249,11 +249,11 @@ export default {
     },
 
     // modified now -- not used now
-    [SESSION_ACTION_GENERATE_RESPONSES]({ state }) {
+    [ACT_sessionGenerateResponses]({ state }) {
       // transitioning from user turn to response turn..
       if (state.userTurn) {
         // console.log("generate ai patterns here..");
-        // dispatch(SESSION_ACTION_CLOSE_UNFINISHED_NOTES);
+        // dispatch(ACT_sessionCloseUnfinishedNotes);
         // 1. push old current pattern to session
         const patternToArchive = {
           type: "user",
@@ -264,7 +264,7 @@ export default {
         // 2. response pattern becomes the new current pattern
         if (state.responseSequenceArray.length < 1) {
           // stop playback
-          this.dispatch(CLOCK_STORE_LOC + CLOCK_ACTION_STARTSTOP);
+          this.dispatch(CLOCK_STORE_LOC + ACT_clockStartStop);
           return;
         }
 
@@ -289,7 +289,7 @@ export default {
     },
 
     // clear/empty the current session
-    [SESSION_ACTION_CLEAR_SESSION]({ state }) {
+    [ACT_sessionClearSession]({ state }) {
       state.currentPattern = [];
       state.aiMelodyArray = [];
       state.session = [];
@@ -300,7 +300,7 @@ export default {
       state.deleteInitiated = false;
     },
 
-    [SESSION_ACTION_CLOSE_UNFINISHED_NOTES]({ state, dispatch }) {
+    [ACT_sessionCloseUnfinishedNotes]({ state, dispatch }) {
       state.currentPattern.forEach((note) => {
         // console.log(note);
         if (!note.end || note.end > 128) {
@@ -313,7 +313,7 @@ export default {
 
         // stop playback of all notes
         this.dispatch(
-          INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+          INSTRUMENT_STORE_LOC + ACT_instrumentEndNote,
           note.note
         );
       });
@@ -445,7 +445,7 @@ export default {
   // using the ES2015 computed property name feature
   mutations: {
     // add new incoming notes (either start or end msg) ONLY when in user turn
-    [SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN](state, data) {
+    [MUT_sessionAddNoteToCurrentPattern](state, data) {
       if (!state.userTurn) return; // safety check
 
       // its a start message push it straight to the pattern

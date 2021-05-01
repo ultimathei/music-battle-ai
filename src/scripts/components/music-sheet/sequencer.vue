@@ -49,9 +49,9 @@ import SequencerItem from "./sequencer-item.vue";
 import Controls from "../controls/controls.vue";
 
 import {
-  CLOCK_ACTION_STARTSTOP,
-  SESSION_ACTION_CONFIRM_SEED,
-  SESSION_ACTION_LOADING,
+  ACT_clockStartStop,
+  ACT_sessionConfirmSeed,
+  ACT_sessionSetLoading,
 } from "../../store/actions";
 
 export default {
@@ -98,11 +98,11 @@ export default {
   },
   methods: {
     ...mapActions("mainClockStore", {
-      startStop: CLOCK_ACTION_STARTSTOP,
+      startStop: ACT_clockStartStop,
     }),
     ...mapActions("sessionStore", {
-      confirmBase: SESSION_ACTION_CONFIRM_SEED,
-      setLoading: SESSION_ACTION_LOADING,
+      confirmBase: ACT_sessionConfirmSeed,
+      setLoading: ACT_sessionSetLoading,
     }),
 
     onResize(e = null) {

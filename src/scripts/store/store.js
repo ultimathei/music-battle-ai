@@ -10,8 +10,8 @@ import modelStore from "./modules/model-store";
 import pianoStore from "./modules/piano-store";
 import sessionStore from "./modules/session-store";
 import {
-  INSTRUMENT_ACTION_START_NOTE,
-  INSTRUMENT_ACTION_END_NOTE,
+  ACT_instrumentStartNote,
+  ACT_instrumentEndNote,
 } from "../store/actions";
 
 import { convertToPatternTime } from "../utils/utils";
@@ -105,7 +105,7 @@ export default new Vuex.Store({
         if (state.singleActiveNote) {
           if (isUserTurn)
             this.dispatch(
-              INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+              INSTRUMENT_STORE_LOC + ACT_instrumentEndNote,
               state.singleActiveNote
             );
           state.currentlyPressedNotes.push(state.singleActiveNote);
@@ -113,7 +113,7 @@ export default new Vuex.Store({
         state.singleActiveNote = data.note;
         if (isUserTurn)
           this.dispatch(
-            INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+            INSTRUMENT_STORE_LOC + ACT_instrumentStartNote,
             data.note
           );
       } else {
@@ -121,14 +121,14 @@ export default new Vuex.Store({
         if (data.note == state.singleActiveNote) {
           if (isUserTurn)
             this.dispatch(
-              INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+              INSTRUMENT_STORE_LOC + ACT_instrumentEndNote,
               state.singleActiveNote
             );
           if (state.currentlyPressedNotes.length > 0) {
             state.singleActiveNote = state.currentlyPressedNotes.pop();
             if (isUserTurn)
               this.dispatch(
-                INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+                INSTRUMENT_STORE_LOC + ACT_instrumentStartNote,
                 state.singleActiveNote
               );
           } else {

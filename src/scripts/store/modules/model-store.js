@@ -2,11 +2,11 @@
  * MODEL STORE
  */
 import {
-  MODEL_ACTION_INIT_RNN,
-  MODEL_ACTION_INIT_VAE,
-  MODEL_ACTION_GENERATE_CONTINUATION,
-  MODEL_ACTION_GENERATE_SIMILARS,
-  SESSION_ACTION_SET_AIMELODIES,
+  ACT_modelInitRnn,
+  ACT_modelInitVae,
+  ACT_modelGenerateContinuationRnn,
+  ACT_modelGenerateSimilarsVae,
+  ACT_sessionSetAiMelodies,
 } from "../actions";
 import {
   improv_checkpoint,
@@ -72,7 +72,7 @@ export default {
     /**
      * Initialise the model to RNN
      */
-    [MODEL_ACTION_INIT_RNN]({ state }) {
+    [ACT_modelInitRnn]({ state }) {
       let model = new music_rnn.MusicRNN(improv_checkpoint);
       model.initialize().then(() => {
         // console.log("rnn init done");
@@ -82,7 +82,7 @@ export default {
       });
     },
 
-    [MODEL_ACTION_GENERATE_CONTINUATION]({ state }) {
+    [ACT_modelGenerateContinuationRnn]({ state }) {
       state.magentaModel
         .continueSequence(sampleSequence, 60, 0.5, ["CM"])
         .then((resp) => {
@@ -94,7 +94,7 @@ export default {
     /**
      * Initialise the model to VAE
      */
-    async [MODEL_ACTION_INIT_VAE]({ state }, minPitch, maxPitch) {
+    async [ACT_modelInitVae]({ state }, minPitch, maxPitch) {
       state.magentaModel = await new music_vae.MusicVAE(
         musicVAE_checkpoint_med_4bar
       ); //ModelConfigJSON
@@ -139,7 +139,7 @@ export default {
       }
     },
 
-    async [MODEL_ACTION_GENERATE_SIMILARS]({ state }, noteSequence) {
+    async [ACT_modelGenerateSimilarsVae]({ state }, noteSequence) {
       state.isModelLoading = true;
       let samples = await state.magentaModel.similar(
         noteSequence,
@@ -149,7 +149,7 @@ export default {
 
       // console.log(samples);
 
-      this.dispatch(SESSION_STORE_LOC + SESSION_ACTION_SET_AIMELODIES, samples);
+      this.dispatch(SESSION_STORE_LOC + ACT_sessionSetAiMelodies, samples);
       state.isModelLoading = false;
       // console.log("samples in model store: ", samples);
       // return samples; // this could be returned to session store

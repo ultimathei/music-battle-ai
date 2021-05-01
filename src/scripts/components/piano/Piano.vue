@@ -35,12 +35,12 @@ import RobotIcon from "../graphics/robot.svg";
 import { convertToPatternTime } from "../../utils/utils";
 
 // import {
-//   PIANO_ACTION_SET_HEIGHT,
-//   PIANO_ACTION_SET_KEYSIZE,
-//   PIANO_ACTION_SET_OCTAVE_COUNT,
-//   PIANO_ACTION_SET_SCALE,
-//   PIANO_ACTION_SET_SIDE_PANEL_WIDTH,
-//   PIANO_ACTION_SET_WIDTH,
+//   ACT_pianoSetHeight,
+//   ACT_pianoSetKeysize,
+//   ACT_pianoSetOctaveCount,
+//   ACT_pianoSetScale,
+//   ACT_pianoSetPanelWidth,
+//   ACT_pianoSetWidth,
 // } from "../../store/actions";
 
 export default {
@@ -79,12 +79,12 @@ export default {
   },
   // methods: {
   //   ...mapActions("pianoStore", [
-  //     PIANO_ACTION_SET_HEIGHT,
-  //     PIANO_ACTION_SET_KEYSIZE,
-  //     PIANO_ACTION_SET_OCTAVE_COUNT,
-  //     PIANO_ACTION_SET_SCALE,
-  //     PIANO_ACTION_SET_SIDE_PANEL_WIDTH,
-  //     PIANO_ACTION_SET_WIDTH,
+  //     ACT_pianoSetHeight,
+  //     ACT_pianoSetKeysize,
+  //     ACT_pianoSetOctaveCount,
+  //     ACT_pianoSetScale,
+  //     ACT_pianoSetPanelWidth,
+  //     ACT_pianoSetWidth,
   //   ]),
   // },
 };

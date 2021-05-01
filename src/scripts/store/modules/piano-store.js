@@ -2,20 +2,20 @@
  * Store module for the piano
  */
 import {
-  PIANO_MUTATION_HEIGHT,
-  PIANO_MUTATION_KEYSIZE,
-  PIANO_MUTATION_OCTAVE_COUNT,
-  PIANO_MUTATION_SCALE,
-  PIANO_MUTATION_SIDE_PANEL_WIDTH,
+  MUT_pianoHeight,
+  MUT_pianoKeysize,
+  MUT_pianoOctaveCount,
+  MUT_pianoScale,
+  MUT_pianoPanelWidth,
   PIANO_MUTATION_WIDTH,
 } from "../mutations";
 import {
-  PIANO_ACTION_SET_HEIGHT,
-  PIANO_ACTION_SET_KEYSIZE,
-  PIANO_ACTION_SET_OCTAVE_COUNT,
-  PIANO_ACTION_SET_SCALE,
-  PIANO_ACTION_SET_SIDE_PANEL_WIDTH,
-  PIANO_ACTION_SET_WIDTH,
+  ACT_pianoSetHeight,
+  ACT_pianoSetKeysize,
+  ACT_pianoSetOctaveCount,
+  ACT_pianoSetScale,
+  ACT_pianoSetPanelWidth,
+  ACT_pianoSetWidth,
 } from "../actions";
 
 export default {
@@ -66,19 +66,19 @@ export default {
   mutations: {
     // using the ES2015 computed property name feature
     // to use a constant as the function name
-    [PIANO_MUTATION_HEIGHT](state, data) {
+    [MUT_pianoHeight](state, data) {
       state.height = data;
     },
-    [PIANO_MUTATION_KEYSIZE](state, data) {
+    [MUT_pianoKeysize](state, data) {
       state.keySize = data;
     },
-    [PIANO_MUTATION_OCTAVE_COUNT](state, data) {
+    [MUT_pianoOctaveCount](state, data) {
       state.octaveCount = data;
     },
-    [PIANO_MUTATION_SCALE](state, data) {
+    [MUT_pianoScale](state, data) {
       state.scale = data;
     },
-    [PIANO_MUTATION_SIDE_PANEL_WIDTH](state, data) {
+    [MUT_pianoPanelWidth](state, data) {
       state.sidePanelWidth = data;
     },
     [PIANO_MUTATION_WIDTH](state, data) {
@@ -87,22 +87,22 @@ export default {
   },
 
   actions: {
-    [PIANO_ACTION_SET_HEIGHT]({ commit }, data) {
-      commit(PIANO_MUTATION_HEIGHT, data);
+    [ACT_pianoSetHeight]({ commit }, data) {
+      commit(MUT_pianoHeight, data);
     },
-    [PIANO_ACTION_SET_KEYSIZE]({ commit }, data) {
-      commit(PIANO_MUTATION_KEYSIZE, data);
+    [ACT_pianoSetKeysize]({ commit }, data) {
+      commit(MUT_pianoKeysize, data);
     },
-    [PIANO_ACTION_SET_OCTAVE_COUNT]({ commit }, data) {
-      commit(PIANO_MUTATION_OCTAVE_COUNT, data);
+    [ACT_pianoSetOctaveCount]({ commit }, data) {
+      commit(MUT_pianoOctaveCount, data);
     },
-    [PIANO_ACTION_SET_SCALE]({ commit }, data) {
-      commit(PIANO_MUTATION_SCALE, data);
+    [ACT_pianoSetScale]({ commit }, data) {
+      commit(MUT_pianoScale, data);
     },
-    [PIANO_ACTION_SET_SIDE_PANEL_WIDTH]({ commit }, data) {
-      commit(PIANO_MUTATION_SIDE_PANEL_WIDTH, data);
+    [ACT_pianoSetPanelWidth]({ commit }, data) {
+      commit(MUT_pianoPanelWidth, data);
     },
-    [PIANO_ACTION_SET_WIDTH]({ commit }, data) {
+    [ACT_pianoSetWidth]({ commit }, data) {
       commit(PIANO_MUTATION_WIDTH, data);
     },
   },

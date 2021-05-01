@@ -57,11 +57,11 @@ import Footer from "./footer/footer.vue";
 
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
-  INSTRUMENT_ACTION_START_NOTE,
-  INSTRUMENT_ACTION_END_NOTE,
-  MODEL_ACTION_INIT_VAE,
+  ACT_instrumentStartNote,
+  ACT_instrumentEndNote,
+  ACT_modelInitVae,
 } from "../store/actions";
-import { CLOCK_MUTATION_UPDATE_SOUND_ON } from "../store/mutations";
+import { MUT_clockMetronomeSoundOn } from "../store/mutations";
 
 export default {
   name: "app",
@@ -112,19 +112,19 @@ export default {
     // maybe store it in local storage, so to not load it every time
     // console.log(this.rangeStart, this.rangeEnd);
     this.getMIDI();
-    this[MODEL_ACTION_INIT_VAE](this.rangeStart, this.rangeEnd);
+    this[ACT_modelInitVae](this.rangeStart, this.rangeEnd);
   },
   methods: {
     ...mapActions("instrumentStore", [
-      INSTRUMENT_ACTION_START_NOTE,
-      INSTRUMENT_ACTION_END_NOTE,
+      ACT_instrumentStartNote,
+      ACT_instrumentEndNote,
     ]),
-    ...mapActions("modelStore", [MODEL_ACTION_INIT_VAE]),
+    ...mapActions("modelStore", [ACT_modelInitVae]),
     ...mapActions("midiStore", ["getMIDI"]),
-    ...mapMutations("mainClockStore", [CLOCK_MUTATION_UPDATE_SOUND_ON]),
+    ...mapMutations("mainClockStore", [MUT_clockMetronomeSoundOn]),
 
     switchMetronome() {
-      this[CLOCK_MUTATION_UPDATE_SOUND_ON](!this.metronomeSoundOn);
+      this[MUT_clockMetronomeSoundOn](!this.metronomeSoundOn);
     },
   },
 };

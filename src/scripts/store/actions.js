@@ -2,51 +2,49 @@
  * A list of all possible actions on the store objects
  */
 // -- piano store actions --
-export const PIANO_ACTION_SET_HEIGHT = "piano_action_set_height";
-export const PIANO_ACTION_SET_KEYSIZE = "piano_action_set_keysize";
-export const PIANO_ACTION_SET_OCTAVE_COUNT = "piano_action_set_octave_count";
-export const PIANO_ACTION_SET_SCALE = "piano_action_set_scale";
-export const PIANO_ACTION_SET_SIDE_PANEL_WIDTH =
-  "piano_action_set_side_panel_width";
-export const PIANO_ACTION_SET_WIDTH = "piano_action_set_width";
+export const ACT_pianoSetHeight = "ACT_pianoSetHeight";
+export const ACT_pianoSetKeysize = "ACT_pianoSetKeysize";
+export const ACT_pianoSetOctaveCount = "ACT_pianoSetOctaveCount";
+export const ACT_pianoSetScale = "ACT_pianoSetScale";
+export const ACT_pianoSetPanelWidth =
+  "ACT_pianoSetPanelWidth";
+export const ACT_pianoSetWidth = "ACT_pianoSetWidth";
 
 // -- clock store actions --
-export const CLOCK_ACTION_NEXT_BIP = "clock_action_next_bip";
-export const CLOCK_ACTION_SCHEDULE_BIP = "clock_action_schedule_bip";
-export const CLOCK_ACTION_PLAY_METRONOME = "clock_action_play_metronome";
-export const CLOCK_ACTION_ADVANCE_SCHEDULER = "clock_action_advance_scheduler";
-export const CLOCK_ACTION_START = "clock_action_start";
-export const CLOCK_ACTION_STOP = "clock_action_stop";
-export const CLOCK_ACTION_STARTSTOP = "clock_action_startstop";
-export const CLOCK_ACTION_RESET = "clock_action_reset";
-export const CLOCK_ACTION_RESET_PRECOUNT = "clock_action_reset_precount";
+export const ACT_clockNextBip = "ACT_clockNextBip";
+export const ACT_clockScheduleBip = "ACT_clockScheduleBip";
+export const ACT_clockPlayMetronome = "ACT_clockPlayMetronome";
+export const ACT_clockAdvanceScheduler = "ACT_clockAdvanceScheduler";
+export const ACT_clockStart = "ACT_clockStart";
+export const ACT_clockStop = "ACT_clockStop";
+export const ACT_clockStartStop = "ACT_clockStartStop";
+export const ACT_clockReset = "ACT_clockReset";
+export const ACT_clockResetPrecount = "ACT_clockResetPrecount";
 
 // -- session store actions --
-export const SESSION_ACTION_CLEAR_SESSION = "session_action_clear_session";
-export const SESSION_ACTION_GENERATE_FIRST_HALF_RESPONSE =
-  "session_action_generate_first_half_response";
-export const SESSION_ACTION_GENERATE_RESPONSES =
-  "session_action_generate_responses";
-export const SESSION_ACTION_PLAY_CURRENT_NOTES =
-  "session_action_play_current_notes";
-export const SESSION_ACTION_PREVIEW_BASE_PATTERN =
-  "session_action_preview_base_pattern";
-export const SESSION_ACTION_CONFIRM_SEED =
-  "session_action_confirm_seed";
-export const SESSION_ACTION_CLOSE_UNFINISHED_NOTES =
-  "session_action_close_unfinished_notes";
-export const SESSION_ACTION_FINISHED_MELODY = "session_action_finished_melody";
-export const SESSION_ACTION_LOADING = "session_action_loading";
-export const SESSION_ACTION_SET_AIMELODIES = "session_action_set_aimelodies";
+export const ACT_sessionClearSession = "ACT_sessionClearSession";
+export const ACT_sessionGenerateFirstHalfResponse =
+  "ACT_sessionGenerateFirstHalfResponse";
+export const ACT_sessionGenerateResponses =
+  "ACT_sessionGenerateResponses";
+export const ACT_sessionPlayCurrentNotes =
+  "ACT_sessionPlayCurrentNotes";
+export const ACT_sessionConfirmSeed =
+  "ACT_sessionConfirmSeed";
+export const ACT_sessionCloseUnfinishedNotes =
+  "ACT_sessionCloseUnfinishedNotes";
+export const ACT_sessionFinishedMelody = "ACT_sessionFinishedMelody";
+export const ACT_sessionSetLoading = "ACT_sessionSetLoading";
+export const ACT_sessionSetAiMelodies = "ACT_sessionSetAiMelodies";
 
 
   // -- model actions --
-export const MODEL_ACTION_INIT_RNN = "model_action_init_rnn";
-export const MODEL_ACTION_INIT_VAE = "model_action_init_vae";
-export const MODEL_ACTION_GENERATE_CONTINUATION =
-  "model_action_generate_continuation";
-export const MODEL_ACTION_GENERATE_SIMILARS = "model_action_generate_similars";
+export const ACT_modelInitRnn = "ACT_modelInitRnn";
+export const ACT_modelInitVae = "ACT_modelInitVae";
+export const ACT_modelGenerateContinuationRnn =
+  "ACT_modelGenerateContinuationRnn";
+export const ACT_modelGenerateSimilarsVae = "ACT_modelGenerateSimilarsVae";
 
 // -- instrument actions --
-export const INSTRUMENT_ACTION_START_NOTE = "instrument_mutation_start_note";
-export const INSTRUMENT_ACTION_END_NOTE = "instrument_mutation_end_note";
+export const ACT_instrumentStartNote = "instrument_mutation_start_note";
+export const ACT_instrumentEndNote = "instrument_mutation_end_note";

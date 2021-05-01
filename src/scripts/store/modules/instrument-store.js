@@ -17,8 +17,8 @@ const synthOptionsArray = [
 ];
 import { getNoteName } from "../../utils/utils";
 import {
-  INSTRUMENT_ACTION_START_NOTE,
-  INSTRUMENT_ACTION_END_NOTE,
+  ACT_instrumentStartNote,
+  ACT_instrumentEndNote,
 } from "../actions";
 
 export default {
@@ -103,10 +103,10 @@ export default {
   },
 
   actions: {
-    [INSTRUMENT_ACTION_START_NOTE]({getters}, note) {
+    [ACT_instrumentStartNote]({getters}, note) {
       getters.synth.triggerAttack(getNoteName(note));
     },
-    [INSTRUMENT_ACTION_END_NOTE]({getters}, note) {
+    [ACT_instrumentEndNote]({getters}, note) {
       getters.synth.triggerRelease(getNoteName(note));
     },
   },
