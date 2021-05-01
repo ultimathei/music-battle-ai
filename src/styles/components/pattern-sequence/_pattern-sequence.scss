@@ -150,6 +150,9 @@
   &[data-active] {
     border: 2px solid $color-brand-accent-4;
   }
+  &[data-upcoming] {
+    opacity: 0.3;
+  }
 
   &[data-sequence-list-item-type="human"] {
     background: $color-brand-accent-2;

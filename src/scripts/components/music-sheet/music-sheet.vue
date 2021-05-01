@@ -134,13 +134,6 @@ export default {
 
     // local computed
     activePattern() {
-      // New aproach
-      // if in seed_edit or seed_recording mode
-      //    if useQuantized --> quantizedPattern
-      //    else --> currentPattern
-      // else (battle mode or playback mode?)
-      //    if userTurn --> currentPattern
-      //    else --> aiMelodyArray[patternPointer]
       if (this.mode == "seed_recording" || this.mode == "seed_edit") {
         if (this.useQuantized) {
           return this.quantizedSeedMelody;
@@ -160,12 +153,6 @@ export default {
           return this.aiMelodyArray[this.patternPointer-1] || [];
         }
       }
-
-      // old way
-      // if (!this.seedMelody && this.useQuantized && this.quantizedSeedMelody) {
-      //   return this.quantizedSeedMelody;
-      // }
-      // return this.currentPattern;
     },
     previousPattern() {
       if (this.session.length > 0)

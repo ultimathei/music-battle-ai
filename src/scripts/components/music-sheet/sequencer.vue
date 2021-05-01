@@ -22,6 +22,7 @@
           :key="`sequence-item-robot-${index}`"
           type="robot"
           :data-active="index == patternPointer && !userTurn"
+          :data-upcoming="index > patternPointer"
           :index="`${index}`"
         />
         <SequencerItem
@@ -30,6 +31,9 @@
           :key="`sequence-item-human-${index}`"
           type="human"
           :data-active="index == patternPointer && userTurn"
+          :data-upcoming="
+            index > patternPointer || (index == patternPointer && !userTurn)
+          "
           :index="`${index}`"
         />
       </div>
@@ -41,9 +45,7 @@
         <RightArrowIcon />
       </div>
     </div>
-    <Controls
-      class="pattern-sequence__controls | playback-controls"
-    />
+    <Controls class="pattern-sequence__controls | playback-controls" />
   </div>
 </template>
 
@@ -55,10 +57,7 @@ import RightArrowIcon from "../graphics/right-arrow.svg";
 import SequencerItem from "./sequencer-item.vue";
 import Controls from "../controls/controls.vue";
 
-import {
-  ACT_clockStartStop,
-  ACT_sessionSetLoading,
-} from "../../store/actions";
+import { ACT_clockStartStop, ACT_sessionSetLoading } from "../../store/actions";
 
 export default {
   name: "Sequencer",
