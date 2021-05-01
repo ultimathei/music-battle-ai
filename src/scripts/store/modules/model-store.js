@@ -39,7 +39,7 @@ export default {
     isModelLoading: false,
     // game level specific values
     numberOfSamples: 2,
-    similarity: 0.6,
+    similarity: 0.8,
   }),
 
   getters: {

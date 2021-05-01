@@ -107,3 +107,11 @@ export const convertFromMagentaSequence = (magentaSeq) => {
     }
   })
 }
+
+export const getOffsetAmount = (quantizer, offset) => {
+  let directedOffset = -offset;
+  if (offset > quantizer / 2) {
+    directedOffset += quantizer;
+  }
+  return directedOffset;
+}

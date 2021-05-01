@@ -66,6 +66,7 @@ export default new Vuex.Store({
       return (
         (state.mode == modes.SEED_RECORDING || state.mode == modes.BATTLE) &&
         state.mainClockStore.isRunning &&
+        state.mainClockStore.precountDemisemiquaver >= 32 &&
         state.sessionStore.userTurn
       );
     },
@@ -93,61 +94,7 @@ export default new Vuex.Store({
 
       // Add note to currently pressed notes array
       dispatch("updateCurrentlyPressedNotes", data);
-
-      // SOUND playback -- ARCHIVED polyphonic
-      // dispatch("playSounds", data);
-
-      // RECORDING the note changes
-      // dispatch("recordNotes");
     },
-
-    /**
-     * Plays the sounds for the given note
-     * @param {*} data the note object
-     */
-    // playSounds({ state }, data) {
-    //   //// Monophonic way
-    //   if (
-    //     (state.mainClockStore.isRunning && state.sessionStore.userTurn) ||
-    //     !state.mainClockStore.isRunning
-    //   ) {
-
-    //     if(state.singleActiveNote) {
-
-    //     }
-
-    //     if (data.on_message) {
-
-    //       this.dispatch(
-    //         INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
-    //         data.note
-    //       );
-
-    //     } else {
-    //       this.dispatch(
-    //         INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
-    //         data.note
-    //       );
-    //     }
-    //   }
-
-    //   //// ARCHIVED Polyphonic way
-    //   // if (
-    //   //   (state.mainClockStore.isRunning && state.sessionStore.userTurn) ||
-    //   //   !state.mainClockStore.isRunning
-    //   // ) {
-    //   //   if (data.on_message)
-    //   //     this.dispatch(
-    //   //       INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
-    //   //       data.note
-    //   //     );
-    //   //   else
-    //   //     this.dispatch(
-    //   //       INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
-    //   //       data.note
-    //   //     );
-    //   // }
-    // },
 
     updateCurrentlyPressedNotes({ state, dispatch }, data) {
       //  Monophonic way

@@ -7,7 +7,7 @@
  * A pattern is essentially 4 bars played by either the user or the response of
  * the app (ai/robot) for the pattern.
  */
-import { convertToPatternTime } from "../../utils/utils";
+import { getOffsetAmount } from "../../utils/utils";
 import { SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN } from "../mutations";
 import {
   SESSION_ACTION_GENERATE_RESPONSES,
@@ -110,7 +110,9 @@ export default {
         : state.currentPattern;
 
       melodyToPlay.forEach((note) => {
-        if (note.start >= 0 && note.start == currentTime) {
+        if (note.start == note.end) {
+          // do not play!
+        } else if (note.start >= 0 && note.start == currentTime) {
           // play sound for note
           this.dispatch(
             INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
@@ -298,12 +300,6 @@ export default {
         // console.log(note);
         if (!note.end || note.end > 128) {
           note.end = 128;
-          // send stop soound message here?
-          // dispatch("recordNoteChanges", {
-          //   on_message: false,
-          //   note: note.note,
-          //   time: { bar: 4, demisemi: 32 },
-          // });
         }
         // test this!
         if (!note.start) {
@@ -318,24 +314,10 @@ export default {
       });
     },
 
-    /**
-     * Storing note MIDI messaged as they come in
-     */
-    recordNoteChanges({ commit }, payload) {
-      // let data = { note: payload.note };
-      // if (payload.on_message) data.start = convertToPatternTime(payload.time);
-      // else data.end = convertToPatternTime(payload.time);
-      // // send data here to store
-      // commit(SESSION_MUTATION_ADD_NOTE_TO_CURRENT_PATTERN, data);
-      // commit('addNoteToPattern', data);
-      // if singleActiveNote exists, add end (now) to the last note in currentPattern
-      // and push old singleActiveNote as note with start=now to the array
-    },
-
     switchNote({ state }, payload) {
       const newPitch = payload.pitch;
       const now = payload.now;
-      console.log(newPitch, now);
+      // console.log(newPitch, now);
       // console.log(state.currentPattern);
       let previousNote =
         state.currentPattern[state.currentPattern.length - 1] || null;
@@ -350,7 +332,7 @@ export default {
         // previous note ended, no new note started
         if (previousNote) {
           if (previousNote.start == now) {
-            // state.currentPattern.pop(); // remove the last item if it has 0 length
+            state.currentPattern.pop(); // remove the last item if it has 0 length
             // console.log('should remove a note here', state.currentPattern);
           } else {
             previousNote.end = now;
@@ -386,124 +368,64 @@ export default {
         return;
       }
 
-      // quantize to 16th notes
+      // quantize melody here
       let quantizer = 4;
+
+      // -- Naive quantization of all notes of melody --
       let newPattern = [];
       state.currentPattern.forEach((note) => {
         let offGridStartAmount = note.start % quantizer;
+        let offsetStart = getOffsetAmount(quantizer, offGridStartAmount);
         let offGridEndAmount = note.end % quantizer;
-        // if(offGridAmount == 2) offGridAmount = 1;
-
-        let offsetStart;
-        if (offGridStartAmount <= quantizer / 2) {
-          offsetStart = -offGridStartAmount;
-        } else {
-          offsetStart = quantizer - offGridStartAmount;
-        }
-        let offsetEnd;
-        if (offGridEndAmount <= quantizer / 2) {
-          offsetEnd = -offGridEndAmount;
-        } else {
-          offsetEnd = quantizer - offGridEndAmount;
-        }
+        let offsetEnd = getOffsetAmount(quantizer, offGridEndAmount);
 
         let newStart = note.start + offsetStart;
         let newEnd = note.end + offsetEnd;
+
+        // min length of a note is the quantizer size
         if (newStart == newEnd) {
           newEnd += quantizer;
         }
 
-        newPattern.push({
-          note: note.note,
-          start: newStart,
-          end: newEnd,
-        });
-
-        // -- archived --
-        // return {
-        //   note: note.note,
-        //   start: Math.floor(note.start / 4) * 4,
-        //   end: Math.ceil(note.end / 4) * 4,
-        // };
-        // -- --
+        if (newStart != newEnd) {
+          newPattern.push({
+            note: note.note,
+            start: newStart,
+            end: newEnd,
+          });
+        }
       });
 
-      let finalPattern = [];
-
-      // -- Adjust overlaps --
-      for (let i = 0; i < newPattern.length - 1; i++) {
-        let thisNote = newPattern[i];
-        let nextNote = newPattern[i + 1];
-        let extraNote = null;
-        // if overlap with next
-        if (thisNote.end > nextNote.start) {
-          if (thisNote.end > nextNote.end) {
-            // this pattern
-            // nextNote:    ...     -->     ....
-            // thisNote: .......... --> ....    ....
-            extraNote = {
-              note: thisNote.note,
-              start: nextNote.end,
-              end: thisNote.end,
-            };
-            thisNote.end = nextNote.start;
-          } else {
-            // this pattern
-            // nextNote:    ....... -->       ....
-            // thisNote: ......     --> ......
-            thisNote.end = nextNote.start;
-            nextNote.start = thisNote.end;
-          }
-        }
-
-        if (thisNote.start == thisNote.end) {
-          thisNote.end += quantizer;
-        }
-
-        // if duplicates achieved
-        if (thisNote.start == nextNote.start && thisNote.end == nextNote.end) {
-          // don't add
-        } else {
-          finalPattern.push(thisNote);
-        }
-        if (extraNote) {
-          // add all three parts and increase counter
-          finalPattern.push(nextNote);
-          finalPattern.push(extraNote);
+      // for each note, check if they have overlap with next ones
+      newPattern.forEach((_, ind, arr) => {
+        let i = ind + 1;
+        let overlaps = [];
+        while (i < arr.length && arr[i].start == _.start) {
+          overlaps.push(arr[i]);
           i++;
         }
-      }
 
-      // add last note
-      let lastNote = newPattern[newPattern.length - 1];
-      let lastBeforeLastNote = finalPattern[finalPattern.length - 1];
-      let extraNote = null;
-      if (lastBeforeLastNote.end > lastNote.start) {
-        if (lastBeforeLastNote.end > lastNote.end) {
-          // this pattern
-          // nextNote:    ...     -->     ....
-          // thisNote: .......... --> ....    ....
-          extraNote = {
-            note: lastBeforeLastNote.note,
-            start: lastNote.end,
-            end: lastBeforeLastNote.end,
-          };
-          lastBeforeLastNote.end = lastNote.start;
-          // add all three parts and increase counter
-          finalPattern.push(lastNote);
-          finalPattern.push(extraNote);
-        } else {
-          // this pattern
-          // lastNote:    ....... -->       ....
-          // thisNote: ......     --> ......
-          lastBeforeLastNote.end = lastNote.start;
-          lastNote.start = lastBeforeLastNote.end;
-          finalPattern.push(lastNote);
+        // deal with possibly generated overlaps
+        if (overlaps.length > 0) {
+          let addition = Math.ceil(quantizer / (overlaps.length + 1));
+          _.end = _.start + addition;
+          overlaps[0].start = _.end;
+          i = 1;
+          while (i < overlaps.length) {
+            // set start
+            overlaps[i].start = overlaps[i - 1].end;
+            // set end (except last, that keeps its end)
+            if(i < overlaps.length - 1) {
+              overlaps[i].end = overlaps[i].start + (i) * addition;
+            }
+            i++;
+          }
         }
-      } else {
-        finalPattern.push(lastNote);
-      }
-      state.quantizedSeedMelody = finalPattern;
+      });
+
+      // set quantized melody
+      state.quantizedSeedMelody = newPattern;
+      // state.quantizedSeedMelody = finalPattern;
       state.useQuantized = true;
     },
   },
@@ -544,6 +466,7 @@ export default {
       }
     },
 
+    // not needed?
     addNoteToPattern(state, note) {
       if (!state.userTurn) return; // safety check
       // if singleActiveNote exists, add end (now) to the last note in currentPattern
