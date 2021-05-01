@@ -15,10 +15,10 @@
     box-shadow: 0 0 30px rgba(black, 0.5);
     display: flex;
     flex-flow: column nowrap;
-    height: 200px;
+    min-height: 200px;
     justify-content: center;
     max-width: 300px;
-    padding: 20px;
+    padding: 30px 20px;
     width: 80%;
   }
 
@@ -67,6 +67,32 @@
       background-color: $color-brand-background;
       color: $color-white;
       margin-right: 10px;
+    }
+  }
+
+  &__scores{
+    @include typography-1-xl;
+    text-transform: uppercase;
+    color: $color-brand-background;
+    display: flex;
+    flex-flow: column;
+    padding-bottom: 20px;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  &__score{
+    padding: 2px 5px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    &-title{
+    }
+    &-value{
+      font-weight: 900;
+      color: $color-brand-accent-2;
     }
   }
 }

@@ -21,15 +21,11 @@ import {
   ACT_sessionCloseUnfinishedNotes,
   ACT_sessionConfirmSeed,
   ACT_sessionFinishedMelody,
-  ACT_sessionGenerateResponses,
   ACT_sessionPlayCurrentNotes,
   ACT_sessionSetAiMelodies,
   ACT_sessionSetLoading,
 } from "../actions";
-import {
-  convertFromMagentaSequence,
-  convertToMagentaSample,
-} from "../../utils/utils";
+import { convertToMagentaSample, isNoteInScale } from "../../utils/utils";
 
 const CLOCK_STORE_LOC = "mainClockStore/";
 const INSTRUMENT_STORE_LOC = "instrumentStore/";
@@ -40,7 +36,6 @@ export default {
   state: () => ({
     userTurn: true, // flags status of turn
     currentPattern: [], // alwyas stores the latest pattern
-    session: [], // a list of alternating user/response patterns
     isSessionLoading: false, // flag status of session
     seedMelody: null, // the seed melody of the session
     quantizedSeedMelody: null, // see quantizeSeedMelody action
@@ -52,12 +47,11 @@ export default {
     prematureNotes: [], // this would be used to cache notes that are strated just before the pattern start
     currentMatchIndex: 0, // the index of current match in the game
     deleteInitiated: false, // flag if user asked to delete session
+    battleScale: [60, 61, 62, 63, 64],
+    battleScores: null,
   }),
 
   getters: {
-    session(state) {
-      return state.session;
-    },
     userTurn(state) {
       return state.userTurn;
     },
@@ -91,6 +85,24 @@ export default {
     patternPointer(state) {
       return state.patternPointer;
     },
+    battleScale(state) {
+      return state.battleScale;
+    },
+    battleScores(state) {
+      return state.battleScores;
+    },
+    avgBattleScore(state) {
+      const sum = state.battleScores.reduce((a, b) => a + b.score, 0);
+      const avg = sum / state.battleScores.length || 0;
+      return (avg/128).toFixed(2)*1000;
+    },
+    totalBattleBonus(state) {
+      const sum = state.battleScores.reduce(
+        (a, b) => a + b.improvBonus,
+        0
+      );
+      return Math.max((sum/128).toFixed(2)*1000, 0);
+    },
   },
 
   actions: {
@@ -102,16 +114,7 @@ export default {
     // 2. get a sample: to_sequence = model.sample(1, 1.0, [scale]) ?? how to sepcify scale?
     // 3. results = vae.interpolate([from_sequence, to_sequence], num_of_interppolation_steps, 1.0, [scale])
     //////////////////
-    ////////
 
-    // IDEA
-    // for prematureNotes: if not userTurn and MIDI not receieved:
-    // collect theese notes to an array with start value 0.
-    // is end note message received for same pitch, remove from array
-    // at the start of a new user pattern, push the content of this array to
-    // the currentPattern array
-
-    ///////
     /**
      * Playback of current pattern sound
      * @param {*} time
@@ -173,39 +176,93 @@ export default {
       }
     },
 
+    // NOTE...
+    // A battle is:
+    // - seed melody (quantized if useQuantized?)
+    // - a list of user melodies (userMelodyArray)
+    // - a list of ai melodies (aiMelodyArray)
+    // also has:
+    // - a score (once complete)
+    // - difficulty level?
+    // - what instrument was used?
     evaluateBattleScore({ state }) {
       console.log("evaluating score here");
-      // for each demisemi portion:
-      // if ai-note present
-      // a. have matching player-note   [+++]
-      // b. empty                       [--]
-      // c. different player note
-      // c.1 in scale               [+]
-      // c.2 out of scale           [---]
-
-      // else (ai-note NOT present)
-      // a. player-note empty           [+++]
-      // b. has player note
-      // b.1 in scale               [+]
-      // b.2 out of scale           [---]
 
       // step 1: push currentPattern to session
-      const patternToArchive = {
-        type: "user",
-        pattern: [...state.currentPattern],
-      };
-      // state.session.push(patternToArchive);
-      state.userMelodyArray.push(patternToArchive);
-      
-      // console.log('session: ',state.session);
-      console.log('userMelodyArray: ', state.userMelodyArray);
-      console.log('aiMelodyArray: ', state.aiMelodyArray);
+      state.userMelodyArray.push([...state.currentPattern]);
 
-      // NOTE
-      // A battle is:
-      // - seed melody (0 index of array)
-      // - a list of alternating user/ai melodies
-      // - a finishing melody ()
+      console.log("userMelodyArray: ", state.userMelodyArray);
+      console.log("aiMelodyArray: ", state.aiMelodyArray);
+
+      // determine scale?
+      // --> actually this should be already done (before getting similars)
+
+      let battleScores = []; // a list of scores for the rounds
+      // for each pattern pair:
+      state.aiMelodyArray.forEach((aiMelody, index) => {
+        let score = 0;
+        let improvBonus = 0;
+        // no score added if userMelody is empty
+        if (state.userMelodyArray[index].length > 0) {
+          // for each demisemi portion: (0...127)
+          for (let i = 0; i < 128; i++) {
+            let aiNoteHere = aiMelody.find(
+              (aiNote) => aiNote.start <= i && aiNote.end > i
+            );
+            let userNoteHere = state.userMelodyArray[index].find(
+              (userNote) => userNote.start <= i && userNote.end > i
+            );
+            // if ai-note present - there is a note who's start and end date wraps this i value
+            if (aiNoteHere) {
+              // a. have matching player-note   [+++]
+              if (userNoteHere && userNoteHere.note == aiNoteHere.note) {
+                score += 1;
+              }
+              // b. different player note
+              // b.1 in scale               [+]
+              else if (
+                userNoteHere &&
+                isNoteInScale(userNoteHere.note, state.battleScale)
+              ) {
+                // score += 0.5;
+                improvBonus += 1;
+              }
+              // b.2 out of scale           [-]
+              else if (userNoteHere) {
+                // score -= 1.5;
+                // score -= 1;
+                improvBonus -= 1;
+              }
+              // c. empty                       [.]
+              else {
+                // score -= 1;
+              }
+            }
+            // else (ai-note NOT present)
+            else {
+              // a. player-note empty           [+++]
+              if (!userNoteHere) {
+                score += 1;
+              }
+              // b. has player note
+              // b.1 in scale               [+]
+              else if (isNoteInScale(userNoteHere.note, state.battleScale)) {
+                // score += 0.5;
+                improvBonus += 1;
+              }
+              // b.2 out of scale           [-]
+              else {
+                // score -= 1;
+                improvBonus -= 1;
+              }
+            }
+          }
+        }
+        battleScores.push({ score, improvBonus });
+      });
+
+      console.log("battleScore", battleScores);
+      state.battleScores = battleScores;
     },
 
     async [ACT_sessionConfirmSeed]({ state, dispatch }) {
@@ -255,21 +312,13 @@ export default {
 
     nextRobotMelody({ state }) {
       // console.log("transitioning from USER to ROBOT turn..");
-      // 1. push old current pattern to session
-      const patternToArchive = {
-        type: "user",
-        pattern: [...state.currentPattern],
-      };
-
-      // state.session.push(patternToArchive);
-      state.userMelodyArray.push(patternToArchive);
+      // 1. push old current pattern to userMelodyArray except the seed melody
+      if (state.patternPointer > 0)
+        state.userMelodyArray.push([...state.currentPattern]);
 
       // 2. get the next element from the start of the ai array
-      // let melody = state.aiMelodyArray.shift();
-      // IDEA - instead of shifting, keep a cursor/counter
       let melody = state.aiMelodyArray[state.patternPointer];
-      // console.log(melody);
-      state.patternPointer += 1;
+      state.patternPointer += 1; // increaase pointer
 
       // 3. add it as the current pattern
       state.currentPattern = melody;
@@ -279,65 +328,15 @@ export default {
 
     nextUserMelody({ state }) {
       // console.log("transitioning from ROBOT to USER turn..");
-      // 1. push old current pattern to session
-      // const patternToArchive = {
-      //   type: "robot",
-      //   pattern: [...state.currentPattern],
-      // };
-
-      // maybe not needed to have a session object?
-      // state.session.push(patternToArchive); 
-
       // clear current pattern - make it ready for user to play
       state.currentPattern = [];
       // flip user turn boolean
       state.userTurn = true;
     },
 
-    // // modified now -- not used now
-    // [ACT_sessionGenerateResponses]({ state }) {
-    //   // transitioning from user turn to response turn..
-    //   if (state.userTurn) {
-    //     // console.log("generate ai patterns here..");
-    //     // dispatch(ACT_sessionCloseUnfinishedNotes);
-    //     // 1. push old current pattern to session
-    //     const patternToArchive = {
-    //       type: "user",
-    //       pattern: [...state.currentPattern],
-    //     };
-    //     state.session.push(patternToArchive);
-
-    //     // 2. response pattern becomes the new current pattern
-    //     if (state.responseSequenceArray.length < 1) {
-    //       // stop playback
-    //       this.dispatch(CLOCK_STORE_LOC + ACT_clockStartStop);
-    //       return;
-    //     }
-
-    //     let sample = state.responseSequenceArray.shift();
-    //     // console.log(sample);
-
-    //     state.currentPattern = convertFromMagentaSequence(sample);
-    //   } else {
-    //     // transitioning from response turn to user turn..
-    //     // 1. push old current pattern to session
-    //     const patternToArchive = {
-    //       type: "robot",
-    //       pattern: [...state.currentPattern],
-    //     };
-    //     state.session.push(patternToArchive);
-
-    //     // clear current pattern - make it ready for user to play
-    //     state.currentPattern = [];
-    //   }
-    //   // flip user turn boolean
-    //   state.userTurn = !state.userTurn;
-    // },
-
     // clear/empty the current session
     [ACT_sessionClearSession]({ state }) {
       state.currentPattern = [];
-      state.session = [];
       state.aiMelodyArray = [];
       state.userMelodyArray = [];
       state.userTurn = true;

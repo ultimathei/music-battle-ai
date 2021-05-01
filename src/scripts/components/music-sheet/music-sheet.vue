@@ -122,7 +122,6 @@ export default {
       "currentPattern",
       "quantizedSeedMelody",
       "seedMelody",
-      "session",
       "userTurn",
       "isSessionLoading",
       "useQuantized",

@@ -4,7 +4,7 @@
       class="playback_control"
       v-if="
         !isRunning &&
-        (session.length > 0 || currentPattern.length > 0) &&
+        (aiMelodyArray.length > 0 || currentPattern.length > 0) &&
         mode != 'seed_recording' &&
         mode != 'scoring'
       "
@@ -82,8 +82,8 @@ export default {
     ]),
     ...mapGetters(["mode"]),
     ...mapGetters("sessionStore", [
-      "session",
       "currentPattern",
+      "aiMelodyArray",
       "useQuantized",
       "deleteInitiated",
     ]),
