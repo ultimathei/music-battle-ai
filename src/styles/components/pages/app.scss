@@ -33,7 +33,7 @@
     height: 100vh;
     width: 100vw;
     padding: 0 30px;
-    z-index: 13;
+    z-index: 100;
     background-color: $color-brand-background;
   }
 
@@ -67,8 +67,15 @@
   align-items: center;
 
   .playback_control {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
     fill: $color-brand-neutral-1;
     border-radius: 999px;
+
+    &:not(:first-of-type) {
+      margin-left: 10px;
+    }
 
     &:hover {
       fill: $color-brand-accent-2;
@@ -96,13 +103,13 @@
     flex-grow: 1;
   }
 
-  &__start-widget {
+  &__info-widget {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 11;
+    z-index: 20;
   }
 
   &__pattern-sequence {
@@ -217,61 +224,5 @@
 
   &__info {
     @include typography-1-m;
-  }
-}
-
-.start-widget {
-  background-color: rgba($color-brand-background, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &__box {
-    align-items: center;
-    background-color: $color-brand-neutral-2;
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(black, 0.5);
-    display: flex;
-    flex-flow: column nowrap;
-    height: 200px;
-    justify-content: center;
-    max-width: 300px;
-    padding: 20px;
-    width: 80%;
-  }
-
-  &__title {
-    color: $color-brand-background;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    padding-bottom: 20px;
-    text-align: center;
-    text-transform: uppercase;
-  }
-
-  &__subtitle {
-    color: $color-brand-background;
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-    max-width: 80%;
-    padding-bottom: 20px;
-    text-align: center;
-  }
-
-  &__button {
-    background-color: $color-brand-accent-2;
-    border-radius: 5px;
-    box-shadow: 0 0 15px rgba(black, 0.15);
-    color: $color-brand-background;
-    cursor: pointer;
-    font-family: "Montserrat", sans-serif;
-    font-size: 14px;
-    padding: 10px 30px;
-    text-transform: uppercase;
-
-    &:hover {
-      background-color: $color-brand-accent-4;
-    }
   }
 }

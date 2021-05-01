@@ -49,6 +49,7 @@ export default {
     userMelodyArray: [], // the user's attemps for each aiMelody
     prematureNotes: [], // this would be used to cache notes that are strated just before the pattern start
     currentMatchIndex: 0, // the index of current match in the game session
+    deleteInitiated: false, // flag if user asked to delete session
   }),
 
   getters: {
@@ -78,6 +79,9 @@ export default {
     },
     quantizedSeedMelody(state) {
       return state.quantizedSeedMelody;
+    },
+    deleteInitiated(state) {
+      return state.deleteInitiated;
     },
   },
 
@@ -293,6 +297,7 @@ export default {
       state.seedMelody = null;
       state.useQuantized = false;
       state.quantizedSeedMelody = null;
+      state.deleteInitiated = false;
     },
 
     [SESSION_ACTION_CLOSE_UNFINISHED_NOTES]({ state, dispatch }) {
@@ -472,11 +477,8 @@ export default {
       }
     },
 
-    // not needed?
-    addNoteToPattern(state, note) {
-      if (!state.userTurn) return; // safety check
-      // if singleActiveNote exists, add end (now) to the last note in currentPattern
-      // and push old singleActiveNote as note with start=now to the array
-    },
+    mutateDeleteInitiated(state) {
+      state.deleteInitiated = !state.deleteInitiated;
+    }
   },
 };

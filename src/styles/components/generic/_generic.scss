@@ -6,11 +6,16 @@
 @import "./buttons";
 @import "./icons";
 
-.playback_control {
-  width: 30px;
-  height: 30px;
-  margin-left: 10px;
-  cursor: pointer;
+.info-bubble {
+  background-color: $color-white;
+  color: $color-brand-background;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 5px;
+  z-index: 20;
 }
 
 .metronome__details {
@@ -21,22 +26,22 @@
 }
 
 .metronome__button {
-    fill: $color-brand-neutral-1;
-    height: 30px;
-    opacity: 0.5;
-    cursor: pointer;
+  fill: $color-brand-neutral-1;
+  height: 30px;
+  opacity: 0.5;
+  cursor: pointer;
 
-    &:hover{
-      opacity: 1;
-      fill: $color-brand-accent-2;
-    }
+  &:hover {
+    opacity: 1;
+    fill: $color-brand-accent-2;
+  }
 
-    &[data-active] {
-      opacity: 1;
-    }
+  &[data-active] {
+    opacity: 1;
+  }
 }
 
-.metronome__flash{
+.metronome__flash {
   width: 8px;
   height: 8px;
   border-radius: 999px;
@@ -52,6 +57,10 @@
 
 /* Metronome flash animation */
 @keyframes flash_metronome_anim {
-  from {background-color: $color-brand-accent-3;}
-  to {background-color: $color-brand-neutral-1;}
+  from {
+    background-color: $color-brand-accent-3;
+  }
+  to {
+    background-color: $color-brand-neutral-1;
+  }
 }

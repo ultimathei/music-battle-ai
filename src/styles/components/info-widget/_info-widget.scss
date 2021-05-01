@@ -1,0 +1,72 @@
+/**
+* Widget component to display helpful, directing 
+* information to the user when the playback is paused
+*/
+.info-widget {
+  background-color: rgba($color-brand-background, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__box {
+    align-items: center;
+    background-color: $color-brand-neutral-2;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(black, 0.5);
+    display: flex;
+    flex-flow: column nowrap;
+    height: 200px;
+    justify-content: center;
+    max-width: 300px;
+    padding: 20px;
+    width: 80%;
+  }
+
+  &__title {
+    color: $color-brand-background;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  &__subtitle {
+    color: $color-brand-background;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    max-width: 80%;
+    padding-bottom: 20px;
+    text-align: center;
+  }
+
+  &__buttons{
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__button {
+    background-color: $color-brand-accent-1;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(black, 0.15);
+    color: $color-brand-background;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    padding: 10px 30px;
+    text-transform: uppercase;
+
+    &:not(.cancel-button):hover {
+      background-color: $color-brand-accent-2;
+    }
+
+    &.cancel-button {
+      background-color: $color-brand-background;
+      color: $color-white;
+      margin-right: 10px;
+    }
+  }
+}

@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="app">
+  <div class="app">
     <Preload class="app__preload" v-if="!isPreloaded" />
 
     <template v-if="magentaModel">
@@ -31,8 +31,8 @@
 
         <div class="app-body__music-sheet-wrap">
           <StartWidget
-            class="app-body__start-widget"
-            v-if="currentPattern.length == 0 && !seedMelody && !isRunning"
+            class="app-body__info-widget"
+            v-if="isStartWidgetVisible"
           />
           <MusicSheet class="app-body__music-sheet" />
         </div>
@@ -52,7 +52,7 @@ import MusicSheet from "./music-sheet/music-sheet.vue";
 import Preload from "./preload/preload.vue";
 import Piano from "./piano/Piano.vue";
 import Sequencer from "./music-sheet/sequencer.vue";
-import StartWidget from "./start-widget/start-widget.vue";
+import StartWidget from "./info-widget/info-widget.vue";
 import Footer from "./footer/footer.vue";
 
 import { mapActions, mapGetters, mapMutations } from "vuex";
@@ -84,13 +84,28 @@ export default {
       "currentBar",
       "currentDemisemiquaver",
       "metronomeSoundOn",
-      "metronomeFlashActive"
+      "metronomeFlashActive",
     ]),
-    ...mapGetters("sessionStore", ["userTurn", "currentPattern", "seedMelody"]),
+    ...mapGetters("sessionStore", [
+      "userTurn",
+      "currentPattern",
+      "seedMelody",
+      "deleteInitiated",
+    ]),
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("midiStore", ["isMIDIready"]),
+    ...mapGetters(["mode"]),
     isPreloaded() {
       return this.isModelReady && this.isMIDIready; // add more conditions
+    },
+    isStartWidgetVisible() {
+      return (
+        this.deleteInitiated ||
+        (!this.isRunning &&
+          this.mode != "seed_recording" &&
+          this.mode != "seed_edit")
+        // this.currentPattern.length == 0 && !this.seedMelody
+      );
     },
   },
   mounted() {
