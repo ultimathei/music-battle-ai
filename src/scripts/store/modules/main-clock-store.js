@@ -21,13 +21,16 @@ import {
   CLOCK_ACTION_STARTSTOP,
   CLOCK_ACTION_RESET,
   CLOCK_ACTION_RESET_PRECOUNT,
-  SESSION_ACTION_CLEAR_SESSION,
   SESSION_ACTION_PLAY_CURRENT_NOTES,
   SESSION_ACTION_CLOSE_UNFINISHED_NOTES,
   SESSION_ACTION_FINISHED_MELODY,
+  INSTRUMENT_ACTION_START_NOTE,
+  INSTRUMENT_ACTION_END_NOTE,
 } from "../actions";
 
 const SESSION_STORE_LOC = "sessionStore/";
+const INSTRUMENT_STORE_LOC = "instrumentStore/";
+import { convertToPatternTime } from "../../utils/utils";
 
 export default {
   namespaced: true,
@@ -146,6 +149,28 @@ export default {
         return;
       }
 
+      // check for already presssed note at start of 4bar
+      if (
+        state.currentBar == 0 &&
+        state.currentDemisemiquaver == 0 &&
+        this.getters.isRecordingAllowed &&
+        this.getters.singleActiveNote
+      ) {
+        // console.log(this.getters.singleActiveNote);
+        this.dispatch(SESSION_STORE_LOC + "switchNote", {
+          pitch: this.getters.singleActiveNote,
+          now: convertToPatternTime(getters.currentMusicalTime),
+        });
+        this.dispatch(
+          INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_END_NOTE,
+          this.getters.singleActiveNote
+        );
+        this.dispatch(
+          INSTRUMENT_STORE_LOC + INSTRUMENT_ACTION_START_NOTE,
+          this.getters.singleActiveNote
+        );
+      }
+
       // increase demisemi
       commit(
         CLOCK_MUTATION_UPDATE_CURRENT_DEMISEMIQUAVER,
@@ -229,8 +254,10 @@ export default {
         );
       }
 
+      // update mode
       if (this.state.mode == "initial")
         this.commit("mutateMode", "seed_recording");
+      else if (this.state.mode == "paused") this.commit("mutateMode", "battle");
 
       commit(CLOCK_MUTATION_UPDATE_IS_RUNNING, true);
       commit(

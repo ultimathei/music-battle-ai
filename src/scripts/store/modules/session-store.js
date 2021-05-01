@@ -374,20 +374,22 @@ export default {
       // -- Naive quantization of all notes of melody --
       let newPattern = [];
       state.currentPattern.forEach((note) => {
-        let offGridStartAmount = note.start % quantizer;
-        let offsetStart = getOffsetAmount(quantizer, offGridStartAmount);
-        let offGridEndAmount = note.end % quantizer;
-        let offsetEnd = getOffsetAmount(quantizer, offGridEndAmount);
+        // do not add notes with 0 length
+        if (note.start != note.end) {
+          let offGridStartAmount = note.start % quantizer;
+          let offsetStart = getOffsetAmount(quantizer, offGridStartAmount);
+          let offGridEndAmount = note.end % quantizer;
+          let offsetEnd = getOffsetAmount(quantizer, offGridEndAmount);
 
-        let newStart = note.start + offsetStart;
-        let newEnd = note.end + offsetEnd;
+          let newStart = note.start + offsetStart;
+          let newEnd = note.end + offsetEnd;
 
-        // min length of a note is the quantizer size
-        if (newStart == newEnd) {
-          newEnd += quantizer;
-        }
+          // if a quantized note got reduced to 0, make it minimum length of quantizer size
+          if (newStart == newEnd) {
+            newEnd += quantizer;
+          }
 
-        if (newStart != newEnd) {
+          // add qunatized note
           newPattern.push({
             note: note.note,
             start: newStart,
@@ -415,8 +417,8 @@ export default {
             // set start
             overlaps[i].start = overlaps[i - 1].end;
             // set end (except last, that keeps its end)
-            if(i < overlaps.length - 1) {
-              overlaps[i].end = overlaps[i].start + (i) * addition;
+            if (i < overlaps.length - 1) {
+              overlaps[i].end = overlaps[i].start + i * addition;
             }
             i++;
           }

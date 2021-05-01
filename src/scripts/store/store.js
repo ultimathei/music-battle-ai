@@ -99,7 +99,8 @@ export default new Vuex.Store({
     updateCurrentlyPressedNotes({ state, dispatch }, data) {
       //  Monophonic way
       // console.log(data);
-      let isUserTurn = this.getters["sessionStore/userTurn"];
+      let isUserTurn =
+        this.getters["sessionStore/userTurn"] && state.mode != "seed_edit";
       if (data.on_message) {
         if (state.singleActiveNote) {
           if (isUserTurn)
