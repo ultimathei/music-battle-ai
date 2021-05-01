@@ -16,26 +16,26 @@
           type="human"
           index="seed"
         />
-        <SequencerItem
-          class="pattern-sequence__list-item"
-          v-for="index in aiMelodyArray.length"
-          :key="`sequence-item-robot-${index}`"
-          type="robot"
-          :data-active="index == patternPointer && !userTurn"
-          :data-upcoming="index > patternPointer"
-          :index="`${index}`"
-        />
-        <SequencerItem
-          class="pattern-sequence__list-item"
-          v-for="index in aiMelodyArray.length"
-          :key="`sequence-item-human-${index}`"
-          type="human"
-          :data-active="index == patternPointer && userTurn"
-          :data-upcoming="
-            index > patternPointer || (index == patternPointer && !userTurn)
-          "
-          :index="`${index}`"
-        />
+        <template v-for="index in aiMelodyArray.length">
+          <SequencerItem
+            class="pattern-sequence__list-item"
+            :key="`sequence-item-robot-${index}`"
+            type="robot"
+            :data-active="index == patternPointer && !userTurn"
+            :data-upcoming="index > patternPointer"
+            :index="`${index}`"
+          />
+          <SequencerItem
+            class="pattern-sequence__list-item"
+            :key="`sequence-item-human-${index}`"
+            type="human"
+            :data-active="index == patternPointer && userTurn"
+            :data-upcoming="
+              index > patternPointer || (index == patternPointer && !userTurn)
+            "
+            :index="`${index}`"
+          />
+        </template>
       </div>
       <div
         class="pattern-sequence__arrow | arrow-right"
@@ -76,7 +76,6 @@ export default {
   },
   computed: {
     ...mapGetters("sessionStore", [
-      "session",
       "userTurn",
       "aiMelodyArray",
       "userMelodyArray",
@@ -92,11 +91,9 @@ export default {
       return Math.floor(this.containerWidth / 40);
     },
     isNextClickable() {
-      // return session.length > currentSequencerPage * sequencerItemFitCount;
       return false;
     },
     isPreviousClickable() {
-      // return currentSequencerPage > 0;
       return false;
     },
   },

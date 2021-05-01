@@ -155,9 +155,9 @@ export default {
       }
     },
     previousPattern() {
-      if (this.session.length > 0)
-        return this.session[this.session.length - 1].pattern;
-      return [];
+      // if (this.session.length > 0)
+        return this.aiMelodyArray[this.patternPointer-1];
+      // return [];
     },
     cursorLeftPosStyle() {
       return {

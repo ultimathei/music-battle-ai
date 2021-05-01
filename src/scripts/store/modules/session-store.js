@@ -194,10 +194,10 @@ export default {
         type: "user",
         pattern: [...state.currentPattern],
       };
-      state.session.push(patternToArchive);
+      // state.session.push(patternToArchive);
       state.userMelodyArray.push(patternToArchive);
       
-      console.log('session: ',state.session);
+      // console.log('session: ',state.session);
       console.log('userMelodyArray: ', state.userMelodyArray);
       console.log('aiMelodyArray: ', state.aiMelodyArray);
 
@@ -261,7 +261,7 @@ export default {
         pattern: [...state.currentPattern],
       };
 
-      state.session.push(patternToArchive);
+      // state.session.push(patternToArchive);
       state.userMelodyArray.push(patternToArchive);
 
       // 2. get the next element from the start of the ai array
@@ -280,13 +280,13 @@ export default {
     nextUserMelody({ state }) {
       // console.log("transitioning from ROBOT to USER turn..");
       // 1. push old current pattern to session
-      const patternToArchive = {
-        type: "robot",
-        pattern: [...state.currentPattern],
-      };
+      // const patternToArchive = {
+      //   type: "robot",
+      //   pattern: [...state.currentPattern],
+      // };
 
       // maybe not needed to have a session object?
-      state.session.push(patternToArchive); 
+      // state.session.push(patternToArchive); 
 
       // clear current pattern - make it ready for user to play
       state.currentPattern = [];

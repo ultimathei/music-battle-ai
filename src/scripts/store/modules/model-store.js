@@ -40,7 +40,7 @@ export default {
     isModelReady: false,
     isModelLoading: false,
     // game level specific values
-    numberOfSamples: 1,
+    numberOfSamples: 2,
     similarity: 0.8,
   }),
 
