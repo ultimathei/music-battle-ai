@@ -10,30 +10,30 @@
 import { getOffsetAmount } from "../../utils/utils";
 import { MUT_sessionAddNoteToCurrentPattern } from "../mutations";
 import {
-  ACT_sessionGenerateResponses,
-  ACT_sessionClearSession,
-  ACT_sessionPlayCurrentNotes,
-  ACT_sessionConfirmSeed,
-  ACT_sessionCloseUnfinishedNotes,
-  ACT_sessionFinishedMelody,
-  ACT_sessionSetLoading,
-  ACT_sessionSetAiMelodies,
-  ACT_instrumentStartNote,
-  ACT_instrumentEndNote,
-  ACT_modelGenerateSimilarsVae,
   ACT_clockReset,
   ACT_clockResetPrecount,
   ACT_clockStartStop,
   ACT_clockStop,
+  ACT_instrumentEndNote,
+  ACT_instrumentStartNote,
+  ACT_modelGenerateSimilarsVae,
+  ACT_sessionClearSession,
+  ACT_sessionCloseUnfinishedNotes,
+  ACT_sessionConfirmSeed,
+  ACT_sessionFinishedMelody,
+  ACT_sessionGenerateResponses,
+  ACT_sessionPlayCurrentNotes,
+  ACT_sessionSetAiMelodies,
+  ACT_sessionSetLoading,
 } from "../actions";
 import {
-  convertToMagentaSample,
   convertFromMagentaSequence,
+  convertToMagentaSample,
 } from "../../utils/utils";
 
+const CLOCK_STORE_LOC = "mainClockStore/";
 const INSTRUMENT_STORE_LOC = "instrumentStore/";
 const MODEL_STORE_LOC = "modelStore/";
-const CLOCK_STORE_LOC = "mainClockStore/";
 
 export default {
   namespaced: true,
