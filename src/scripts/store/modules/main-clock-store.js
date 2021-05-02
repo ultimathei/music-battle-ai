@@ -52,6 +52,9 @@ export default {
   }),
 
   getters: {
+    audioContext(state) {
+      return state.audioContext;
+    },
     currentDemisemiquaver(state) {
       return state.currentDemisemiquaver;
     },

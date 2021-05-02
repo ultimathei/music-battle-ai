@@ -32,6 +32,15 @@ export default {
   mutations: {
     // using the ES2015 computed property name feature
     // to use a constant as the function name
+    mutateMidiAccess(state, newVal) {
+      state.midiAccess = newVal;
+    },
+    removeMidiAccess(state) {
+      console.log('removing midiAccess?');
+      for (let input of state.midiAccess.inputs.values())
+        input.onmidimessage = null;
+      state.midiAccess = null;
+    },
   },
 
   actions: {

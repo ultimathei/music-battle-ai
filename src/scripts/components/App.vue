@@ -61,10 +61,43 @@
         <div class="menu__item" @click="goToPage('logout')">Logout</div>
       </div>
 
-      <div
-        class="app__page | page-profile"
-        v-if="currentPageOpen == 'profile'"
-      ></div>
+      <div class="app__page | page-profile" v-if="currentPageOpen == 'profile'">
+        <div class="page-profile__item">
+          <div class="page-profile__item-avatar">
+            <div class="page-profile__item-avatar-photo">
+              <UserIcon />
+            </div>
+          </div>
+        </div>
+        <div class="page-profile__item">
+          <div class="page-profile__item-key">Name</div>
+          <div class="page-profile__item-value">Mate</div>
+        </div>
+        <div class="page-profile__item">
+          <div class="page-profile__item-key">Email</div>
+          <div class="page-profile__item-value">
+            krisztian.mate.design@gmail.com
+          </div>
+        </div>
+        <div class="page-profile__item">
+          <div class="page-profile__item-key">Member since</div>
+          <div class="page-profile__item-value">01/12/21</div>
+        </div>
+        <div class="page-profile__item">
+          <div class="page-profile__item-key">Level</div>
+          <div class="page-profile__item-value">PRO</div>
+        </div>
+        <div class="page-profile__item">
+          <div class="page-profile__item-key">All time score</div>
+          <div class="page-profile__item-value">100009999</div>
+        </div>
+        <div class="page-profile__item">
+          <div class="page-profile__item-button">
+            <span>Request password change</span>
+          </div>
+        </div>
+      </div>
+
       <div
         class="app__page | page-battles"
         v-if="currentPageOpen == 'battles'"
@@ -111,7 +144,6 @@ import Preload from "./preload/preload.vue";
 import Sequencer from "./music-sheet/sequencer.vue";
 import StartWidget from "./info-widget/info-widget.vue";
 
-
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
   ACT_instrumentStartNote,
@@ -120,7 +152,12 @@ import {
   ACT_clockStop,
 } from "../store/actions";
 
-import { MUT_clockMetronomeSoundOn } from "../store/mutations";
+import {
+  MUT_clockMetronomeSoundOn,
+  MUT_clockAudioContext,
+} from "../store/mutations";
+
+import UserIcon from "./graphics/user.svg";
 
 export default {
   name: "app",
@@ -137,6 +174,7 @@ export default {
     Preload,
     Sequencer,
     StartWidget,
+    UserIcon,
   },
   computed: {
     ...mapGetters(["mode", "isMenuOpen", "currentPageOpen"]),
@@ -147,6 +185,7 @@ export default {
       "currentDemisemiquaver",
       "metronomeSoundOn",
       "metronomeFlashActive",
+      "audioContext",
     ]),
     ...mapGetters("sessionStore", [
       "userTurn",
@@ -183,7 +222,11 @@ export default {
     ...mapActions("modelStore", [ACT_modelInitVae]),
     ...mapActions("midiStore", ["getMIDI"]),
     ...mapActions("mainClockStore", [ACT_clockStop]),
-    ...mapMutations("mainClockStore", [MUT_clockMetronomeSoundOn]),
+    ...mapMutations("mainClockStore", [
+      MUT_clockMetronomeSoundOn,
+      MUT_clockAudioContext,
+    ]),
+    ...mapMutations("midiStore", ["removeMidiAccess"]),
     ...mapMutations(["mutateIsMenuOpen", "mutateCurrentPageOpen"]),
 
     switchMetronome() {
@@ -191,7 +234,7 @@ export default {
     },
 
     switchMenu() {
-      if(this.isMenuOpen) {
+      if (this.isMenuOpen) {
         this.mutateIsMenuOpen(false);
       } else {
         // stop playback
@@ -201,25 +244,16 @@ export default {
     },
 
     goToPage(name) {
-      switch (name) {
-        case this.currentPageOpen:
-          break;
-        // case "home":
-        //   this.mutateCurrentPageOpen(name);
-        //   // if (this.$route.path != "/battle") {
-        //   //   this.$router.push("/battle");
-        //   // }
-        //   break;
-        case "logout":
-          // TODO delete audio context, midi access
+      if(name == "logout"){
+          this[MUT_clockAudioContext](null);
+          this.removeMidiAccess();
           this.mutateIsMenuOpen(false);
           this.mutateCurrentPageOpen("battle");
           this.$router.push("/");
-          break;
-        default:
+      }else{
+          this[MUT_clockAudioContext](null);
           this.mutateCurrentPageOpen(name);
           this.mutateIsMenuOpen(false);
-          break;
       }
     },
   },
