@@ -36,7 +36,6 @@ export default {
       state.midiAccess = newVal;
     },
     removeMidiAccess(state) {
-      console.log('removing midiAccess?');
       for (let input of state.midiAccess.inputs.values())
         input.onmidimessage = null;
       state.midiAccess = null;
