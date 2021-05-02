@@ -48,11 +48,9 @@ export default {
     currentMatchIndex: 0, // the index of current match in the game
     deleteInitiated: false, // flag if user asked to delete session
 
-    battleScale: [60, 61, 62, 63, 64], // do this!
+    battleScale: [], // do this!
     battleScores: null,
     streakIndex: 0,
-    dailyGoal: 2000,
-    dailyTotal: 0,
     sessionCreated: null,
   }),
 
@@ -96,12 +94,6 @@ export default {
     battleScores(state) {
       return state.battleScores;
     },
-    dailyGoal(state) {
-      return state.dailyGoal;
-    },
-    dailyTotal(state) {
-      return state.dailyTotal;
-    },
     streakIndex(state) {
       return state.streakIndex;
     },
@@ -109,13 +101,10 @@ export default {
       return state.sessionCreated;
     },
     avgBattleScore(state) {
-      const sum = state.battleScores.reduce((a, b) => a + b.score, 0);
-      const avg = sum / state.battleScores.length || 0;
-      return (avg / 128).toFixed(2) * 100;
+      return state.battleScores.score;
     },
     totalBattleBonus(state) {
-      const sum = state.battleScores.reduce((a, b) => a + b.improvBonus, 0);
-      return Math.max((sum / 128).toFixed(2) * 100, 0);
+      return state.battleScores.improvBonus;
     },
   },
 
@@ -267,7 +256,18 @@ export default {
       });
 
       // console.log("battleScore", battleScores);
-      state.battleScores = battleScores;
+      const sum = battleScores.reduce((a, b) => a + b.score, 0);
+      const avg = sum / battleScores.length || 0;
+      const score = (avg / 128).toFixed(2) * 100;
+
+      const improvSum = battleScores.reduce((a, b) => a + b.improvBonus, 0);
+      const improvBonus = Math.max((improvSum / 128).toFixed(2) * 100, 0);
+
+      state.battleScores = {
+        score: score,
+        improvBonus: improvBonus,
+        streakBonus: state.streakIndex * 10
+      };
 
       // save it
       let battleObject = {
@@ -305,7 +305,19 @@ export default {
     [ACT_sessionSetAiMelodies]({ state, dispatch }, melodiesArray) {
       console.log("steped in ACT_sessionSetAiMelodies");
       state.aiMelodyArray = melodiesArray;
-      // state.isSessionLoading = false; // ?need
+      
+      // determine scale 
+      let scale = [];
+      melodiesArray.forEach(melody => {
+        melody.forEach(note => {
+          let pitch = note.note % 12;
+          if(!scale.includes(pitch)) {
+            scale.push(pitch);
+          }
+        });
+      });
+      state.battleScale = scale;
+      // console.log('scale', scale);
 
       dispatch("nextRobotMelody"); // move below?
 

@@ -19,8 +19,7 @@
           <div class="info-widget__score-value">+{{ totalBattleBonus }}</div>
           <div class="info-widget__score-icon">
             <InLoveEmoji v-if="totalBattleBonus >= 40" />
-            <CoolEmoji v-else-if="totalBattleBonus >= 5" />
-            <SweatEmoji v-else />
+            <CoolEmoji v-else-if="totalBattleBonus >= 1" />
           </div>
         </div>
         <div class="info-widget__score">
@@ -28,7 +27,7 @@
           <div class="info-widget__score-value">+{{ streakIndex * 10 }}</div>
           <div class="info-widget__score-icon">
             <InLoveEmoji v-if="streakIndex >= 3" />
-            <CoolEmoji v-else />
+            <CoolEmoji v-else-if="streakIndex >= 1" />
           </div>
         </div>
 
@@ -52,7 +51,7 @@
           <div class="info-widget__score-icon">
             <InLoveEmoji v-if="dailyTotal >= dailyGoal" />
             <CoolEmoji v-else-if="dailyTotal >= dailyGoal / 2" />
-            <SweatEmoji v-else />
+            <TongueEmoji v-else />
           </div>
         </div>
       </div>
@@ -93,6 +92,7 @@
 import CoolEmoji from "../graphics/cool.svg";
 import SweatEmoji from "../graphics/sweat.svg";
 import InLoveEmoji from "../graphics/in-love.svg";
+import TongueEmoji from "../graphics/tongue.svg";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
   ACT_clockStartStop,
@@ -106,16 +106,15 @@ export default {
     CoolEmoji,
     InLoveEmoji,
     SweatEmoji,
+    TongueEmoji,
   },
   computed: {
-    ...mapGetters(["mode"]),
+    ...mapGetters(["mode", "dailyGoal", "dailyTotal"]),
     ...mapGetters("sessionStore", [
       "deleteInitiated",
       "battleScores",
       "totalBattleBonus",
       "avgBattleScore",
-      "dailyGoal",
-      "dailyTotal",
       "streakIndex",
     ]),
     ...mapGetters("modelStore", ["numberOfSamples", "similarity"]),
@@ -130,14 +129,14 @@ export default {
     },
     description() {
       if (this.deleteInitiated)
-        return "Are you sure? The melody cannot be retrieved once deleted!";
+        return "Are you sure? The melody cannot be retrieved once deleted! Your streak will break, but the scores saved at the last checkpoint are safe!";
       else if (this.mode == "loading") return "Working on my melodies..";
       else if (this.mode == "initial")
         return "Start the battle by recording a four bar melody!";
       else if (this.mode == "scoring" && !this.battleScores)
         return "Calculating your scores..";
       else if (this.mode == "scoring" && this.battleScores)
-        return "Your scores in this battle";
+        return `Your scores in this battle #${this.streakIndex+1}`;
       return "Click button to resume";
     },
     buttonText() {
@@ -185,7 +184,7 @@ export default {
       // change similarity a tiny bit (-0.05)
       this.mutateSimilarity(this.similarity - 0.05);
       // increase sample count (+2)
-      // this.mutateNumberOfSamples(this.numberOfSamples + 2);
+      this.mutateNumberOfSamples(this.numberOfSamples + 2);
 
       setTimeout(() => {
         // 3. generate new aiMelodies

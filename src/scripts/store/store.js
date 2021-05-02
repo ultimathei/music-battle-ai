@@ -52,6 +52,8 @@ export default new Vuex.Store({
     mode: modes.INITIAL,
     currentlyPressedNotes: [],
     singleActiveNote: null,
+    dailyGoal: 2000,
+    dailyTotal: 0,
   },
   getters: {
     mode(state) {
@@ -70,6 +72,12 @@ export default new Vuex.Store({
         state.mainClockStore.precountDemisemiquaver >= 32 &&
         state.sessionStore.userTurn
       );
+    },
+    dailyGoal(state) {
+      return state.dailyGoal;
+    },
+    dailyTotal(state) {
+      return state.dailyTotal;
     },
   },
   // used for syncronous transactions
@@ -165,8 +173,11 @@ export default new Vuex.Store({
     },
 
     saveBattle({ state }, battleObject) {
+      // read
       let savedBattles = localStorage.getItem("savedBattles");
+      let newSaved = [];
       let now = this.getters[SESSION_STORE_LOC + "sessionCreated"];
+
       if (savedBattles) {
         savedBattles = JSON.parse(savedBattles);
 
@@ -180,14 +191,28 @@ export default new Vuex.Store({
           });
         }
 
-        savedBattles = JSON.stringify(savedBattles);
+        newSaved = savedBattles;
       } else {
-        savedBattles = `[${JSON.stringify({
+        newSaved.push({
           ...battleObject,
           created: now,
-        })}]`;
+        });
       }
-      localStorage.setItem("savedBattles", savedBattles);
+      // write
+      localStorage.setItem("savedBattles", JSON.stringify(newSaved));
+
+      console.log(newSaved);
+
+      // update dailyTotal
+      let dailyTotal = 0;
+      newSaved.forEach((battle) => {
+        battle.rounds.forEach((round) => {
+          dailyTotal += parseInt(round.scores.score) || 0;
+          dailyTotal += parseInt(round.scores.improvBonus) || 0;
+          dailyTotal += parseInt(round.scores.streakBonu) || 0;
+        });
+      });
+      state.dailyTotal = dailyTotal;
     },
 
     /**
