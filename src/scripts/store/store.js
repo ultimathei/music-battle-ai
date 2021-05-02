@@ -54,6 +54,7 @@ export default new Vuex.Store({
     singleActiveNote: null,
     dailyGoal: 2000,
     dailyTotal: 0,
+    isMenuOpen: false,
   },
   getters: {
     mode(state) {
@@ -79,11 +80,17 @@ export default new Vuex.Store({
     dailyTotal(state) {
       return state.dailyTotal;
     },
+    isMenuOpen(state) {
+      return state.isMenuOpen;
+    },
   },
   // used for syncronous transactions
   mutations: {
     mutateMode(state, newVal) {
       state.mode = newVal;
+    },
+    mutateIsMenuOpen(state, newVal) {
+      state.isMenuOpen = newVal;
     },
   },
   // used for asyncronous transactions

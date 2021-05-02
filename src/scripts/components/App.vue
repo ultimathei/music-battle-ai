@@ -4,8 +4,9 @@
 
     <template v-if="magentaModel">
       <div class="app__header | app-header">
-        <div class="app-header__menu">
-          <MenuIcon />
+        <div class="app-header__menu" @click="mutateIsMenuOpen(!isMenuOpen)">
+          <MenuIcon v-if="!isMenuOpen"/>
+          <MenuIconCloser v-else/>
         </div>
         <div class="app-header__logo | logo">
           <Logo />
@@ -27,6 +28,15 @@
           />
         </div>
       </div>
+
+      <div class="app__menu | menu" v-if="isMenuOpen">
+        <div class="menu__item">Battleground</div>
+        <div class="menu__item">Profile & settings</div>
+        <div class="menu__item">My saved battles</div>
+        <div class="menu__item">Scoreboard</div>
+        <div class="menu__item">Logout</div>
+      </div>
+
       <div class="app__body | app-body">
         <div class="app-body__instrument | instrument">
           <div class="instrument__container | instrument-container">
@@ -53,6 +63,8 @@ import Controls from "./controls/controls.vue";
 import Footer from "./footer/footer.vue";
 import Logo from "./graphics/logo.svg";
 import MenuIcon from "./graphics/menu.svg";
+// import MenuIconCloser from "./graphics/menu_close_1.svg";
+import MenuIconCloser from "./graphics/menu_close_2.svg";
 import MetronomeIcon from "./graphics/metronome.svg";
 import MidiController from "./midi/midi-controller.vue";
 import MusicSheet from "./music-sheet/music-sheet.vue";
@@ -76,6 +88,7 @@ export default {
     Footer,
     Logo,
     MenuIcon,
+    MenuIconCloser,
     MetronomeIcon,
     MidiController,
     MusicSheet,
@@ -85,6 +98,7 @@ export default {
     StartWidget,
   },
   computed: {
+    ...mapGetters(["mode", "isMenuOpen"]),
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
     ...mapGetters("mainClockStore", [
       "isRunning",
@@ -101,7 +115,6 @@ export default {
     ]),
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("midiStore", ["isMIDIready"]),
-    ...mapGetters(["mode"]),
     isPreloaded() {
       return this.isModelReady && this.isMIDIready; // add more conditions
     },
@@ -129,6 +142,7 @@ export default {
     ...mapActions("modelStore", [ACT_modelInitVae]),
     ...mapActions("midiStore", ["getMIDI"]),
     ...mapMutations("mainClockStore", [MUT_clockMetronomeSoundOn]),
+    ...mapMutations(["mutateIsMenuOpen"]),
 
     switchMetronome() {
       this[MUT_clockMetronomeSoundOn](!this.metronomeSoundOn);

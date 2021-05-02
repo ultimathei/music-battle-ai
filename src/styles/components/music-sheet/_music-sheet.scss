@@ -25,24 +25,24 @@ $ms_header-height: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 99;
+    z-index: 20;
   }
 
   &__precount{
-    width: 100px;
-    height: 100px;
-    background-color: $color-brand-accent-1;
-    color: $color-brand-neutral-3;
-    font-size: 30px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    border-radius: 999px;
-    display: flex;
-    justify-content: center;
     align-items: center;
+    background-color: $color-brand-accent-1;
+    border-radius: 999px;
+    color: $color-brand-neutral-3;
+    display: flex;
     flex-grow: 0;
     flex-shrink: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    height: 100px;
+    justify-content: center;
     opacity: 0.75;
+    width: 100px;
 
     & svg{
       fill: $color-brand-neutral-3;
