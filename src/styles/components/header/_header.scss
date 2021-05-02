@@ -1,0 +1,42 @@
+.app-header {
+  // position: relative;
+  width: 100%;
+
+  &__menu {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    fill: $color-brand-neutral-1;
+    margin-right: 10px;
+    padding: 5px 5px 5px 0;
+    width: 38px;
+    z-index: 32;
+
+    &:hover {
+      fill: $color-brand-accent-2;
+    }
+  }
+
+  &__logo {
+    align-items: center;
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    position: absolute;
+    z-index: 31;
+    left: 50%;
+    margin-left: -70px;
+
+    & svg {
+      height: 50px;
+    }
+  }
+
+  &__controls {
+    align-items: center;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    z-index: 32;
+  }
+}

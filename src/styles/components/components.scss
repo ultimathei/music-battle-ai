@@ -4,10 +4,13 @@
 * A list of components used across the site
 */
 
-@import './pages/app';
-@import './pages/loading-page';
+@import './app';
+@import './pages/pages';
 @import './generic/generic';
+@import './menu/menu';
+@import './header/header';
 @import './music-sheet/music-sheet';
+@import './instrument/instrument';
 @import './pattern-sequence/pattern-sequence';
 @import './piano/piano';
 @import './info-widget/info-widget';

@@ -16,6 +16,7 @@ import {
 
 import { convertToPatternTime } from "../utils/utils";
 import { users } from "../services/users_DB";
+import { battles_DB } from "../services/battles_DB";
 
 Vue.use(Vuex);
 
@@ -59,6 +60,7 @@ export default new Vuex.Store({
     isMenuOpen: false,
     currentPageOpen: "battle",
     fadeoutComplete: false,
+    savedBattles: [],
   },
   getters: {
     user(state) {
@@ -92,6 +94,9 @@ export default new Vuex.Store({
     },
     currentPageOpen(state) {
       return state.currentPageOpen;
+    },
+    savedBattles(state) {
+      return state.savedBattles;
     },
   },
   // used for syncronous transactions
@@ -298,5 +303,16 @@ export default new Vuex.Store({
         return { success: false };
       }
     },
+
+
+    /**
+     * Mock db -- get saved battles
+     */
+    fetchSavedBattles({state}) {
+      // from local storage for now..
+      let savedBattles = localStorage.getItem("savedBattles");
+      if (savedBattles) state.savedBattles = JSON.parse(savedBattles);
+      state.savedBattles = battles_DB;
+    }
   },
 });

@@ -44,9 +44,11 @@ export default {
     ...mapGetters(["currentPageOpen"]),
   },
   methods: {
-    ...mapMutations(["mutateIsMenuOpen", "mutateCurrentPageOpen"]),
     ...mapMutations("mainClockStore", [MUT_clockAudioContext]),
     ...mapMutations("midiStore", ["removeMidiAccess"]),
+    ...mapMutations(["mutateIsMenuOpen", "mutateCurrentPageOpen"]),
+    
+    // local computed
     goToPage(name) {
       if (name == "logout") {
         localStorage.removeItem("userToken");

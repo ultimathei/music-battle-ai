@@ -64,3 +64,32 @@
     background-color: $color-brand-neutral-1;
   }
 }
+
+.playback-controls {
+  padding: 10px 0 10px 20px;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .playback_control {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    fill: $color-black;
+    border-radius: 999px;
+
+    &[data-disabled] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    &:not(:first-of-type) {
+      margin-left: 10px;
+    }
+
+    &:hover {
+      fill: $color-brand-accent-4;
+    }
+  }
+}

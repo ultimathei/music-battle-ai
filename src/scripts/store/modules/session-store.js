@@ -181,16 +181,10 @@ export default {
 
     evaluateBattleScore({ state }) {
       console.log("evaluating score here");
-
       // step 1: push currentPattern to session
       state.userMelodyArray.push([...state.currentPattern]);
 
-      // console.log("userMelodyArray: ", state.userMelodyArray);
-      // console.log("aiMelodyArray: ", state.aiMelodyArray);
-
-      // determine scale?
-      // --> actually this should be already done (before getting similars)
-
+      // determine scale
       let battleScores = []; // a list of scores for the rounds
       // for each pattern pair:
       state.aiMelodyArray.forEach((aiMelody, index) => {
@@ -259,7 +253,6 @@ export default {
       const sum = battleScores.reduce((a, b) => a + b.score, 0);
       const avg = sum / battleScores.length || 0;
       const score = (avg / 128).toFixed(2) * 100;
-
       const improvSum = battleScores.reduce((a, b) => a + b.improvBonus, 0);
       const improvBonus = Math.max((improvSum / 128).toFixed(2) * 100, 0);
 

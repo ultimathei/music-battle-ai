@@ -1,0 +1,25 @@
+.menu {
+  @include typography-1-xl;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  padding-top: 100px;
+  padding-bottom: 80px;
+  text-transform: uppercase;
+
+  &__item {
+    padding: 15px 60px;
+    cursor: pointer;
+
+    &[data-active] {
+      color: $color-brand-accent-1;
+      // pointer-events: none;
+    }
+
+    &:hover {
+      color: $color-brand-accent-2;
+    }
+  }
+}

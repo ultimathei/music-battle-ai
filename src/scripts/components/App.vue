@@ -12,10 +12,7 @@
 
       <ProfilePage class="app__page" v-if="currentPageOpen == 'profile'" />
       <BattlesPage class="app__page" v-if="currentPageOpen == 'battles'" />
-      <ScoreBoardPage
-        class="app__page"
-        v-if="currentPageOpen == 'scoreboard'"
-      />
+      <ScoresPage class="app__page" v-if="currentPageOpen == 'scoreboard'" />
       <BattlePage class="app__body" v-if="currentPageOpen == 'battle'" />
 
       <Footer class="app__footer" v-if="currentPageOpen != 'battles'" />
@@ -31,7 +28,7 @@ import Menu from "./menu/menu.vue";
 import ProfilePage from "./pages/profile.vue";
 import BattlesPage from "./pages/battles.vue";
 import BattlePage from "./pages/battle.vue";
-import ScoreBoardPage from "./pages/scoreboard.vue";
+import ScoresPage from "./pages/scoreboard.vue";
 
 import { mapActions, mapGetters } from "vuex";
 import { ACT_modelInitVae } from "../store/actions";
@@ -45,7 +42,7 @@ export default {
     ProfilePage,
     BattlesPage,
     BattlePage,
-    ScoreBoardPage,
+    ScoresPage,
     Footer,
   },
   data() {
@@ -64,17 +61,8 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["user", "mode", "isMenuOpen", "currentPageOpen"]),
+    ...mapGetters(["user", "isMenuOpen", "currentPageOpen"]),
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
-    ...mapGetters("mainClockStore", [
-      "isRunning",
-      "currentBar",
-      "currentDemisemiquaver",
-      "metronomeSoundOn",
-      "metronomeFlashActive",
-      "audioContext",
-    ]),
-    ...mapGetters("sessionStore", ["deleteInitiated"]),
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("midiStore", ["isMIDIready"]),
 
@@ -85,12 +73,14 @@ export default {
     },
   },
   async mounted() {
+    // check for auth token
     let token = localStorage.getItem("userToken");
     if (!token) {
       this.$router.push("/");
       return;
     }
 
+    // have token
     const response = await this.findUserByToken(token);
     if (!response.success) {
       localStorage.removeItem("userToken");
@@ -98,6 +88,7 @@ export default {
       return;
     }
 
+    // initialize MIDI and model
     this.getMIDI();
     this[ACT_modelInitVae](this.rangeStart, this.rangeEnd);
   },

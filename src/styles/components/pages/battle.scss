@@ -1,0 +1,48 @@
+/**
+* BATTLE / HOME page component
+*/
+.page-battle {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+
+  &__music-sheet-wrap {
+    width: 100%;
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+  }
+
+  &__info-widget {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 20;
+  }
+
+  &__pattern-sequence {
+    width: 100%;
+    height: 60px;
+    margin: 5px 0;
+    background: $color-brand-neutral-1;
+    border-radius: 10px;
+  }
+
+  &__instrument {
+    flex-grow: 0;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  &__loading {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 12;
+  }
+}
