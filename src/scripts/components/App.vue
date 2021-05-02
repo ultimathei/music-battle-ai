@@ -4,9 +4,9 @@
 
     <template v-if="magentaModel">
       <div class="app__header | app-header">
-        <div class="app-header__menu" @click="mutateIsMenuOpen(!isMenuOpen)">
-          <MenuIcon v-if="!isMenuOpen"/>
-          <MenuIconCloser v-else/>
+        <div class="app-header__menu" @click="switchMenu">
+          <MenuIcon v-if="!isMenuOpen" />
+          <MenuIconCloser v-else />
         </div>
         <div class="app-header__logo | logo">
           <Logo />
@@ -30,14 +30,51 @@
       </div>
 
       <div class="app__menu | menu" v-if="isMenuOpen">
-        <div class="menu__item">Battleground</div>
-        <div class="menu__item">Profile & settings</div>
-        <div class="menu__item">My saved battles</div>
-        <div class="menu__item">Scoreboard</div>
-        <div class="menu__item">Logout</div>
+        <div
+          class="menu__item"
+          @click="goToPage('battle')"
+          :data-active="currentPageOpen == 'battle'"
+        >
+          Battleground
+        </div>
+        <div
+          class="menu__item"
+          @click="goToPage('profile')"
+          :data-active="currentPageOpen == 'profile'"
+        >
+          Profile & settings
+        </div>
+        <div
+          class="menu__item"
+          @click="goToPage('battles')"
+          :data-active="currentPageOpen == 'battles'"
+        >
+          My saved battles
+        </div>
+        <div
+          class="menu__item"
+          @click="goToPage('scoreboard')"
+          :data-active="currentPageOpen == 'scoreboard'"
+        >
+          Scoreboard
+        </div>
+        <div class="menu__item" @click="goToPage('logout')">Logout</div>
       </div>
 
-      <div class="app__body | app-body">
+      <div
+        class="app__page | page-profile"
+        v-if="currentPageOpen == 'profile'"
+      ></div>
+      <div
+        class="app__page | page-battles"
+        v-if="currentPageOpen == 'battles'"
+      ></div>
+      <div
+        class="app__page | page-scoreboard"
+        v-if="currentPageOpen == 'scoreboard'"
+      ></div>
+
+      <div class="app__body | app-body" v-if="currentPageOpen == 'battle'">
         <div class="app-body__instrument | instrument">
           <div class="instrument__container | instrument-container">
             <Piano class="instrument-container__content" ref="piano" />
@@ -53,6 +90,7 @@
         </div>
         <Sequencer class="app-body__pattern-sequence" />
       </div>
+
       <Footer class="app__footer" />
     </template>
   </div>
@@ -73,12 +111,15 @@ import Preload from "./preload/preload.vue";
 import Sequencer from "./music-sheet/sequencer.vue";
 import StartWidget from "./info-widget/info-widget.vue";
 
+
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
   ACT_instrumentStartNote,
   ACT_instrumentEndNote,
   ACT_modelInitVae,
+  ACT_clockStop,
 } from "../store/actions";
+
 import { MUT_clockMetronomeSoundOn } from "../store/mutations";
 
 export default {
@@ -98,7 +139,7 @@ export default {
     StartWidget,
   },
   computed: {
-    ...mapGetters(["mode", "isMenuOpen"]),
+    ...mapGetters(["mode", "isMenuOpen", "currentPageOpen"]),
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
     ...mapGetters("mainClockStore", [
       "isRunning",
@@ -141,11 +182,45 @@ export default {
     ]),
     ...mapActions("modelStore", [ACT_modelInitVae]),
     ...mapActions("midiStore", ["getMIDI"]),
+    ...mapActions("mainClockStore", [ACT_clockStop]),
     ...mapMutations("mainClockStore", [MUT_clockMetronomeSoundOn]),
-    ...mapMutations(["mutateIsMenuOpen"]),
+    ...mapMutations(["mutateIsMenuOpen", "mutateCurrentPageOpen"]),
 
     switchMetronome() {
       this[MUT_clockMetronomeSoundOn](!this.metronomeSoundOn);
+    },
+
+    switchMenu() {
+      if(this.isMenuOpen) {
+        this.mutateIsMenuOpen(false);
+      } else {
+        // stop playback
+        this[ACT_clockStop]();
+        this.mutateIsMenuOpen(true);
+      }
+    },
+
+    goToPage(name) {
+      switch (name) {
+        case this.currentPageOpen:
+          break;
+        // case "home":
+        //   this.mutateCurrentPageOpen(name);
+        //   // if (this.$route.path != "/battle") {
+        //   //   this.$router.push("/battle");
+        //   // }
+        //   break;
+        case "logout":
+          // TODO delete audio context, midi access
+          this.mutateIsMenuOpen(false);
+          this.mutateCurrentPageOpen("battle");
+          this.$router.push("/");
+          break;
+        default:
+          this.mutateCurrentPageOpen(name);
+          this.mutateIsMenuOpen(false);
+          break;
+      }
     },
   },
 };

@@ -55,6 +55,7 @@ export default new Vuex.Store({
     dailyGoal: 2000,
     dailyTotal: 0,
     isMenuOpen: false,
+    currentPageOpen: "battle",
   },
   getters: {
     mode(state) {
@@ -83,6 +84,9 @@ export default new Vuex.Store({
     isMenuOpen(state) {
       return state.isMenuOpen;
     },
+    currentPageOpen(state) {
+      return state.currentPageOpen;
+    },
   },
   // used for syncronous transactions
   mutations: {
@@ -91,6 +95,9 @@ export default new Vuex.Store({
     },
     mutateIsMenuOpen(state, newVal) {
       state.isMenuOpen = newVal;
+    },
+    mutateCurrentPageOpen(state, newVal) {
+      state.currentPageOpen = newVal;
     },
   },
   // used for asyncronous transactions
