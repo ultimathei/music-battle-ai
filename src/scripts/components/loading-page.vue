@@ -95,14 +95,18 @@ export default {
       passwordGiven: false,
     };
   },
-  mounted() {
+  async mounted() {
     let userToken = localStorage.getItem('userToken');
-    if(userToken) {
+    const response = await this.findUserByToken(userToken);
+
+    if(response.success) {
       this.$router.push("battle");
+    } else {
+      localStorage.removeItem('userToken');
     }
   },
   methods: {
-    ...mapActions(["authenticate"]),
+    ...mapActions(["authenticate", "findUserByToken"]),
     async login() {
       if (!this.isInputFilled) return;
       this.errorMsgTimeout = null;

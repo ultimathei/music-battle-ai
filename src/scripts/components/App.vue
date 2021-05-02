@@ -1,6 +1,6 @@
 <template>
   <div class="app">
-    <Preload class="app__preload" v-if="!isPreloaded" />
+    <Preload class="app__preload" v-if="!fadeoutComplete" :data-fadeout="isPreloaded" />
 
     <template v-if="magentaModel">
       <div class="app__header | app-header">
@@ -214,6 +214,20 @@ export default {
     PlayIcon,
     ShareIcon,
   },
+  data() {
+    return {
+      fadeoutComplete: false,
+    }
+  },
+  watch: {
+    isPreloaded(newVal, oldVal) {
+      if ((newVal == true)) {
+        setTimeout(() => {
+          this.fadeoutComplete = true;
+        }, 1500);
+      }
+    },
+  },
   computed: {
     ...mapGetters(["user", "mode", "isMenuOpen", "currentPageOpen"]),
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
@@ -246,15 +260,28 @@ export default {
       );
     },
   },
-  mounted() {
+  async mounted() {
     // maybe store it in local storage, so to not load it every time
     // console.log(this.rangeStart, this.rangeEnd);
+    let token = localStorage.getItem("userToken");
+    if (!token) {
+      this.$router.push("/");
+      return;
+    }
+
+    const response = await this.findUserByToken(token);
+    if (!response.success) {
+      localStorage.removeItem("userToken");
+      this.$router.push("/");
+      return;
+    }
+
     this.getMIDI();
     this[ACT_modelInitVae](this.rangeStart, this.rangeEnd);
   },
   methods: {
     ...mapMutations(["mutateIsMenuOpen", "mutateCurrentPageOpen"]),
-    ...mapActions(["authenticate"]),
+    ...mapActions(["authenticate", "findUserByToken"]),
     ...mapActions("instrumentStore", [
       ACT_instrumentStartNote,
       ACT_instrumentEndNote,
@@ -284,6 +311,7 @@ export default {
 
     goToPage(name) {
       if (name == "logout") {
+        localStorage.removeItem("userToken");
         this[MUT_clockAudioContext](null);
         this.removeMidiAccess();
         this.mutateIsMenuOpen(false);

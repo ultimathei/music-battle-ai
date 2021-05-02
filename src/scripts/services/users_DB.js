@@ -9,6 +9,7 @@ export const users = [
     password: 'password',
     level: 'pro',
     allTimeScore: 666666,
+    token: 'supersecrettoken-1',
   },
   {
     _id: 'user002',
@@ -17,5 +18,6 @@ export const users = [
     password: 'password',
     level: 'beginner',
     allTimeScore: 0,
+    token: 'supersecrettoken-1',
   },
 ]

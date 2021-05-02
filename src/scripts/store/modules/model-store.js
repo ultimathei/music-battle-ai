@@ -133,7 +133,8 @@ export default {
       // state.magentaModel.dataConverter.minPitch = 60;
       // state.magentaModel.dataConverter.maxPitch = 84;
       await state.magentaModel.initialize();
-
+      this.dispatch("action_fadeoutComplete", true);
+      console.log(this.state.user);
       // const testIt = new MelodyConverterArgs();
       // console.log(testIt);
       // console.log(mm);
@@ -142,11 +143,7 @@ export default {
       if (state.magentaModel.initialized) {
         // console.log(state.magentaModel);
         state.modelMessage = "AI model loaded";
-
-        setTimeout(() => {
-          state.isModelReady = true;
-          console.log("fadeout complete, element removed");
-        }, 1500);
+        state.isModelReady = true;
       } else {
         state.modelMessage = "Could not initialize AI model";
       }

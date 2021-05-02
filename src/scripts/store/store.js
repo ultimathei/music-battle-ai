@@ -58,6 +58,7 @@ export default new Vuex.Store({
     dailyTotal: 0,
     isMenuOpen: false,
     currentPageOpen: "battle",
+    fadeoutComplete: false,
   },
   getters: {
     user(state) {
@@ -262,16 +263,39 @@ export default new Vuex.Store({
       );
 
       if (user) {
-        const { name, email, level, allTimeScore } = user;
+        const { name, email, level, allTimeScore, token } = user;
         state.user = {
           name,
           email,
           level,
           allTimeScore,
+          token,
         };
-        return {success: true, token: 'sampletoken'};
+        return { success: true, token: token };
       } else {
-        return {success: false};
+        return { success: false };
+      }
+    },
+
+    action_fadeoutComplete({ state }, newVal) {
+      state.fadeoutComplete = newVal;
+    },
+
+    findUserByToken({ state }, token) {
+      let user = users.find((_) => _.token == token);
+      if(user) {
+        const { name, email, level, allTimeScore, token } = user;
+        state.user = {
+          name,
+          email,
+          level,
+          allTimeScore,
+          token,
+        };
+        return { success: true, token: token };
+      }
+      else {
+        return { success: false };
       }
     },
   },
