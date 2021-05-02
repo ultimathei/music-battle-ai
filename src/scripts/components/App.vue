@@ -215,7 +215,7 @@ export default {
     ShareIcon,
   },
   computed: {
-    ...mapGetters(["mode", "isMenuOpen", "currentPageOpen"]),
+    ...mapGetters(["user", "mode", "isMenuOpen", "currentPageOpen"]),
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
     ...mapGetters("mainClockStore", [
       "isRunning",
@@ -234,7 +234,7 @@ export default {
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("midiStore", ["isMIDIready"]),
     isPreloaded() {
-      return this.isModelReady && this.isMIDIready; // add more conditions
+      return this.user && this.isModelReady && this.isMIDIready; // add more conditions
     },
     isStartWidgetVisible() {
       return (
@@ -253,6 +253,8 @@ export default {
     this[ACT_modelInitVae](this.rangeStart, this.rangeEnd);
   },
   methods: {
+    ...mapMutations(["mutateIsMenuOpen", "mutateCurrentPageOpen"]),
+    ...mapActions(["authenticate"]),
     ...mapActions("instrumentStore", [
       ACT_instrumentStartNote,
       ACT_instrumentEndNote,
@@ -265,7 +267,6 @@ export default {
       MUT_clockAudioContext,
     ]),
     ...mapMutations("midiStore", ["removeMidiAccess"]),
-    ...mapMutations(["mutateIsMenuOpen", "mutateCurrentPageOpen"]),
 
     switchMetronome() {
       this[MUT_clockMetronomeSoundOn](!this.metronomeSoundOn);

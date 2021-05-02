@@ -15,6 +15,7 @@ import {
 } from "../store/actions";
 
 import { convertToPatternTime } from "../utils/utils";
+import { users } from "../services/users_DB";
 
 Vue.use(Vuex);
 
@@ -49,6 +50,7 @@ export default new Vuex.Store({
 
   // other, non module generic store objects
   state: {
+    user: null,
     mode: modes.INITIAL,
     currentlyPressedNotes: [],
     singleActiveNote: null,
@@ -58,6 +60,9 @@ export default new Vuex.Store({
     currentPageOpen: "battle",
   },
   getters: {
+    user(state) {
+      return state.user;
+    },
     mode(state) {
       return state.mode;
     },
@@ -243,6 +248,30 @@ export default new Vuex.Store({
           pitch: state.singleActiveNote,
           now,
         });
+      }
+    },
+
+    /**
+     * Mock authentication -- not to be used in production
+     */
+    authenticate({ state }, formData) {
+      let user = users.find(
+        (_) =>
+          _.email == formData.get("email") &&
+          _.password == formData.get("password")
+      );
+
+      if (user) {
+        const { name, email, level, allTimeScore } = user;
+        state.user = {
+          name,
+          email,
+          level,
+          allTimeScore,
+        };
+        return {success: true, token: 'sampletoken'};
+      } else {
+        return {success: false};
       }
     },
   },

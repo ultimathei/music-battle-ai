@@ -6,13 +6,18 @@
     <form
       v-if="isSupportedBrowser"
       class="loading-page__login-form | login-form"
+      ref="loginForm"
+      @submit="login"
     >
       <div class="login-form__field">
         <EmailIcon class="login-form__field-icon" />
         <input
           class="login-form__field-input"
           type="text"
+          ref="email"
+          name="email"
           placeholder="Email address"
+          @keyup="onEmailInputChange"
         />
       </div>
       <div class="login-form__field">
@@ -20,13 +25,19 @@
         <input
           class="login-form__field-input"
           type="password"
+          name="password"
+          ref="password"
           placeholder="Password"
+          @keyup="onPasswordInputChange"
         />
+      </div>
+      <div class="login-form__message">
+        {{ errorMessage }}
       </div>
       <div
         class="login-form__button"
-        @click="goToRoute"
-        :data-disabled="!inputFilled"
+        @click="login"
+        :data-disabled="!isInputFilled"
       >
         Login
       </div>
@@ -57,6 +68,7 @@
 import Logo from "./graphics/logo.svg";
 import EmailIcon from "./graphics/email.svg";
 import PassIcon from "./graphics/password.svg";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "LoadingPage",
@@ -66,18 +78,65 @@ export default {
     PassIcon,
   },
   computed: {
-    isSupportedBrowser(){
+    ...mapGetters(["user"]),
+    // loacl computed
+    isSupportedBrowser() {
       return navigator.userAgent.indexOf("Chrome") > -1;
-    }
+    },
+    isInputFilled() {
+      return this.emailGiven && this.passwordGiven;
+    },
   },
   data() {
     return {
-      inputFilled: true, // set this dynamically
+      errorMessage: null,
+      errorMsgTimeout: '',
+      emailGiven: false,
+      passwordGiven: false,
     };
   },
-  methods: {
-    goToRoute() {
+  mounted() {
+    let userToken = localStorage.getItem('userToken');
+    if(userToken) {
       this.$router.push("battle");
+    }
+  },
+  methods: {
+    ...mapActions(["authenticate"]),
+    async login() {
+      if (!this.isInputFilled) return;
+      this.errorMsgTimeout = null;
+      this.errorMessage = '';
+
+      // NOTE this is not the proper way, but for mock data I use it to acccelerate development
+      // SHOULD NOT BE USED IN PRODUCTION
+      let formData = new FormData(this.$refs.loginForm);
+      // console.log(formData);
+      let successFulLogin = await this.authenticate(formData);
+
+      if (successFulLogin.success) {
+        this.$router.push("battle");
+        localStorage.setItem('userToken', successFulLogin.token);
+      }
+      else {
+        console.log("no login");
+        this.errorMessage = "No user found or incorrect details";
+        this.errorMsgTimeout = setTimeout(() => {
+          this.errorMessage = '';
+        }, 4000);
+      }
+    },
+    onEmailInputChange(e) {
+      if (this.validateEmail(e.target.value)) this.emailGiven = true;
+      else this.emailGiven = false;
+    },
+    onPasswordInputChange(e) {
+      if (e.target.value.length > 0) this.passwordGiven = true;
+      else this.passwordGiven = false;
+    },
+    validateEmail(email) {
+      const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
     },
   },
 };

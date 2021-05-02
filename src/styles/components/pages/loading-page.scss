@@ -87,6 +87,13 @@
     }
   }
 
+  &__message{
+    @include typography-1-s;
+    min-height: 20px;
+    color: $color-white;
+
+  }
+
   &__button{
     @include typography-1-l;
     border-radius: 5px;
