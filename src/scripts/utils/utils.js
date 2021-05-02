@@ -126,7 +126,7 @@ export const getOffsetAmount = (quantizer, offset) => {
   return directedOffset;
 };
 
-// scale is a note array -> pitch numbers 
+// scale is a note array -> pitch numbers
 export const isNoteInScale = (pitch, scale) => {
-  return scale.includes(pitch);
-}
+  return scale.includes(pitch % 12);
+};

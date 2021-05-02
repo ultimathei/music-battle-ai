@@ -213,7 +213,7 @@ export default {
                 isNoteInScale(userNoteHere.note, state.battleScale)
               ) {
                 // score += 0.5;
-                improvBonus += 1;
+                improvBonus += 0.5;
               }
               // b.2 out of scale           [-]
               else if (userNoteHere) {
@@ -253,8 +253,9 @@ export default {
       const sum = battleScores.reduce((a, b) => a + b.score, 0);
       const avg = sum / battleScores.length || 0;
       const score = (avg / 128).toFixed(2) * 100;
+      console.log('battlescores', battleScores);
       const improvSum = battleScores.reduce((a, b) => a + b.improvBonus, 0);
-      const improvBonus = Math.max((improvSum / 128).toFixed(2) * 100, 0);
+      const improvBonus =  Math.max((improvSum / 128).toFixed(2) * 100, 0);
 
       state.battleScores = {
         score: score,
@@ -310,7 +311,7 @@ export default {
         });
       });
       state.battleScale = scale;
-      // console.log('scale', scale);
+      console.log('scale', scale);
 
       dispatch("nextRobotMelody"); // move below?
 
