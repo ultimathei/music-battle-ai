@@ -123,7 +123,7 @@ export default {
         localStorage.setItem('userToken', successFulLogin.token);
       }
       else {
-        console.log("no login");
+        // console.log("no login");
         this.errorMessage = "No user found or incorrect details";
         this.errorMsgTimeout = setTimeout(() => {
           this.errorMessage = '';
