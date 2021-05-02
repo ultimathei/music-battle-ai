@@ -253,7 +253,6 @@ export default {
       const sum = battleScores.reduce((a, b) => a + b.score, 0);
       const avg = sum / battleScores.length || 0;
       const score = (avg / 128).toFixed(2) * 100;
-      console.log('battlescores', battleScores);
       const improvSum = battleScores.reduce((a, b) => a + b.improvBonus, 0);
       const improvBonus =  Math.max((improvSum / 128).toFixed(2) * 100, 0);
 
@@ -311,7 +310,6 @@ export default {
         });
       });
       state.battleScale = scale;
-      console.log('scale', scale);
 
       dispatch("nextRobotMelody"); // move below?
 
@@ -378,8 +376,8 @@ export default {
       this.commit(MODEL_STORE_LOC + "mutateNumberOfSamples", 2);
     },
 
-    continueSession({ state, commit }) {
-      console.log(state.seedMelody);
+    continueSession({ state }) {
+      // console.log(state.seedMelody);
       state.currentPattern = state.seedMelody;
       state.aiMelodyArray = [];
       state.userMelodyArray = [];

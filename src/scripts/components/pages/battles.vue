@@ -80,7 +80,6 @@ export default {
 
     getDate(milis) {
       let date = new Date(milis);
-      console.log(typeof date);
       return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     },
   },

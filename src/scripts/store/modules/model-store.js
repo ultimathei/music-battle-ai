@@ -134,7 +134,7 @@ export default {
       // state.magentaModel.dataConverter.maxPitch = 84;
       await state.magentaModel.initialize();
       this.dispatch("action_fadeoutComplete", true);
-      console.log(this.state.user);
+      // console.log(this.state.user);
       // const testIt = new MelodyConverterArgs();
       // console.log(testIt);
       // console.log(mm);
