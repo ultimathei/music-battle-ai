@@ -73,16 +73,6 @@
     <div class="music-sheet__precount-wrap" v-if="isPrecountVisible">
       <div class="music-sheet__precount">{{ precountDisplayValue }}</div>
     </div>
-
-    <div class="music-sheet__precount-wrap" v-if="isSessionLoading">
-      <div class="music-sheet__precount">
-        <LoaderSpinner />
-      </div>
-    </div>
-
-    <!-- <div v-if="isSessionLoading" class="app-body__loading | loading-widget">
-      <div class="loading-widget__box">loading</div>
-    </div> -->
   </div>
 </template>
 
@@ -92,7 +82,6 @@ import BattleIcon from "../graphics/match.svg";
 import NotesIcon from "../graphics/notes.svg";
 import LeftArrowIcon from "../graphics/left-arrow.svg";
 import RightArrowIcon from "../graphics/right-arrow.svg";
-import LoaderSpinner from "../graphics/loader.svg";
 import { getNoteName } from "../../utils/utils";
 
 export default {
@@ -102,7 +91,6 @@ export default {
     NotesIcon,
     LeftArrowIcon,
     RightArrowIcon,
-    LoaderSpinner,
   },
   computed: {
     ...mapGetters("mainClockStore", [

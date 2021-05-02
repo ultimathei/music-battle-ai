@@ -38,7 +38,7 @@
         <div
           class="info-widget__button"
           @click="confirmButtonAction"
-          v-if="!(mode == 'scoring' && !battleScores)"
+          v-if="!(mode == 'scoring' && !battleScores) && mode != 'loading'"
         >
           {{ buttonText }}
         </div>
@@ -69,6 +69,7 @@ export default {
     // local computed
     title() {
       if (this.deleteInitiated) return "Delete melody";
+      else if (this.mode == "loading") return "Get reaady!";
       else if (this.mode == "initial") return "Hey, Mate!";
       else if (this.mode == "scoring") return "End of Battle";
       return "Battle paused";
@@ -76,6 +77,7 @@ export default {
     description() {
       if (this.deleteInitiated)
         return "Are you sure? The melody cannot be retrieved once deleted!";
+      else if (this.mode == "loading") return "Working on my melodies..";
       else if (this.mode == "initial")
         return "Start the battle by recording a four bar melody!";
       else if (this.mode == "scoring" && !this.battleScores) return "Calculating your scores..";

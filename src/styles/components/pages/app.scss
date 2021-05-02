@@ -103,6 +103,11 @@
     fill: $color-black;
     border-radius: 999px;
 
+    &[data-disabled] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
     &:not(:first-of-type) {
       margin-left: 10px;
     }

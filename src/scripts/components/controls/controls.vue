@@ -2,6 +2,7 @@
   <div>
     <div
       class="playback_control"
+      :data-disabled="mode == 'loading'"
       v-if="
         !isRunning &&
         (aiMelodyArray.length > 0 || currentPattern.length > 0) &&
@@ -14,6 +15,7 @@
     </div>
     <div
       class="playback_control"
+      :data-disabled="mode == 'loading'"
       v-if="mode == 'seed_edit' && !deleteInitiated"
     >
       <QuantizeIcon @click="quantizeMelody" v-if="!useQuantized" />
@@ -21,11 +23,16 @@
     </div>
     <div
       class="playback_control"
+      :data-disabled="mode == 'loading'"
       v-if="mode == 'seed_edit' && !deleteInitiated"
     >
       <ConfirmIcon @click="confirmSeed" />
     </div>
-    <div class="playback_control" v-if="!deleteInitiated">
+    <div
+      class="playback_control"
+      v-if="!deleteInitiated"
+      :data-disabled="mode == 'loading'"
+    >
       <PauseIcon v-if="isRunning" @click="startStop" />
       <PlayIcon v-else @click="startStop" />
     </div>
@@ -91,15 +98,25 @@ export default {
       resetClock: ACT_clockReset,
     }),
     ...mapActions("sessionStore", {
-      confirmSeed: ACT_sessionConfirmSeed,
+      ACT_sessionConfirmSeed,
       quantizeMelody: "quantizeSeedMelody",
     }),
     ...mapMutations("sessionStore", ["mutateDeleteInitiated"]),
+    ...mapMutations(["mutateMode"]),
     askToDelete() {
       if (!this.deleteInitiated) {
         // pause playback -- maybe not needed
       }
       this.mutateDeleteInitiated();
+    },
+    confirmSeed() {
+      console.log("confirm seed here");
+      // 1. disable all buttons and display loading -- > set mode to loading
+      this.mutateMode("loading");
+      setTimeout(() => {
+        // then call the similars generation function
+        this[ACT_sessionConfirmSeed]();
+      }, 50);
     },
   },
 };

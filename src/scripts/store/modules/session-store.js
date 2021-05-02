@@ -94,14 +94,14 @@ export default {
     avgBattleScore(state) {
       const sum = state.battleScores.reduce((a, b) => a + b.score, 0);
       const avg = sum / state.battleScores.length || 0;
-      return (avg/128).toFixed(2)*1000;
+      return (avg/128).toFixed(2)*100;
     },
     totalBattleBonus(state) {
       const sum = state.battleScores.reduce(
         (a, b) => a + b.improvBonus,
         0
       );
-      return Math.max((sum/128).toFixed(2)*1000, 0);
+      return Math.max((sum/128).toFixed(2)*100, 0);
     },
   },
 
@@ -265,7 +265,7 @@ export default {
       state.battleScores = battleScores;
     },
 
-    async [ACT_sessionConfirmSeed]({ state, dispatch }) {
+    [ACT_sessionConfirmSeed]({ state, dispatch }) {
       // state.isSessionLoading = true; // use this to display loader?
       // as confirmed make current pattern the seed
       state.seedMelody = state.useQuantized
@@ -274,26 +274,27 @@ export default {
       state.currentPattern = state.seedMelody;
       state.useQuantized = false;
       state.quantizedSeedMelody = null;
-      state.isSessionLoading = true;
+      // state.isSessionLoading = true;
 
       // get ai melodies
-      await this.dispatch(
+      this.dispatch(
         MODEL_STORE_LOC + ACT_modelGenerateSimilarsVae,
         convertToMagentaSample(state.seedMelody, 120, 8)
       );
-      state.isSessionLoading = false;
+    },
 
-      dispatch("nextRobotMelody");
+    [ACT_sessionSetAiMelodies]({ state, dispatch }, melodiesArray) {
+      console.log('steped in ACT_sessionSetAiMelodies');
+      state.aiMelodyArray = melodiesArray;
+      // state.isSessionLoading = false; // ?need
+
+      dispatch("nextRobotMelody"); // move below?
 
       // reset precount and start the battle
       this.dispatch(CLOCK_STORE_LOC + ACT_clockReset);
       this.dispatch(CLOCK_STORE_LOC + ACT_clockResetPrecount);
       this.dispatch(CLOCK_STORE_LOC + ACT_clockStartStop);
       this.commit("mutateMode", "battle");
-    },
-
-    [ACT_sessionSetAiMelodies]({ state }, melodiesArray) {
-      state.aiMelodyArray = melodiesArray;
     },
 
     [ACT_sessionSetLoading]({ state }) {

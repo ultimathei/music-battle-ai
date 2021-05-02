@@ -127,8 +127,6 @@ export default {
 
       // console.log('before',model.spec.dataConverter.args)
       if (state.magentaModel.initialized) {
-        // setting limits
-
         // console.log(state.magentaModel);
         state.modelMessage = "AI model loaded";
 
@@ -142,8 +140,6 @@ export default {
     },
 
     async [ACT_modelGenerateSimilarsVae]({ state }, noteSequence) {
-      state.isModelLoading = true;
-
       let samples = await state.magentaModel.similar(
         noteSequence,
         state.numberOfSamples,
@@ -162,7 +158,7 @@ export default {
       // console.log(melodies);
 
       this.dispatch(SESSION_STORE_LOC + ACT_sessionSetAiMelodies, melodies);
-      state.isModelLoading = false;
+      // state.isModelLoading = false;
     },
   },
 };

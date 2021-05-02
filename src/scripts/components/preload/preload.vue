@@ -1,5 +1,5 @@
 <template>
-  <div class="| app-preload" :data-fadeout="magentaModel != null">
+  <div class="| app-preload" :data-fadeout="modelMessage == 'AI model loaded'">
     <Logo class="app-preload__logo | logo" />
     <p class="app-preload__info">{{ midiStatusMsg }}</p>
     <p class="app-preload__info">{{ modelMessage }}</p>
