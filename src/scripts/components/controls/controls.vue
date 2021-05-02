@@ -29,9 +29,6 @@
       <PauseIcon v-if="isRunning" @click="startStop" />
       <PlayIcon v-else @click="startStop" />
     </div>
-
-    <!-- test this -->
-    <div class="info-bubble">Mode now: {{ mode }}</div>
   </div>
 </template>
 

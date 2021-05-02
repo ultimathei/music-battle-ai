@@ -3,8 +3,13 @@
     <Preload class="app__preload" v-if="!isPreloaded" />
 
     <template v-if="magentaModel">
-      <div class="app__header">
-        <Logo class="app-header__logo | logo" />
+      <div class="app__header | app-header">
+        <div class="app-header__menu">
+          <MenuIcon />
+        </div>
+        <div class="app-header__logo | logo">
+          <Logo />
+        </div>
         <div class="app-header__controls">
           <div class="metronome__details">
             {{ currentBar + 1 }} /
@@ -44,16 +49,17 @@
 </template>
 
 <script>
-import Logo from "./graphics/logo.svg";
-import MetronomeIcon from "./graphics/metronome.svg";
 import Controls from "./controls/controls.vue";
+import Footer from "./footer/footer.vue";
+import Logo from "./graphics/logo.svg";
+import MenuIcon from "./graphics/menu.svg";
+import MetronomeIcon from "./graphics/metronome.svg";
 import MidiController from "./midi/midi-controller.vue";
 import MusicSheet from "./music-sheet/music-sheet.vue";
-import Preload from "./preload/preload.vue";
 import Piano from "./piano/Piano.vue";
+import Preload from "./preload/preload.vue";
 import Sequencer from "./music-sheet/sequencer.vue";
 import StartWidget from "./info-widget/info-widget.vue";
-import Footer from "./footer/footer.vue";
 
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import {
@@ -66,16 +72,17 @@ import { MUT_clockMetronomeSoundOn } from "../store/mutations";
 export default {
   name: "app",
   components: {
-    Logo,
     Controls,
-    MidiController,
+    Footer,
+    Logo,
+    MenuIcon,
     MetronomeIcon,
+    MidiController,
     MusicSheet,
     Piano,
     Preload,
     Sequencer,
     StartWidget,
-    Footer,
   },
   computed: {
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),

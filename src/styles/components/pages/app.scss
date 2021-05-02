@@ -46,16 +46,46 @@
 }
 
 .app-header {
+  position: relative;
+  width: 100%;
+  
+  &__menu{
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    fill: $color-brand-neutral-1;
+    margin-right: 10px;
+    padding: 5px 5px 5px 0;
+    width: 38px;
+    z-index: 1;
+
+    &:hover {
+      fill: $color-brand-accent-2;
+    }
+  }
+
   &__logo {
-    width: 140px;
+    align-items: center;
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    padding: 10px;
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    z-index: 0;
+
+    & svg{
+      height: 50px;
+    }
   }
 
   &__controls {
-    flex-grow: 1;
+    align-items: center;
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-end;
-    align-items: center;
+    z-index: 1;
   }
 }
 
