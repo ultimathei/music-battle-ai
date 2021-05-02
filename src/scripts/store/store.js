@@ -310,9 +310,10 @@ export default new Vuex.Store({
      */
     fetchSavedBattles({state}) {
       // from local storage for now..
+      console.log('updating saved battles list from database..');
       let savedBattles = localStorage.getItem("savedBattles");
       if (savedBattles) state.savedBattles = JSON.parse(savedBattles);
-      state.savedBattles = battles_DB;
+      else state.savedBattles = battles_DB;
     }
   },
 });
