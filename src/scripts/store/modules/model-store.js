@@ -57,10 +57,23 @@ export default {
     modelMessage(state) {
       return state.modelMessage;
     },
+    numberOfSamples(state) {
+      return state.numberOfSamples;
+    },
+    similarity(state) {
+      return state.similarity;
+    },
   },
   // basiacally setters
   // using the ES2015 computed property name feature
-  mutations: {},
+  mutations: {
+    mutateNumberOfSamples(state, newVal) {
+      state.numberOfSamples = newVal;
+    },
+    mutateSimilarity(state, newVal) {
+      state.similarity = newVal;
+    },
+  },
   actions: {
     ////// IDEA ///////
     // idea for VAE interpolate

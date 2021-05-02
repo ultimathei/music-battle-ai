@@ -31,7 +31,7 @@
     <div
       class="playback_control"
       v-if="!deleteInitiated"
-      :data-disabled="mode == 'loading'"
+      :data-disabled="mode == 'loading' || mode == 'scoring'"
     >
       <PauseIcon v-if="isRunning" @click="startStop" />
       <PlayIcon v-else @click="startStop" />

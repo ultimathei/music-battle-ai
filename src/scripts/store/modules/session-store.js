@@ -47,8 +47,13 @@ export default {
     prematureNotes: [], // this would be used to cache notes that are strated just before the pattern start
     currentMatchIndex: 0, // the index of current match in the game
     deleteInitiated: false, // flag if user asked to delete session
-    battleScale: [60, 61, 62, 63, 64],
+
+    battleScale: [60, 61, 62, 63, 64], // do this!
     battleScores: null,
+    streakIndex: 0,
+    dailyGoal: 2000,
+    dailyTotal: 0,
+    sessionCreated: null,
   }),
 
   getters: {
@@ -91,17 +96,26 @@ export default {
     battleScores(state) {
       return state.battleScores;
     },
+    dailyGoal(state) {
+      return state.dailyGoal;
+    },
+    dailyTotal(state) {
+      return state.dailyTotal;
+    },
+    streakIndex(state) {
+      return state.streakIndex;
+    },
+    sessionCreated(state) {
+      return state.sessionCreated;
+    },
     avgBattleScore(state) {
       const sum = state.battleScores.reduce((a, b) => a + b.score, 0);
       const avg = sum / state.battleScores.length || 0;
-      return (avg/128).toFixed(2)*100;
+      return (avg / 128).toFixed(2) * 100;
     },
     totalBattleBonus(state) {
-      const sum = state.battleScores.reduce(
-        (a, b) => a + b.improvBonus,
-        0
-      );
-      return Math.max((sum/128).toFixed(2)*100, 0);
+      const sum = state.battleScores.reduce((a, b) => a + b.improvBonus, 0);
+      return Math.max((sum / 128).toFixed(2) * 100, 0);
     },
   },
 
@@ -176,23 +190,14 @@ export default {
       }
     },
 
-    // NOTE...
-    // A battle is:
-    // - seed melody (quantized if useQuantized?)
-    // - a list of user melodies (userMelodyArray)
-    // - a list of ai melodies (aiMelodyArray)
-    // also has:
-    // - a score (once complete)
-    // - difficulty level?
-    // - what instrument was used?
     evaluateBattleScore({ state }) {
       console.log("evaluating score here");
 
       // step 1: push currentPattern to session
       state.userMelodyArray.push([...state.currentPattern]);
 
-      console.log("userMelodyArray: ", state.userMelodyArray);
-      console.log("aiMelodyArray: ", state.aiMelodyArray);
+      // console.log("userMelodyArray: ", state.userMelodyArray);
+      // console.log("aiMelodyArray: ", state.aiMelodyArray);
 
       // determine scale?
       // --> actually this should be already done (before getting similars)
@@ -261,11 +266,25 @@ export default {
         battleScores.push({ score, improvBonus });
       });
 
-      console.log("battleScore", battleScores);
+      // console.log("battleScore", battleScores);
       state.battleScores = battleScores;
+
+      // save it
+      let battleObject = {
+        seedMelody: state.seedMelody,
+        rounds: [
+          {
+            aiMelodyArray: state.aiMelodyArray,
+            userMelodyArray: state.userMelodyArray,
+            scores: state.battleScores,
+          },
+        ],
+        // modelSimilarity: this.state.similarity,
+      };
+      this.dispatch("saveBattle", battleObject);
     },
 
-    [ACT_sessionConfirmSeed]({ state, dispatch }) {
+    [ACT_sessionConfirmSeed]({ state }) {
       // state.isSessionLoading = true; // use this to display loader?
       // as confirmed make current pattern the seed
       state.seedMelody = state.useQuantized
@@ -274,7 +293,7 @@ export default {
       state.currentPattern = state.seedMelody;
       state.useQuantized = false;
       state.quantizedSeedMelody = null;
-      // state.isSessionLoading = true;
+      state.sessionCreated = Date.now();
 
       // get ai melodies
       this.dispatch(
@@ -284,7 +303,7 @@ export default {
     },
 
     [ACT_sessionSetAiMelodies]({ state, dispatch }, melodiesArray) {
-      console.log('steped in ACT_sessionSetAiMelodies');
+      console.log("steped in ACT_sessionSetAiMelodies");
       state.aiMelodyArray = melodiesArray;
       // state.isSessionLoading = false; // ?need
 
@@ -346,6 +365,27 @@ export default {
       state.quantizedSeedMelody = null;
       state.deleteInitiated = false;
       state.patternPointer = 0;
+      state.sessionCreated = null;
+
+      // reset model parameters (similarity, numberofsamples)
+      this.commit(MODEL_STORE_LOC + "mutateSimilarity", 0.9);
+      this.commit(MODEL_STORE_LOC + "mutateNumberOfSamples", 2);
+    },
+
+    continueSession({ state, commit }) {
+      console.log(state.seedMelody);
+      state.currentPattern = state.seedMelody;
+      state.aiMelodyArray = [];
+      state.userMelodyArray = [];
+      state.userTurn = true;
+      state.patternPointer = 0;
+      state.streakIndex +=1;
+
+      // get ai melodies
+      this.dispatch(
+        MODEL_STORE_LOC + ACT_modelGenerateSimilarsVae,
+        convertToMagentaSample(state.seedMelody, 120, 8)
+      );
     },
 
     [ACT_sessionCloseUnfinishedNotes]({ state }) {

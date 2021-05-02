@@ -164,6 +164,32 @@ export default new Vuex.Store({
       /////////
     },
 
+    saveBattle({ state }, battleObject) {
+      let savedBattles = localStorage.getItem("savedBattles");
+      let now = this.getters[SESSION_STORE_LOC + "sessionCreated"];
+      if (savedBattles) {
+        savedBattles = JSON.parse(savedBattles);
+
+        let lastBattle = savedBattles[savedBattles.length - 1];
+        if (lastBattle.created == now) {
+          lastBattle.rounds.push(...battleObject.rounds);
+        } else {
+          savedBattles.push({
+            ...battleObject,
+            created: now,
+          });
+        }
+
+        savedBattles = JSON.stringify(savedBattles);
+      } else {
+        savedBattles = `[${JSON.stringify({
+          ...battleObject,
+          created: now,
+        })}]`;
+      }
+      localStorage.setItem("savedBattles", savedBattles);
+    },
+
     /**
      * Records the notes to the appropriate array
      * @param {*} data the note object
