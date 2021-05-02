@@ -121,7 +121,7 @@ export default {
 
     // local computed
     activePattern() {
-      if (this.mode == "seed_recording" || this.mode == "seed_edit") {
+      if (this.mode == "seed_recording" || this.mode == "seed_edit" || this.mode == "loading") {
         if (this.useQuantized) {
           return this.quantizedSeedMelody;
         } else {

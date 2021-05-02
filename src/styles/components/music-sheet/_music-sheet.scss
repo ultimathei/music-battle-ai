@@ -11,7 +11,7 @@ $ms_header-height: 25px;
   border: 2px solid $color-brand-accent-4;
   display: flex;
   flex-flow: row nowrap;
-  height: 100%;
+  // height: 100%;
   width: 100%;
   overflow: hidden;
   font-family: 'Montserrat', sans-serif;
@@ -103,7 +103,7 @@ $ms_header-height: 25px;
   }
 
   &__body {
-    height: 100%;
+    // height: 100%;
     width: calc(100% - #{$ms_side-width});
     display: flex;
     flex-flow: column nowrap;
