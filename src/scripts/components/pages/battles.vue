@@ -59,6 +59,7 @@ export default {
     ShareIcon,
   },
   mounted() {
+    // set loading to true?
     this.fetchSavedBattles();
   },
   computed: {

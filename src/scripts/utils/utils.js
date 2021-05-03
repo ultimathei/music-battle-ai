@@ -130,3 +130,16 @@ export const getOffsetAmount = (quantizer, offset) => {
 export const isNoteInScale = (pitch, scale) => {
   return scale.includes(pitch % 12);
 };
+
+// calculating the total score of giveb array of battles
+export const calculateTotalScore = (battles) => {
+  let dailyTotal = 0;
+  battles.forEach((battle) => {
+    battle.rounds.forEach((round) => {
+      dailyTotal += parseInt(round.scores.score) || 0;
+      dailyTotal += parseInt(round.scores.improvBonus) || 0;
+      dailyTotal += parseInt(round.scores.streakBonu) || 0;
+    });
+  });
+  return dailyTotal;
+}

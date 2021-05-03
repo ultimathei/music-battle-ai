@@ -14,8 +14,8 @@ import {
   ACT_instrumentEndNote,
 } from "../store/actions";
 
-import { convertToPatternTime } from "../utils/utils";
-import { users } from "../services/users_DB";
+import { convertToPatternTime, calculateTotalScore } from "../utils/utils";
+import { users_DB } from "../services/users_DB";
 import { battles_DB } from "../services/battles_DB";
 
 Vue.use(Vuex);
@@ -197,49 +197,6 @@ export default new Vuex.Store({
       /////////
     },
 
-    saveBattle({ state }, battleObject) {
-      // read
-      let savedBattles = localStorage.getItem("savedBattles");
-      let newSaved = [];
-      let now = this.getters[SESSION_STORE_LOC + "sessionCreated"];
-
-      if (savedBattles) {
-        savedBattles = JSON.parse(savedBattles);
-
-        let lastBattle = savedBattles[savedBattles.length - 1];
-        if (lastBattle.created == now) {
-          lastBattle.rounds.push(...battleObject.rounds);
-        } else {
-          savedBattles.push({
-            ...battleObject,
-            created: now,
-          });
-        }
-
-        newSaved = savedBattles;
-      } else {
-        newSaved.push({
-          ...battleObject,
-          created: now,
-        });
-      }
-      // write
-      localStorage.setItem("savedBattles", JSON.stringify(newSaved));
-
-      // console.log(newSaved);
-
-      // update dailyTotal
-      let dailyTotal = 0;
-      newSaved.forEach((battle) => {
-        battle.rounds.forEach((round) => {
-          dailyTotal += parseInt(round.scores.score) || 0;
-          dailyTotal += parseInt(round.scores.improvBonus) || 0;
-          dailyTotal += parseInt(round.scores.streakBonu) || 0;
-        });
-      });
-      state.dailyTotal = dailyTotal;
-    },
-
     /**
      * Records the notes to the appropriate array
      * @param {*} data the note object
@@ -257,63 +214,163 @@ export default new Vuex.Store({
       }
     },
 
+    action_fadeoutComplete({ state }, newVal) {
+      state.fadeoutComplete = newVal;
+    },
+
     /**
      * Mock authentication -- not to be used in production
      */
     authenticate({ state }, formData) {
-      let user = users.find(
+      let user = users_DB.find(
         (_) =>
           _.email == formData.get("email") &&
           _.password == formData.get("password")
       );
 
       if (user) {
-        const { name, email, level, allTimeScore, token } = user;
-        state.user = {
+        const { _id, name, email, level, allTimeScore, token } = user;
+        let projection = {
+          _id,
           name,
           email,
           level,
           allTimeScore,
           token,
         };
+        state.user = projection; // set in vue store
         return { success: true, token: token };
       } else {
         return { success: false };
       }
     },
 
-    action_fadeoutComplete({ state }, newVal) {
-      state.fadeoutComplete = newVal;
-    },
+    findUserByToken({ state }, search_token) {
+      let user = users_DB.find((_) => _.token == search_token);
 
-    findUserByToken({ state }, token) {
-      let user = users.find((_) => _.token == token);
-      if(user) {
-        const { name, email, level, allTimeScore, token } = user;
-        state.user = {
+
+      if (user) {
+        const { _id, name, email, level, allTimeScore, token } = user;
+        let projection = {
+          _id,
           name,
           email,
           level,
           allTimeScore,
           token,
         };
+        state.user = projection;
         return { success: true, token: token };
-      }
-      else {
+      } else {
         return { success: false };
       }
     },
 
-
     /**
-     * Mock db -- get saved battles
+     * BATTLES actions
      */
-    fetchSavedBattles({state}) {
+    async fetchSavedBattles({ state, dispatch }) {
       // from local storage for now..
-      console.log('updating saved battles list from database..');
-      let savedBattles = localStorage.getItem("savedBattles");
-      if (savedBattles) state.savedBattles = JSON.parse(savedBattles);
-      else state.savedBattles = battles_DB;
-    }
+      console.log("fetching all battles from database..");
+      let response = await dispatch("fetchUserBattles");
+      console.log(response);
+      if(!response.success) {
+        console.error(response.message);
+      } else {
+        state.savedBattles = response.battles;
+      }
+      // set loading to false?
+    },
+    
+    fetchUserBattles({ state }) {
+      // from local storage for now..
+      console.log("fetching user's battles from database..");
+
+      // read DB instance
+      let battles_DB_instance = localStorage.getItem("battles_DB");
+      // format: [{ user_id: "user._id", battles: [] }]
+    
+      if (!battles_DB_instance) {
+        battles_DB_instance = battles_DB; // initial mock DB state from file
+        localStorage.setItem("battles_DB", JSON.stringify(battles_DB_instance));
+      } else {
+        battles_DB_instance = JSON.parse(battles_DB_instance); // try-catch?
+      }
+      // get battles for a specific user from LC
+      // aka find DB item with user_id == user._id
+      let DB_object = battles_DB_instance.find((obj) => obj.user_id == state.user._id);
+      // if didn't find, return error message?
+      if (!DB_object) {
+        return { success: false, message: "could not read Database"};
+      }
+      // else get the battles list of this user
+      return {success: true, battles: DB_object.battles}
+    },
+
+
+    // SAVING
+    async saveBattle({ state, dispatch }, newBattle) {
+      console.log("saving battle here..");
+      // read user battles from DB to make sure we are using the up to date list
+      let response = await dispatch("fetchUserBattles");
+      if(!response.success) {
+        console.error(response.message);
+        return;
+      }
+      // else
+      // users battles
+      let battles_previousState = response.battles;
+
+      // info about battle to be saved
+      let battles_newState = [];
+      let now = this.getters[SESSION_STORE_LOC + "sessionCreated"];
+
+      // if not empty -- existing battles
+      if (battles_previousState.length > 0) {
+        let lastBattle = battles_previousState[battles_previousState.length - 1];
+        if (lastBattle.created == now) {
+          // ongoing battle, so push this round to rounds array
+          lastBattle.rounds.push(...newBattle.rounds);
+        } else {
+          // new battle, so push new battle to battles array
+          battles_previousState.push({
+            ...newBattle,
+            _id: battles_previousState.length,
+            created: now,
+          });
+        }
+        battles_newState = battles_previousState;
+
+      } else {
+        // no battles yet for user, this will be the first 
+        battles_newState.push({
+          ...newBattle,
+          _id: battles_previousState.length, // 0
+          created: now,
+        });
+      }
+
+
+      // need new method to store in LC in correct format
+      // write
+      let battles_DB_instance = JSON.parse(localStorage.getItem("battles_DB"));
+      // format: [{ user_id: "user._id", battles: [] }]
+      let index = battles_DB_instance.findIndex(obj=>obj.user_id == state.user._id);
+      battles_DB_instance.splice(index, 1, {
+        user_id: state.user._id,
+        battles: battles_newState
+      });
+      // write update in LC (DB)
+      localStorage.setItem("battles_DB", JSON.stringify(battles_DB_instance));
+
+      // console.log(newSaved);
+      // TODO: filter for todays battles only, 
+      // where startof today created < endof today
+      // ..
+      // for now, no filtering (all time total score)
+      state.dailyTotal = calculateTotalScore(battles_newState);
+    },
+
+
   },
 });

@@ -1,7 +1,7 @@
 /**
  * A mock data set of users
  */
-export const users = [
+export const users_DB = [
   {
     _id: 'user001',
     name: 'Mate',
