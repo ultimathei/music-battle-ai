@@ -1,3 +1,69 @@
 .page-scoreboard {
-  background-color: blue;
+  border: 6px dotted rgba($color-brand-accent-1, 0.5);
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+
+  &__title {
+    padding-bottom: 20px;
+  }
+
+  &__list {
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    &:not(:last-of-type) {
+      padding-bottom: 80px;
+    }
+
+    &-item {
+      display: flex;
+      flex-flow: row nowrap;
+      width: 100%;
+      justify-content: space-between;
+      max-width: 400px;
+
+      &[data-index="1"] {
+        color: $color-brand-accent-2;
+      }
+      &[data-index="2"] {
+        color: $color-brand-accent-1;
+      }
+      &[data-index="4"]{
+        opacity: 0.7;
+
+      } 
+      &[data-index="5"]{
+        opacity: 0.5;
+      }
+
+      &-count {
+        padding-right: 10px;
+        width: 50px;
+      }
+      &-details {
+        flex-grow: 1;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        align-items: center;
+      }
+      &-score {
+
+      }
+
+      &-username {
+        flex-grow: 1;
+        text-align: right;
+      }
+
+      &-avatar{
+
+      }
+    }
+  }
 }

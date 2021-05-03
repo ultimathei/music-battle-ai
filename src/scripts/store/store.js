@@ -226,7 +226,7 @@ export default new Vuex.Store({
       // write
       localStorage.setItem("savedBattles", JSON.stringify(newSaved));
 
-      console.log(newSaved);
+      // console.log(newSaved);
 
       // update dailyTotal
       let dailyTotal = 0;
