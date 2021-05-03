@@ -25,7 +25,8 @@
       flex-flow: row nowrap;
       width: 100%;
       justify-content: space-between;
-      max-width: 400px;
+      max-width: 330px;
+      padding: 3px;
 
       &[data-index="1"] {
         color: $color-brand-accent-2;
@@ -62,7 +63,23 @@
       }
 
       &-avatar{
+        height: 18px;
+        width: 18px;
+        border: 1px solid $color-brand-neutral-1;
+        position: relative;
+        background-color: $color-brand-accent-2;
+        border-radius: 999px;
+        margin-left: 10px;
 
+        svg {
+          padding: 1.5px;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          fill: rgba($color-brand-background, 0.5);
+        }
       }
     }
   }

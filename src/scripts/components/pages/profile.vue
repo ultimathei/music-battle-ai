@@ -29,11 +29,11 @@
       <div class="page-profile__item-key">All time score</div>
       <div class="page-profile__item-value">100009999</div>
     </div>
-    <div class="page-profile__item">
+    <!-- <div class="page-profile__item">
       <div class="page-profile__item-button">
         <span>Request password change</span>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
