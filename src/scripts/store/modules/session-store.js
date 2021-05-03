@@ -252,14 +252,17 @@ export default {
       // console.log("battleScore", battleScores);
       const sum = battleScores.reduce((a, b) => a + b.score, 0);
       const avg = sum / battleScores.length || 0;
-      const score = (Number.parseFloat(avg) / 1.28).toFixed(0);
+      const score = Number.parseInt((Number.parseFloat(avg) / 1.28).toFixed(0));
       const improvSum = battleScores.reduce((a, b) => a + b.improvBonus, 0);
-      const improvBonus =  Math.max((Number.parseFloat(improvSum) / 1.28).toFixed(0), 0);
+      const improvBonus = Math.max(
+        Number.parseInt(Number.parseFloat(improvSum) / 1.28).toFixed(0),
+        0
+      );
 
       state.battleScores = {
         score: score,
         improvBonus: improvBonus,
-        streakBonus: state.streakIndex * 10
+        streakBonus: state.streakIndex * 10,
       };
 
       // save it
@@ -298,13 +301,13 @@ export default {
     [ACT_sessionSetAiMelodies]({ state, dispatch }, melodiesArray) {
       console.log("steped in ACT_sessionSetAiMelodies");
       state.aiMelodyArray = melodiesArray;
-      
-      // determine scale 
+
+      // determine scale
       let scale = [];
-      melodiesArray.forEach(melody => {
-        melody.forEach(note => {
+      melodiesArray.forEach((melody) => {
+        melody.forEach((note) => {
           let pitch = note.note % 12;
-          if(!scale.includes(pitch)) {
+          if (!scale.includes(pitch)) {
             scale.push(pitch);
           }
         });
@@ -384,7 +387,7 @@ export default {
       state.userMelodyArray = [];
       state.userTurn = true;
       state.patternPointer = 0;
-      state.streakIndex +=1;
+      state.streakIndex += 1;
 
       // get ai melodies
       this.dispatch(

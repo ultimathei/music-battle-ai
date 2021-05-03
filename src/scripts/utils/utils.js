@@ -138,7 +138,7 @@ export const calculateTotalScore = (battles) => {
     battle.rounds.forEach((round) => {
       dailyTotal += parseInt(round.scores.score) || 0;
       dailyTotal += parseInt(round.scores.improvBonus) || 0;
-      dailyTotal += parseInt(round.scores.streakBonu) || 0;
+      dailyTotal += parseInt(round.scores.streakBonus) || 0;
     });
   });
   return dailyTotal;
