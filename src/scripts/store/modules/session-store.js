@@ -252,9 +252,9 @@ export default {
       // console.log("battleScore", battleScores);
       const sum = battleScores.reduce((a, b) => a + b.score, 0);
       const avg = sum / battleScores.length || 0;
-      const score = (avg / 128).toFixed(2) * 100;
+      const score = (Number.parseFloat(avg) / 1.28).toFixed(0);
       const improvSum = battleScores.reduce((a, b) => a + b.improvBonus, 0);
-      const improvBonus =  Math.max((improvSum / 128).toFixed(2) * 100, 0);
+      const improvBonus =  Math.max((Number.parseFloat(improvSum) / 1.28).toFixed(0), 0);
 
       state.battleScores = {
         score: score,

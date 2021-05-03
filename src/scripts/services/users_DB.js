@@ -6,7 +6,7 @@ export const users_DB = [
     _id: 'user001',
     name: 'Mate',
     email: 'test@email.com',
-    password: 'password',
+    password: 'Abcd9876@',
     level: 'pro',
     allTimeScore: 666666,
     token: 'supersecrettoken-1',

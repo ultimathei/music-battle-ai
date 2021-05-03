@@ -109,7 +109,7 @@ export default {
     TongueEmoji,
   },
   computed: {
-    ...mapGetters(["mode", "dailyGoal", "dailyTotal"]),
+    ...mapGetters(["userName", "mode", "dailyGoal", "dailyTotal"]),
     ...mapGetters("sessionStore", [
       "deleteInitiated",
       "battleScores",
@@ -123,7 +123,7 @@ export default {
     title() {
       if (this.deleteInitiated) return "Delete melody";
       else if (this.mode == "loading") return "Get ready!";
-      else if (this.mode == "initial") return "Hey, Mate!";
+      else if (this.mode == "initial") return `Hey, ${this.userName}!`;
       else if (this.mode == "scoring") return "Checkpoint";
       return "Battle paused";
     },

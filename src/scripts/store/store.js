@@ -66,6 +66,9 @@ export default new Vuex.Store({
     user(state) {
       return state.user;
     },
+    userName(state) {
+      return state.user.name || 'Champion';
+    },
     mode(state) {
       return state.mode;
     },
