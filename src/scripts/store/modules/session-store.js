@@ -369,6 +369,7 @@ export default {
       state.quantizedSeedMelody = null;
       state.deleteInitiated = false;
       state.patternPointer = 0;
+      state.streakIndex = 0;
       state.sessionCreated = null;
 
       // reset model parameters (similarity, numberofsamples)
