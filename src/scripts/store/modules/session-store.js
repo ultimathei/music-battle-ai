@@ -241,7 +241,7 @@ export default {
               // b.2 out of scale           [-]
               else {
                 // score -= 1;
-                improvBonus -= 1;
+                improvBonus -= 0.7;
               }
             }
           }
