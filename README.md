@@ -21,5 +21,5 @@ and your app should open in localhost.
 **Some of which are originally from https://www.freepik.com**
 **Some of which are originally from https://smashicons.com/**
 **Some of which are originally from https://icon54.com/**
-**All images are from Unsplash.com and/or Pexels.com**
+**All images are from unsplash.com and/or pexels.com**
 **Using the Montserrat Google webFont**
