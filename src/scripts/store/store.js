@@ -326,7 +326,7 @@ export default new Vuex.Store({
           battles_previousState[battles_previousState.length - 1];
 
         // console.log('lastBattle', lastBattle);
-        
+
         // continuation, so update latest battle data
         if (streakIndex > 0) {
           // ongoing battle, so push this round to rounds array
@@ -335,17 +335,14 @@ export default new Vuex.Store({
             {
               data: {
                 seedMelody: lastBattle.data.seedMelody,
-                rounds: [
-                  ...lastBattle.data.rounds,
-                  ...newBattle.rounds
-                ]                
-              }
+                rounds: [...lastBattle.data.rounds, ...newBattle.rounds],
+              },
             },
             {
               headers: { Authorization: `Bearer ${state.token}` },
-            });
+            }
+          );
           // console.log(data);
-
         } else {
           // new battle, so push new battle to battles array
 
@@ -355,11 +352,12 @@ export default new Vuex.Store({
             `http://localhost:1337/battles`,
             {
               data: newBattle,
-              profile: lastBattle.profile
+              profile: lastBattle.profile,
             },
             {
               headers: { Authorization: `Bearer ${state.token}` },
-            });
+            }
+          );
         }
       } else {
         // no battles yet for user, this will be the first
@@ -376,7 +374,7 @@ export default new Vuex.Store({
           `http://localhost:1337/battles`,
           {
             data: newBattle,
-            profile: prof
+            profile: prof,
           },
           {
             headers: { Authorization: `Bearer ${state.token}` },
@@ -389,13 +387,24 @@ export default new Vuex.Store({
       state.savedBattles = battles_newState;
       // console.log('battles_newState', battles_newState);
 
-      dispatch('updateTotalScore', battles_newState);
+      dispatch("updateTotalScore", battles_newState);
     },
 
-    async updateTotalScore({state}, battles_newState) {
-      state.dailyTotal = calculateTotalScore(battles_newState);
+    async updateTotalScore({ state }, battles_newState) { 
+      // update daily
+      let todayDate = new Date();
+      todayDate = todayDate.getDate();
+      console.log('todayDate', todayDate);
+      let battlesToday = battles_newState.filter(item => {
+        let createdDay = new Date(item.created_at);
+        createdDay = createdDay.getDate();
+        console.log(createdDay);
+        return todayDate == createdDay;
+      });
+      state.dailyTotal = calculateTotalScore(battlesToday);
+
       // update it in profile?
-      const {data} = await axios.get(
+      const { data } = await axios.get(
         `http://localhost:1337/profiles?_user.id=${state.user._id}`,
         {
           headers: { Authorization: `Bearer ${state.token}` },
@@ -404,7 +413,8 @@ export default new Vuex.Store({
       const respp = await axios.put(
         `http://localhost:1337/profiles/${data[0].id}`,
         {
-          all_time_score: state.dailyTotal
+          all_time_score: calculateTotalScore(battles_newState),
+          daily_score: state.dailyTotal
         },
         {
           headers: { Authorization: `Bearer ${state.token}` },
@@ -412,8 +422,8 @@ export default new Vuex.Store({
       );
     },
 
-    async getProfileDetails({state}) {
-      const {data} = await axios.get(
+    async getProfileDetails({ state }) {
+      const { data } = await axios.get(
         `http://localhost:1337/profiles?_user.id=${state.user._id}`,
         {
           headers: { Authorization: `Bearer ${state.token}` },
@@ -421,6 +431,56 @@ export default new Vuex.Store({
       );
 
       return data[0];
+    },
+
+    async getTopAllTime({ state }) {
+      const { data } = await axios.get(`http://localhost:1337/profiles`, {
+        headers: { Authorization: `Bearer ${state.token}` },
+      });
+
+      // sort by all time score
+      function compare(a, b) {
+        if (a.all_time_score > b.all_time_score) {
+          return -1;
+        }
+        if (a.all_time_score < b.all_time_score) {
+          return 1;
+        }
+        return 0;
+      }
+
+      data.sort(compare);
+      return data.slice(0, 5).map((item) => {
+        return {
+          score: item.all_time_score,
+          username: item.user.username,
+        };
+      });
+    },
+
+    async getTopFiveToday({ state }) {
+      const { data } = await axios.get(`http://localhost:1337/profiles`, {
+        headers: { Authorization: `Bearer ${state.token}` },
+      });
+
+      // sort by all time score
+      function compare(a, b) {
+        if (a.daily_score > b.daily_score) {
+          return -1;
+        }
+        if (a.daily_score < b.daily_score) {
+          return 1;
+        }
+        return 0;
+      }
+
+      data.sort(compare);
+      return data.slice(0, 5).map((item) => {
+        return {
+          score: item.daily_score,
+          username: item.user.username,
+        };
+      });
     },
   },
 });

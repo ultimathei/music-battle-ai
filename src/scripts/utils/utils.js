@@ -131,7 +131,7 @@ export const isNoteInScale = (pitch, scale) => {
   return scale.includes(pitch % 12);
 };
 
-// calculating the total score of giveb array of battles
+// calculating the total score of given array of battles
 export const calculateTotalScore = (battles) => {
   let dailyTotal = 0;
   console.log('battles', battles);
