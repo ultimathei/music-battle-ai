@@ -78,7 +78,7 @@ export default {
     PassIcon,
   },
   computed: {
-    ...mapGetters(["user"]),
+    ...mapGetters(["user", "isLoggedIn"]),
     // loacl computed
     isSupportedBrowser() {
       return navigator.userAgent.indexOf("Chrome") > -1;
@@ -96,17 +96,14 @@ export default {
     };
   },
   async mounted() {
-    let userToken = localStorage.getItem('userToken');
-    const response = await this.findUserByToken(userToken);
-
-    if(response.success) {
+    if(this.isLoggedIn) {
       this.$router.push("battle");
     } else {
       localStorage.removeItem('userToken');
     }
   },
   methods: {
-    ...mapActions(["authenticate", "findUserByToken"]),
+    ...mapActions(["authenticate"]),
     async login() {
       if (!this.isInputFilled) return;
       this.errorMsgTimeout = null;
@@ -119,8 +116,8 @@ export default {
       let successFulLogin = await this.authenticate(formData);
 
       if (successFulLogin.success) {
+        console.log("successful auth..");
         this.$router.push("battle");
-        localStorage.setItem('userToken', successFulLogin.token);
       }
       else {
         // console.log("no login");

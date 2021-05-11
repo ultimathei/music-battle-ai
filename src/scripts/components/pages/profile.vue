@@ -9,25 +9,25 @@
     </div>
     <div class="page-profile__item">
       <div class="page-profile__item-key">Name</div>
-      <div class="page-profile__item-value">Mate</div>
+      <div class="page-profile__item-value">{{name}}</div>
     </div>
     <div class="page-profile__item">
       <div class="page-profile__item-key">Email</div>
       <div class="page-profile__item-value">
-        krisztian.mate.design@gmail.com
+        {{email}}
       </div>
     </div>
     <div class="page-profile__item">
       <div class="page-profile__item-key">Member since</div>
-      <div class="page-profile__item-value">01/12/21</div>
+      <div class="page-profile__item-value">{{member_since}}</div>
     </div>
     <div class="page-profile__item">
       <div class="page-profile__item-key">Level</div>
-      <div class="page-profile__item-value">PRO</div>
+      <div class="page-profile__item-value">{{level}}</div>
     </div>
     <div class="page-profile__item">
       <div class="page-profile__item-key">All time score</div>
-      <div class="page-profile__item-value">100009999</div>
+      <div class="page-profile__item-value">{{all_time_score}}</div>
     </div>
     <!-- <div class="page-profile__item">
       <div class="page-profile__item-button">
@@ -38,12 +38,35 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import UserIcon from "../graphics/user.svg";
+import {getDate} from '../../utils/utils';
 
 export default {
   name: "ProfilePage",
-  components:{
+  components: {
     UserIcon,
+  },
+  data() {
+    return {
+      name: '-',
+      email: '-',
+      member_since: '-',
+      level: '-',
+      all_time_score: 0,
+    }
+  },
+  async mounted() {
+    const profile = await this.getProfileDetails();
+    console.log(profile);
+    this.name = profile.user.username;
+    this.email = profile.user.email;
+    this.member_since = getDate(profile.user.created_at);
+    this.level = profile.level;
+    this.all_time_score = profile.all_time_score;
+  },
+  methods: {
+    ...mapActions(["getProfileDetails"]),
   },
 };
 </script>

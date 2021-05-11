@@ -134,12 +134,18 @@ export const isNoteInScale = (pitch, scale) => {
 // calculating the total score of giveb array of battles
 export const calculateTotalScore = (battles) => {
   let dailyTotal = 0;
+  console.log('battles', battles);
   battles.forEach((battle) => {
-    battle.rounds.forEach((round) => {
+    battle.data.rounds.forEach((round) => {
       dailyTotal += parseInt(round.scores.score) || 0;
       dailyTotal += parseInt(round.scores.improvBonus) || 0;
       dailyTotal += parseInt(round.scores.streakBonus) || 0;
     });
   });
   return dailyTotal;
+}
+
+export const getDate = (milis) => {
+  let date = new Date(milis);
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 }

@@ -46,12 +46,13 @@ export default {
   methods: {
     ...mapMutations("mainClockStore", [MUT_clockAudioContext]),
     ...mapMutations("midiStore", ["removeMidiAccess"]),
-    ...mapMutations(["mutateIsMenuOpen", "mutateCurrentPageOpen"]),
+    ...mapMutations(["destroyToken", "mutateIsMenuOpen", "mutateCurrentPageOpen"]),
     
     // local computed
     goToPage(name) {
       if (name == "logout") {
-        localStorage.removeItem("userToken");
+        // localStorage.removeItem("userToken");
+        this.destroyToken();
         this[MUT_clockAudioContext](null);
         this.removeMidiAccess();
         this.mutateIsMenuOpen(false);

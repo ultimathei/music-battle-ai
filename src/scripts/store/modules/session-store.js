@@ -51,7 +51,6 @@ export default {
     battleScale: [], // do this!
     battleScores: null,
     streakIndex: 0,
-    sessionCreated: null,
   }),
 
   getters: {
@@ -96,9 +95,6 @@ export default {
     },
     streakIndex(state) {
       return state.streakIndex;
-    },
-    sessionCreated(state) {
-      return state.sessionCreated;
     },
     avgBattleScore(state) {
       return state.battleScores.score;
@@ -289,7 +285,6 @@ export default {
       state.currentPattern = state.seedMelody;
       state.useQuantized = false;
       state.quantizedSeedMelody = null;
-      state.sessionCreated = Date.now();
 
       // get ai melodies
       this.dispatch(
@@ -373,11 +368,10 @@ export default {
       state.deleteInitiated = false;
       state.patternPointer = 0;
       state.streakIndex = 0;
-      state.sessionCreated = null;
 
       // reset model parameters (similarity, numberofsamples)
       this.commit(MODEL_STORE_LOC + "mutateSimilarity", 0.9);
-      this.commit(MODEL_STORE_LOC + "mutateNumberOfSamples", 2);
+      this.commit(MODEL_STORE_LOC + "mutateNumberOfSamples", 1);
     },
 
     continueSession({ state }) {
@@ -388,6 +382,7 @@ export default {
       state.userTurn = true;
       state.patternPointer = 0;
       state.streakIndex += 1;
+      state.isContinuation = true;
 
       // get ai melodies
       this.dispatch(
@@ -573,5 +568,9 @@ export default {
     mutateDeleteInitiated(state) {
       state.deleteInitiated = !state.deleteInitiated;
     },
+
+    mutateIsContinuation(state, newVal) {
+      state.isContinuation = newVal;
+    }
   },
 };

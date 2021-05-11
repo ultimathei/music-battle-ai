@@ -29,6 +29,7 @@ import ProfilePage from "./pages/profile.vue";
 import BattlesPage from "./pages/battles.vue";
 import BattlePage from "./pages/battle.vue";
 import ScoresPage from "./pages/scoreboard.vue";
+import axios from "axios";
 
 import { mapActions, mapGetters } from "vuex";
 import { ACT_modelInitVae } from "../store/actions";
@@ -61,10 +62,17 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["user", "isMenuOpen", "currentPageOpen"]),
+    ...mapGetters([
+      "user",
+      "token",
+      "isLoggedIn",
+      "isMenuOpen",
+      "currentPageOpen",
+    ]),
     ...mapGetters("modelStore", ["magentaModel", "isModelReady"]),
     ...mapGetters("instrumentStore", ["rangeStart", "rangeEnd"]),
     ...mapGetters("midiStore", ["isMIDIready"]),
+    ...mapGetters(["user"]),
 
     // local computed
     isPreloaded() {
@@ -73,29 +81,23 @@ export default {
     },
   },
   async mounted() {
-    // check for auth token
-    let token = localStorage.getItem("userToken");
-    if (!token) {
+    if (!this.isLoggedIn) {
+      localStorage.removeItem("user");
       this.$router.push("/");
       return;
     }
 
-    // have token
-    const response = await this.findUserByToken(token);
-    if (!response.success) {
-      localStorage.removeItem("userToken");
-      this.$router.push("/");
-      return;
-    }
+    await this.getProfileDetails();
+    console.log(this.user);
 
     // initialize MIDI and model
     this.getMIDI();
     this[ACT_modelInitVae](this.rangeStart, this.rangeEnd);
   },
   methods: {
-    ...mapActions(["findUserByToken"]),
     ...mapActions("modelStore", [ACT_modelInitVae]),
     ...mapActions("midiStore", ["getMIDI"]),
+    ...mapActions(["authenticate", "getProfileDetails"]),
   },
 };
 </script>

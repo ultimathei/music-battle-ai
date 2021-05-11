@@ -17,6 +17,7 @@ import {
 import { convertToPatternTime, calculateTotalScore } from "../utils/utils";
 import { users_DB } from "../services/users_DB";
 import { battles_DB } from "../services/battles_DB";
+import axios from "axios";
 
 Vue.use(Vuex);
 
@@ -51,7 +52,8 @@ export default new Vuex.Store({
 
   // other, non module generic store objects
   state: {
-    user: null,
+    user: JSON.parse(localStorage.getItem("user")) || null,
+    token: localStorage.getItem("userToken") || null,
     mode: modes.INITIAL,
     currentlyPressedNotes: [],
     singleActiveNote: null,
@@ -66,8 +68,14 @@ export default new Vuex.Store({
     user(state) {
       return state.user;
     },
+    token(state) {
+      return state.token;
+    },
+    isLoggedIn(state) {
+      return state.token != null;
+    },
     userName(state) {
-      return state.user.name || 'Champion';
+      return state.user.name || "Champion";
     },
     mode(state) {
       return state.mode;
@@ -112,6 +120,11 @@ export default new Vuex.Store({
     },
     mutateCurrentPageOpen(state, newVal) {
       state.currentPageOpen = newVal;
+    },
+    destroyToken(state) {
+      localStorage.removeItem("user");
+      localStorage.removeItem("userToken");
+      state.token = null;
     },
   },
   // used for asyncronous transactions
@@ -224,47 +237,30 @@ export default new Vuex.Store({
     /**
      * Mock authentication -- not to be used in production
      */
-    authenticate({ state }, formData) {
-      let user = users_DB.find(
-        (_) =>
-          _.email == formData.get("email") &&
-          _.password == formData.get("password")
-      );
+    async authenticate({ state }, formData) {
+      try {
+        const { data } = await axios.post("http://localhost:1337/auth/local", {
+          identifier: formData.get("email"),
+          password: formData.get("password"),
+        });
 
-      if (user) {
-        const { _id, name, email, level, allTimeScore, token } = user;
+        // success
+        // console.log(data);
         let projection = {
-          _id,
-          name,
-          email,
-          level,
-          allTimeScore,
-          token,
-        };
-        state.user = projection; // set in vue store
-        return { success: true, token: token };
-      } else {
-        return { success: false };
-      }
-    },
-
-    findUserByToken({ state }, search_token) {
-      let user = users_DB.find((_) => _.token == search_token);
-
-
-      if (user) {
-        const { _id, name, email, level, allTimeScore, token } = user;
-        let projection = {
-          _id,
-          name,
-          email,
-          level,
-          allTimeScore,
-          token,
+          _id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          level: data.user.profile.level,
+          allTimeScore: data.user.profile.all_time_score,
         };
         state.user = projection;
-        return { success: true, token: token };
-      } else {
+        localStorage.setItem("user", JSON.stringify(projection));
+        state.token = data.jwt;
+        localStorage.setItem("userToken", data.jwt);
+        return { success: true };
+      } catch (error) {
+        console.log(error);
+        // fail
         return { success: false };
       }
     },
@@ -277,46 +273,38 @@ export default new Vuex.Store({
       console.log("fetching all battles from database..");
       let response = await dispatch("fetchUserBattles");
       console.log(response);
-      if(!response.success) {
+      if (!response.success) {
         console.error(response.message);
       } else {
         state.savedBattles = response.battles;
       }
       // set loading to false?
     },
-    
-    fetchUserBattles({ state }) {
+
+    async fetchUserBattles({ state }) {
       // from local storage for now..
       console.log("fetching user's battles from database..");
 
-      // read DB instance
-      let battles_DB_instance = localStorage.getItem("battles_DB");
-      // format: [{ user_id: "user._id", battles: [] }]
-    
-      if (!battles_DB_instance) {
-        battles_DB_instance = battles_DB; // initial mock DB state from file
-        localStorage.setItem("battles_DB", JSON.stringify(battles_DB_instance));
-      } else {
-        battles_DB_instance = JSON.parse(battles_DB_instance); // try-catch?
+      // get my battles
+      try {
+        const { data } = await axios.get(
+          `http://localhost:1337/battles?profile.user_eq=${state.user._id}`,
+          {
+            headers: { Authorization: `Bearer ${state.token}` },
+          }
+        );
+        return { success: true, battles: data };
+      } catch (error) {
+        return { success: false, message: "could not read Database" };
       }
-      // get battles for a specific user from LC
-      // aka find DB item with user_id == user._id
-      let DB_object = battles_DB_instance.find((obj) => obj.user_id == state.user._id);
-      // if didn't find, return error message?
-      if (!DB_object) {
-        return { success: false, message: "could not read Database"};
-      }
-      // else get the battles list of this user
-      return {success: true, battles: DB_object.battles}
     },
-
 
     // SAVING
     async saveBattle({ state, dispatch }, newBattle) {
       console.log("saving battle here..");
       // read user battles from DB to make sure we are using the up to date list
       let response = await dispatch("fetchUserBattles");
-      if(!response.success) {
+      if (!response.success) {
         console.error(response.message);
         return;
       }
@@ -326,54 +314,113 @@ export default new Vuex.Store({
 
       // info about battle to be saved
       let battles_newState = [];
-      let now = this.getters[SESSION_STORE_LOC + "sessionCreated"];
+
+      let streakIndex = this.getters[SESSION_STORE_LOC + "streakIndex"];
+      // console.log('streakIndex', streakIndex);
+
+      // save to DB
 
       // if not empty -- existing battles
       if (battles_previousState.length > 0) {
-        let lastBattle = battles_previousState[battles_previousState.length - 1];
-        if (lastBattle.created == now) {
+        let lastBattle =
+          battles_previousState[battles_previousState.length - 1];
+
+        // console.log('lastBattle', lastBattle);
+        
+        // continuation, so update latest battle data
+        if (streakIndex > 0) {
           // ongoing battle, so push this round to rounds array
-          lastBattle.rounds.push(...newBattle.rounds);
+          const { data } = await axios.put(
+            `http://localhost:1337/battles/${lastBattle.id}`,
+            {
+              data: {
+                seedMelody: lastBattle.data.seedMelody,
+                rounds: [
+                  ...lastBattle.data.rounds,
+                  ...newBattle.rounds
+                ]                
+              }
+            },
+            {
+              headers: { Authorization: `Bearer ${state.token}` },
+            });
+          // console.log(data);
+
         } else {
           // new battle, so push new battle to battles array
-          battles_previousState.push({
-            ...newBattle,
-            _id: battles_previousState.length,
-            created: now,
-          });
-        }
-        battles_newState = battles_previousState;
 
+          // HERE
+          // create new battle and fetch all battles of user again to update local store
+          const { data } = await axios.post(
+            `http://localhost:1337/battles`,
+            {
+              data: newBattle,
+              profile: lastBattle.profile
+            },
+            {
+              headers: { Authorization: `Bearer ${state.token}` },
+            });
+        }
       } else {
-        // no battles yet for user, this will be the first 
-        battles_newState.push({
-          ...newBattle,
-          _id: battles_previousState.length, // 0
-          created: now,
-        });
+        // no battles yet for user, this will be the first
+        // step1. get profile
+        const profileResp = await axios.get(
+          `http://localhost:1337/profiles?_user.id=${state.user._id}`,
+          {
+            headers: { Authorization: `Bearer ${state.token}` },
+          }
+        );
+        let prof = profileResp.data[0];
+        // step2. create battle with profile
+        const { data } = await axios.post(
+          `http://localhost:1337/battles`,
+          {
+            data: newBattle,
+            profile: prof
+          },
+          {
+            headers: { Authorization: `Bearer ${state.token}` },
+          }
+        );
       }
 
+      response = await dispatch("fetchUserBattles");
+      battles_newState = response.battles;
+      state.savedBattles = battles_newState;
+      // console.log('battles_newState', battles_newState);
 
-      // need new method to store in LC in correct format
-      // write
-      let battles_DB_instance = JSON.parse(localStorage.getItem("battles_DB"));
-      // format: [{ user_id: "user._id", battles: [] }]
-      let index = battles_DB_instance.findIndex(obj=>obj.user_id == state.user._id);
-      battles_DB_instance.splice(index, 1, {
-        user_id: state.user._id,
-        battles: battles_newState
-      });
-      // write update in LC (DB)
-      localStorage.setItem("battles_DB", JSON.stringify(battles_DB_instance));
-
-      // console.log(newSaved);
-      // TODO: filter for todays battles only, 
-      // where startof today created < endof today
-      // ..
-      // for now, no filtering (all time total score)
-      state.dailyTotal = calculateTotalScore(battles_newState);
+      dispatch('updateTotalScore', battles_newState);
     },
 
+    async updateTotalScore({state}, battles_newState) {
+      state.dailyTotal = calculateTotalScore(battles_newState);
+      // update it in profile?
+      const {data} = await axios.get(
+        `http://localhost:1337/profiles?_user.id=${state.user._id}`,
+        {
+          headers: { Authorization: `Bearer ${state.token}` },
+        }
+      );
+      const respp = await axios.put(
+        `http://localhost:1337/profiles/${data[0].id}`,
+        {
+          all_time_score: state.dailyTotal
+        },
+        {
+          headers: { Authorization: `Bearer ${state.token}` },
+        }
+      );
+    },
 
+    async getProfileDetails({state}) {
+      const {data} = await axios.get(
+        `http://localhost:1337/profiles?_user.id=${state.user._id}`,
+        {
+          headers: { Authorization: `Bearer ${state.token}` },
+        }
+      );
+
+      return data[0];
+    },
   },
 });

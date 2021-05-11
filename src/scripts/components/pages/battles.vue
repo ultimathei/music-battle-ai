@@ -25,19 +25,19 @@
             <div class="battle-list-item__detail">
               <div class="battle-list-item__detail-key">score</div>
               <div class="battle-list-item__detail-value">
-                {{ calculateBattleScore(battle.rounds) }}
+                {{ calculateBattleScore(battle.data.rounds) }}
               </div>
             </div>
             <div class="battle-list-item__detail">
               <div class="battle-list-item__detail-key">battle length</div>
               <div class="battle-list-item__detail-value">
-                {{ battle.rounds.length }}
+                {{ battle.data.rounds.length }}
               </div>
             </div>
             <div class="battle-list-item__detail">
               <div class="battle-list-item__detail-key">Battle date</div>
               <div class="battle-list-item__detail-value">
-                {{ getDate(battle.created) }}
+                {{ getCreatedDate(battle.created_at) }}
               </div>
             </div>
           </div>
@@ -51,6 +51,7 @@
 import { mapActions, mapGetters } from "vuex";
 import PlayIcon from "../graphics/play.svg";
 import ShareIcon from "../graphics/share.svg";
+import {getDate} from '../../utils/utils';
 
 export default {
   name: "BattlesPage",
@@ -58,9 +59,10 @@ export default {
     PlayIcon,
     ShareIcon,
   },
-  mounted() {
+  async mounted() {
     // set loading to true?
-    this.fetchSavedBattles();
+    await this.fetchSavedBattles();
+    console.log(this.savedBattles);
   },
   computed: {
     ...mapGetters(["user", "savedBattles"]),
@@ -79,9 +81,8 @@ export default {
       return score;
     },
 
-    getDate(milis) {
-      let date = new Date(milis);
-      return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    getCreatedDate(milis) {
+      return getDate(milis);
     },
   },
 };
